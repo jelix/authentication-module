@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="test-auth-app@jelix.org" name="test">
+        <version>0.1</version>
+    </info>
+    <dependencies>
+        <jelix minversion="1.6.24" maxversion="1.7.*"/>
+    </dependencies>
+</module>

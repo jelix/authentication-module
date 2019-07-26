@@ -1,0 +1,30 @@
+{
+    "name": "jelix/authentication-module",
+    "type": "jelix-module",
+    "description": "modules to add authentication features to a web application made with Jelix",
+    "keywords": ["authentication"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Laurent Jouanneau",
+            "email": "laurent@jelix.org"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    },
+    "archive": {
+        "exclude": ["/test"]
+    },
+    "extra": {
+        "jelix" : {
+            "modules-dir": [
+                "modules"
+            ]
+        },
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        }
+    },
+    "minimum-stability": "stable"
+}

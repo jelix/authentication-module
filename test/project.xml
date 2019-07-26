@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://jelix.org/ns/project/1.0">
+    <info id="test-auth@jelix.org" name="test">
+        <version>0.1</version>
+        <label lang="en-EN">Authentication Test</label>
+        <description lang="en-EN">Application to test authentication</description>
+        <licence>MIT</licence>
+        <copyright>2019 Laurent Jouanneau and other contributors</copyright>
+        <creator name="Laurent Jouanneau" email="laurent@jelix.org"/>
+    </info>
+</project>
