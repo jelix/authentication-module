@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": ">=5.6",
-        "jelix/jelix": "dev-jelix-1.7.x"
+        "jelix/jelix": "dev-jelix-1.7.x",
+        "jelix/adminui-module": "dev-master"
     },
     "require-dev" : {
         

@@ -9,7 +9,7 @@ availableLocales=fr_FR
 ; see http://www.php.net/manual/en/timezones.php for supported values
 timeZone="Europe/Paris"
 
-theme=default
+theme=adminlte
 
 [modules]
 jelix.enabled=on
@@ -25,12 +25,16 @@ jacl2db.installparam[defaultuser]=on
 jacl2db.installparam[defaultgroups]=on
 
 
+adminui.enabled=on
+adminui.installparam[wwwfiles]=vhost
 [coordplugins]
 
 [responses]
-html=testResponse
+html="module:adminui~adminuiResponse"
 
 
+htmlerror="module:adminui~adminuiResponse"
+htmllogin="module:adminui~adminuiBareResponse"
 [error_handling]
 messageLogFormat="%date%\t%ip%\t[%code%]\t%msg%\n\tat: %file%\t%line%\n\turl: %url%\n\t%http_method%: %params%\n\treferer: %referer%\n%trace%\n\n"
 errorMessage="Une erreur technique est survenue. Désolé pour ce désagrément."
@@ -62,9 +66,7 @@ multiview=off
 ; : basePath="/aaa/" )
 basePath=
 
-; leave empty to have jelix error messages
-notfoundAct=
-;notfoundAct = "jelix~error:notfound"
+notfoundAct = "jelix~error:notfound"
 
 jelixWWWPath="jelix/"
 
@@ -82,5 +84,26 @@ email="root@localhost"
 
 [webassets_common]
 
-[session]
-storage=
+adminlte-bootstrap.require=jquery
+adminlte-bootstrap.css[]="adminlte-assets/bower_components/bootstrap/dist/css/bootstrap.min.css"
+adminlte-bootstrap.js[]="adminlte-assets/bower_components/bootstrap/dist/js/bootstrap.min.js"
+
+adminlte-fontawesome.css[]="adminlte-assets/bower_components/font-awesome/css/font-awesome.min.css"
+
+adminlte.require="jquery,adminlte-bootstrap,adminlte-fontawesome"
+adminlte.css[]="adminlte-assets/bower_components/Ionicons/css/ionicons.min.css"
+adminlte.css[]="adminlte-assets/dist/css/AdminLTE.min.css"
+adminlte.css[]="adminlte-assets/dist/css/skins/_all-skins.min.css"
+adminlte.css[]="adminlte-assets/SourceSansPro/SourceSansPro.css"
+adminlte.css[]="adminlte-assets/adminui.css"
+adminlte.js[]="adminlte-assets/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"
+adminlte.js[]="adminlte-assets/bower_components/fastclick/lib/fastclick.js"
+adminlte.js[]="adminlte-assets/dist/js/adminlte.min.js"
+adminlte.js[]="adminlte-assets/adminui.js"
+
+[adminui]
+appVersion=0.0.1
+htmlLogo="Jelix<b>Auth</b>"
+htmlLogoMini="J<b>Auth</b>"
+htmlCopyright="<strong>Copyright &copy; 2019 Laurent Jouanneau</strong>."
+dashboardTemplate=
