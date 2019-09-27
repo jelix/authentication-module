@@ -24,9 +24,11 @@ jacl2db.enabled=off
 jacl2db.installparam[defaultuser]=on
 jacl2db.installparam[defaultgroups]=on
 
-
 adminui.enabled=on
 adminui.installparam[wwwfiles]=vhost
+
+authcore.enabled=on
+
 [coordplugins]
 
 [responses]
@@ -66,7 +68,7 @@ multiview=off
 ; : basePath="/aaa/" )
 basePath=
 
-notfoundAct = "jelix~error:notfound"
+notfoundAct="jelix~error:notfound"
 
 jelixWWWPath="jelix/"
 

@@ -14,6 +14,8 @@ use Jelix\AdminUI\SideBar\SubMenu;
 use Jelix\AdminUI\SideBar\LinkMenuItem;
 use Jelix\AdminUI\ControlSideBar\Panel;
 
+use Jelix\Authentication\Session;
+
 class adminuiListener extends jEventListener
 {
 
@@ -30,8 +32,13 @@ class adminuiListener extends jEventListener
         $uim = $event->uiManager;
 
         $accountMenu = $uim->navbar()->accountMenu();
-        //$accountMenu->setNotAuthenticated('#signin');
-        $accountMenu->setAuthenticated('laurentj', 'Laurent Jouanneau', jUrl::get('test~default:login'), '#profile');
+        if (Session::hasSessionUser()) {
+            $user = Session::getSessionUser();
+            $accountMenu->setAuthenticated($user->getUserId(), $user->getName(), '#signout', '#profile');
+        }
+        else {
+            $accountMenu->setNotAuthenticated('#signin');
+        }
         //$accountMenu->setAuthenticated('laurentj', 'Laurent Jouanneau', '#signout', '#profile', \jApp::urlBasePath().'adminlte-assets/dist/img/user2-160x160.jpg');
         //$accountMenu->addLink(new Link('#prefs', 'Your preferences'));
 
