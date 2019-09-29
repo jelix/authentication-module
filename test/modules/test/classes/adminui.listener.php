@@ -14,7 +14,7 @@ use Jelix\AdminUI\SideBar\SubMenu;
 use Jelix\AdminUI\SideBar\LinkMenuItem;
 use Jelix\AdminUI\ControlSideBar\Panel;
 
-use Jelix\Authentication\Session;
+use Jelix\Authentication\Core\Session;
 
 class adminuiListener extends jEventListener
 {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
-    <info id="authentication@modules.jelix.org" name="authentication" createdate="2019-09-27">
+    <info id="authcore@modules.jelix.org" name="authcore" createdate="2019-09-27">
         <version date="2019-09-27">0.1</version>
-        <label lang="en_US"></label>
-        <description lang="en_US"></description>
+        <label lang="en_US">JelixAuth Core</label>
+        <description lang="en_US">Core of authentication system</description>
         <license>MIT</license>
         <copyright>2019 Laurent Jouanneau</copyright>
         <creator name="Laurent Jouanneau" email="laurent@jelix.org"/>
@@ -13,6 +13,6 @@
         <jelix minversion="1.7.0" maxversion="1.7.*"/>
     </dependencies>
     <autoload>
-        <namespacePathMap name="Jelix\Authentication" dir="lib/" />
+        <namespacePathMap name="Jelix\Authentication\Core" dir="lib/Core" />
    </autoload>
 </module>

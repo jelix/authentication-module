@@ -6,7 +6,7 @@
  * @licence MIT
  */
 
-namespace Jelix\Authentication;
+namespace Jelix\Authentication\Core;
 
 /**
  * Manage the authenticated session
