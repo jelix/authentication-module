@@ -3,5 +3,7 @@
     <classicentrypoint name="index" default="true" optionalTrailingSlash="true">
         <url pathinfo="/" module="adminui" action="default:index"/>
         <url pathinfo="/test" module="test" action="default:index"/>
+        <url pathinfo="/auth" module="authcore" include="urls.xml"/>
+        <url pathinfo="/test/yes/signin" module="test" action="alwaysyes:signin"/>
     </classicentrypoint>
 </urls>

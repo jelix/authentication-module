@@ -33,7 +33,7 @@ class SessionUser {
     function __construct($userId, $name, array $attributes) {
         $this->attributes = $attributes;
         $this->userId = $userId;
-        $this->name = $name;
+        $this->name = $name ?: $userId;
     }
 
     function getUserId() {

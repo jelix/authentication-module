@@ -6,4 +6,7 @@
     <dependencies>
         <jelix minversion="1.6.24" maxversion="1.7.*"/>
     </dependencies>
+    <autoload>
+        <namespacePathMap name="TestAuth\" dir="lib/" />
+    </autoload>
 </module>

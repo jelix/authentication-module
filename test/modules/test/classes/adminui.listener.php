@@ -32,12 +32,16 @@ class adminuiListener extends jEventListener
         $uim = $event->uiManager;
 
         $accountMenu = $uim->navbar()->accountMenu();
-        if (Session::hasSessionUser()) {
-            $user = Session::getSessionUser();
-            $accountMenu->setAuthenticated($user->getUserId(), $user->getName(), '#signout', '#profile');
+        if (jAuthentication::isCurrentUserAuthenticated()) {
+            $user = jAuthentication::getCurrentUser();
+            $accountMenu->setAuthenticated(
+                $user->getUserId(),
+                $user->getName(),
+                jAuthentication::getSignoutPageUrl(),
+                '#profile');
         }
         else {
-            $accountMenu->setNotAuthenticated('#signin');
+            $accountMenu->setNotAuthenticated(jAuthentication::getSigninPageUrl());
         }
         //$accountMenu->setAuthenticated('laurentj', 'Laurent Jouanneau', '#signout', '#profile', \jApp::urlBasePath().'adminlte-assets/dist/img/user2-160x160.jpg');
         //$accountMenu->addLink(new Link('#prefs', 'Your preferences'));

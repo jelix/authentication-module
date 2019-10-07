@@ -14,5 +14,6 @@
     </dependencies>
     <autoload>
         <namespacePathMap name="Jelix\Authentication\Core" dir="lib/Core" />
+        <class name="jAuthentication" file="lib/jAuthentication.php" />
    </autoload>
 </module>

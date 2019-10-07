@@ -27,7 +27,15 @@ class jAuthentication {
     public static function manager() {
         if (self::$manager === null) {
             $idpList = array();
-
+            if (isset(jApp::config()->authentication['idp'])) {
+                $idpClasses = jApp::config()->authentication['idp'];
+                if (!is_array($idpClasses)) {
+                    $idpClasses = array($idpClasses);
+                }
+                foreach($idpClasses as $idpClass) {
+                    $idpList[] = new $idpClass();
+                }
+            }
             self::$manager = new AuthenticatorManager($idpList);
         }
         return self::$manager;
@@ -59,13 +67,17 @@ class jAuthentication {
      * @return string url
      */
     public static function signout() {
-        $url = self::getSigninPageUrl();
+        $url = '';
         $idpId = Session::getIdentityProviderId();
         if ($idpId) {
             $idp = jAuthentication::manager()->getIdpById($idpId);
-            $url = $idp->getLogoutUrl();
+            if ($idp) {
+                $url = $idp->getLogoutUrl();
+            }
         }
-
+        if ($url == '') {
+            $url = self::getSigninPageUrl();
+        }
         Session::unsetSessionUser();
         return $url;
     }
