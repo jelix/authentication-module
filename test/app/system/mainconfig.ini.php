@@ -111,4 +111,4 @@ htmlCopyright="<strong>Copyright &copy; 2019 Laurent Jouanneau</strong>."
 dashboardTemplate=
 
 [authentication]
-idp[] = "\TestAuth\AlwaysYesIdp"
+idp[] = alwaysyes

@@ -5,11 +5,10 @@
  * @link     http://jelix.org
  * @licence MIT
  */
-namespace TestAuth;
 
 use Jelix\Authentication\Core\IdentityProviderInterface;
 
-class AlwaysYesIdp implements IdentityProviderInterface {
+class AlwaysYesIdentityProvider implements IdentityProviderInterface {
 
 
     /**
