@@ -33,7 +33,6 @@ RUN apk --no-cache add git php7 php7-fpm \
     wget
 
 RUN set -eux; \
-    sed -i "/^listen =/c\listen = 9000" /etc/php7/php-fpm.d/www.conf; \
     sed -i "/^display_errors =/c\display_errors = On" /etc/php7/php.ini; \
     addgroup -g $FPM_GROUP_ID grouptest; \
     adduser -D -u $FPM_USER_ID -G grouptest usertest;
@@ -43,6 +42,7 @@ RUN set -eux; \
 RUN wget -O /bin/composer https://getcomposer.org/download/$composer_version/composer.phar \
     && chmod +x /bin/composer
 
+COPY www.conf /etc/php7/php-fpm.d/www.conf
 COPY entrypoint.sh /bin/
 COPY appctl.sh /bin/
 RUN chmod 755 /bin/entrypoint.sh /bin/appctl.sh

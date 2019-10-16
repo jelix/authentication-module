@@ -2,7 +2,7 @@
     "name": "jelix/authentication-module",
     "type": "jelix-module",
     "description": "modules to add authentication features to a web application made with Jelix",
-    "keywords": ["authentication"],
+    "keywords": ["authentication", "jelix"],
     "license": "MIT",
     "authors": [
         {
