@@ -5,7 +5,6 @@
  * @link     http://jelix.org
  * @licence MIT
  */
-use \Jelix\Authentication\Core\Session;
 
 class signCtrl extends jController {
 
@@ -46,7 +45,6 @@ class signCtrl extends jController {
         $rep->url = jAuthentication::signout();
         return $rep;
     }
-
 
 }
 

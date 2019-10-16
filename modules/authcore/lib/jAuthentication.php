@@ -7,7 +7,7 @@
  */
 
 use Jelix\Authentication\Core\AuthenticatorManager;
-use Jelix\Authentication\Core\Session;
+use Jelix\Authentication\Core\AuthSession\AuthSession;
 
 /**
  * Proxy class to access to authentication features in a Jelix framework context
@@ -20,6 +20,11 @@ class jAuthentication {
      * @var AuthenticatorManager
      */
     protected static $manager = null;
+
+    /**
+     * @var AuthSession
+     */
+    protected static $session = null;
 
     /**
      * @return AuthenticatorManager
@@ -41,12 +46,32 @@ class jAuthentication {
         return self::$manager;
     }
 
+    /**
+     * @return AuthSession
+     */
+    public static function session() {
+        if (self::$session === null) {
+            if (isset(jApp::config()->authentication['sessionHandler']) &&
+                jApp::config()->authentication['sessionHandler'] != ''
+            ) {
+                $sessHandName = jApp::config()->authentication['sessionHandler'];
+            }
+            else {
+                $sessHandName = 'php';
+            }
+            $sessionHandler = \jApp::loadPlugin($sessHandName, 'authsession', '.authsession.php', $sessHandName.'AuthSessionHandler', array());
+            self::$session = new Jelix\Authentication\Core\AuthSession\AuthSession($sessionHandler);
+
+        }
+        return self::$session;
+    }
+
     public static function isCurrentUserAuthenticated() {
-        return Session::hasSessionUser();
+        return self::session()->hasSessionUser();
     }
 
     public static function getCurrentUser()  {
-        return Session::getSessionUser();
+        return self::session()->getSessionUser();
     }
 
     public static function getSigninPageUrl() {
@@ -68,7 +93,7 @@ class jAuthentication {
      */
     public static function signout() {
         $url = '';
-        $idpId = Session::getIdentityProviderId();
+        $idpId = self::session()->getIdentityProviderId();
         if ($idpId) {
             $idp = jAuthentication::manager()->getIdpById($idpId);
             if ($idp) {
@@ -78,7 +103,7 @@ class jAuthentication {
         if ($url == '') {
             $url = self::getSigninPageUrl();
         }
-        Session::unsetSessionUser();
+        self::session()->unsetSessionUser();
         return $url;
     }
 

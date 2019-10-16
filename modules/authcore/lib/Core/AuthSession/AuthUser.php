@@ -6,17 +6,18 @@
  * @licence MIT
  */
 
-namespace Jelix\Authentication\Core;
+namespace Jelix\Authentication\Core\AuthSession;
 
 /**
- * Properties about a user in session
+ * Properties about a user in a authentication session
  *
  * This object contains user attributes.
  *
  * Attributes are supposed to be set by any module during the login event,
  * for example, by a module managing accounts.
  */
-class SessionUser {
+class AuthUser
+{
 
     protected $userId;
 

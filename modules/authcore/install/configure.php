@@ -24,6 +24,9 @@ class authcoreModuleConfigurator extends \Jelix\Installer\Module\Configurator
         if ($ini->getValue('idp', 'authentication') === null) {
             $ini->setValue('idp', "", 'authentication');
         }
+        if ($ini->getValue('sessionHandler', 'authentication') === null) {
+            $ini->setValue('sessionHandler', "php", 'authentication');
+        }
 
     }
 

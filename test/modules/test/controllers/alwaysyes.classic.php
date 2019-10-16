@@ -5,7 +5,6 @@
  * @link     http://jelix.org
  * @licence MIT
  */
-use \Jelix\Authentication\Core\Session;
 
 class alwaysyesCtrl extends jController {
     /**
@@ -15,8 +14,8 @@ class alwaysyesCtrl extends jController {
         $rep = $this->getResponse('redirect');
 
         // FIXME load attributes
-        $user = new \Jelix\Authentication\Core\SessionUser('testuser', 'User Test', array());
-        Session::setSessionUser($user, 'alwaysyes');
+        $user = new \Jelix\Authentication\Core\AuthSession\AuthUser('testuser', 'User Test', array());
+        jAuthentication::session()->setSessionUser($user, 'alwaysyes');
         $rep->action = 'test~default:index';
         return $rep;
     }

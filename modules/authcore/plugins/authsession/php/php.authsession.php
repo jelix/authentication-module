@@ -6,50 +6,42 @@
  * @licence MIT
  */
 
-namespace Jelix\Authentication\Core;
+use Jelix\Authentication\Core\AuthSession\AuthSessionHandlerInterface;
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 
-/**
- * Manage the authenticated session
- *
- */
-class Session {
+
+class phpAuthSessionHandler implements AuthSessionHandlerInterface {
 
     const SESSION_NAME = 'JAUTH';
 
     /**
-     * @param SessionUser $user
+     * @param AuthUser $user
      * @param string $IPid
      */
-    public static function setSessionUser(SessionUser $user, $IPid)
+    public function setSessionUser(AuthUser $user, $IPid)
     {
         $_SESSION[self::SESSION_NAME] = array(
             'user' => $user,
             'identProviderId' => $IPid
         );
-        \jEvent::notify('AuthenticationLogin', array(
-            'user' => $user,
-            'identProviderId' => $IPid
-        ));
     }
 
-    public static function unsetSessionUser()
+    public function unsetSessionUser()
     {
         if (isset($_SESSION[self::SESSION_NAME])) {
-            $user = $_SESSION[self::SESSION_NAME]['user'];
             unset($_SESSION[self::SESSION_NAME]);
-            \jEvent::notify('AuthenticationLogout', array('user' => $user));
         }
     }
 
-    public static function hasSessionUser()
+    public function hasSessionUser()
     {
         return isset($_SESSION[self::SESSION_NAME]);
     }
 
     /**
-     * @return SessionUser|null
+     * @return AuthUser|null
      */
-    public static function getSessionUser()
+    public function getSessionUser()
     {
         if (isset($_SESSION[self::SESSION_NAME])) {
             return $_SESSION[self::SESSION_NAME]['user'];
@@ -57,13 +49,12 @@ class Session {
         return null;
     }
 
-    public static function getIdentityProviderId()
+    public function getIdentityProviderId()
     {
         if (isset($_SESSION[self::SESSION_NAME])) {
             return $_SESSION[self::SESSION_NAME]['identProviderId'];
         }
         return null;
     }
-
-
 }
+

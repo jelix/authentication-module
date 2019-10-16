@@ -112,3 +112,4 @@ dashboardTemplate=
 
 [authentication]
 idp[] = alwaysyes
+sessionHandler = php
