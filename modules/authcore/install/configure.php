@@ -28,6 +28,16 @@ class authcoreModuleConfigurator extends \Jelix\Installer\Module\Configurator
             $ini->setValue('sessionHandler', "php", 'authentication');
         }
 
+        if ($ini->getValue('sessionauth', 'coordplugins') === null) {
+            $ini->setValue('sessionauth', true, 'coordplugins');
+        }
+        if (!$ini->isSection('sessionauth')) {
+            $ini->setValues(array(
+                'missingAuthAction'=>'',
+                'missingAuthAjaxAction'=>'',
+                'authRequired' => false
+            ), 'sessionauth');
+        }
     }
 
     public function localConfigure(LocalConfigurationHelpers $helpers)

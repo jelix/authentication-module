@@ -11,45 +11,47 @@ use Jelix\Authentication\Core\IdentityProviderInterface;
 class AlwaysYesIdentityProvider implements IdentityProviderInterface {
 
 
+    public function __construct(array $options) {
+
+    }
+
     /**
-     * the identifiant of the identity provider
-     *
-     * Should be specific to the identity provider, and used to identify the
-     * identity provider
-     * @return string
+     * @inheritDoc
      */
     public function getId() {
         return 'alwaysyes';
     }
 
     /**
-     * give the url to use to authenticate the user
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getLoginUrl() {
         return '';
     }
 
     /**
-     * give the url to use to logout the user
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getLogoutUrl() {
         return '';
     }
 
     /**
-     * Give the html to display in a login page.
-     *
-     * Note that there may have as html content as activated identity providers
-     *
-     * @return string html content
+     * @inheritDoc
      */
     public function getHtmlLoginForm(\jRequest $request) {
         $tpl = new \jTpl();
         return $tpl->fetch('test~alwaysyesform');
     }
 
+    /**
+     *
+     * @inheritDoc
+     */
+    public function checkSessionValidity ($request, $authUser, $authRequired) {
+        if ($authRequired && !$authUser) {
+            throw new \jHttp401UnauthorizedException();
+        }
+        return null;
+    }
 }

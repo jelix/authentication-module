@@ -30,6 +30,8 @@ adminui.installparam[wwwfiles]=vhost
 authcore.enabled=on
 
 [coordplugins]
+sessionauth = on
+
 
 [responses]
 html="module:adminui~adminuiResponse"
@@ -113,3 +115,10 @@ dashboardTemplate=
 [authentication]
 idp[] = alwaysyes
 sessionHandler = php
+
+[sessionauth]
+authRequired = off
+missingAuthAction = ""
+missingAuthAjaxAction = ""
+
+

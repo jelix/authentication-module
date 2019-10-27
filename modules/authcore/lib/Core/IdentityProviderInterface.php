@@ -14,6 +14,9 @@ namespace Jelix\Authentication\Core;
  */
 interface IdentityProviderInterface {
 
+
+    public function __construct(array $options);
+
     /**
      * the identifiant of the identity provider
      *
@@ -45,4 +48,23 @@ interface IdentityProviderInterface {
      * @return string html content
      */
     public function getHtmlLoginForm(\jRequest $request);
+
+    /**
+     * verify if the session is valid
+     *
+     * The identity provider should indicate by the returned value,
+     * if the target action can be executed (the method must return null), or
+     * if an other action should be executed (the method must return a jSelectorAct object),
+     * in case of a lack of authentication.
+     *
+     * The identity provider can also throw a jHttp401UnauthorizedException exception
+     * if it cannot provides an action to process the case of a lack of authentication.
+     *
+     * @param \jRequest $request
+     * @param AuthSession\AuthUser|null $authUser the user identified into the session. null if there is no user
+     * @param boolean $authRequired  true when the current action needs an authenticated user
+     * @return \jSelectorAct|null return an action to redirect to, without error
+     * @throws \jHttp401UnauthorizedException
+     */
+    public function checkSessionValidity ($request, $authUser, $authRequired);
 }

@@ -38,7 +38,12 @@ class jAuthentication {
                     $idpPlugins = array($idpPlugins);
                 }
                 foreach($idpPlugins as $idpPlugin) {
-                    $idpList[] = \jApp::loadPlugin($idpPlugin, 'authidp', '.authidp.php', $idpPlugin.'IdentityProvider', array());
+                    $options = array();
+                    $optionName = $idpPlugin.'_idp';
+                    if (isset(jApp::config()->$optionName)) {
+                        $options = jApp::config()->$optionName;
+                    }
+                    $idpList[] = \jApp::loadPlugin($idpPlugin, 'authidp', '.authidp.php', $idpPlugin.'IdentityProvider', $options);
                 }
             }
             self::$manager = new AuthenticatorManager($idpList);
