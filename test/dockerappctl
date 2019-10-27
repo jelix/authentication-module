@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+COMMAND="$1"
+
+if [ "$COMMAND" == "" ]; then
+    echo "Error: command is missing"
+    echo "Possible commands: clean_tmp, reset, install, rights, composer_install, composer_update"
+    exit 1;
+fi
+
+case $COMMAND in
+    clean_tmp)
+        docker exec -t -i jelix_auth_php appctl.sh clean_tmp;;
+    reset)
+        docker exec -t -i jelix_auth_php appctl.sh reset;;
+    install)
+        docker exec -t -i jelix_auth_php appctl.sh install;;
+    rights)
+        docker exec -t -i jelix_auth_php appctl.sh rights;;
+    composer_install)
+        docker exec -t -i jelix_auth_php appctl.sh composer_install;;
+    composer_update)
+        docker exec -t -i jelix_auth_php appctl.sh composer_update;;
+    *)
+        echo "wrong command"
+        exit 2
+        ;;
+esac
+
