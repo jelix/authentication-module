@@ -45,6 +45,7 @@ RUN wget -O /bin/composer https://getcomposer.org/download/$composer_version/com
 COPY www.conf /etc/php7/php-fpm.d/www.conf
 COPY entrypoint.sh /bin/
 COPY appctl.sh /bin/
+COPY profile.start /etc/profile.d/start
 RUN chmod 755 /bin/entrypoint.sh /bin/appctl.sh
 
 ENV PHP_INI_DIR /etc/php7

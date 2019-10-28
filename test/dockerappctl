@@ -21,6 +21,10 @@ case $COMMAND in
         docker exec -t -i jelix_auth_php appctl.sh composer_install;;
     composer_update)
         docker exec -t -i jelix_auth_php appctl.sh composer_update;;
+    shell)
+       docker exec -it --user usertest jelix_auth_php  /bin/sh -l;;
+    shellroot)
+       docker exec -it jelix_auth_php  /bin/sh  -l;;
     *)
         echo "wrong command"
         exit 2
