@@ -11,5 +11,6 @@ var/db/*
 var/config/profiles.ini.php
 var/config/localconfig.ini.php
 var/config/liveconfig.ini.php
+var/config/users.ini.php
 vendor/*
 composer.lock

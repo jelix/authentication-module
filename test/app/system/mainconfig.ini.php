@@ -28,6 +28,7 @@ adminui.enabled=on
 adminui.installparam[wwwfiles]=vhost
 
 authcore.enabled=on
+authloginpass.enabled=on
 
 [coordplugins]
 sessionauth = on
@@ -35,10 +36,9 @@ sessionauth = on
 
 [responses]
 html="module:adminui~adminuiResponse"
-
-
 htmlerror="module:adminui~adminuiResponse"
 htmllogin="module:adminui~adminuiBareResponse"
+
 [error_handling]
 messageLogFormat="%date%\t%ip%\t[%code%]\t%msg%\n\tat: %file%\t%line%\n\turl: %url%\n\t%http_method%: %params%\n\treferer: %referer%\n%trace%\n\n"
 errorMessage="Une erreur technique est survenue. Désolé pour ce désagrément."
@@ -113,12 +113,29 @@ htmlCopyright="<strong>Copyright &copy; 2019 Laurent Jouanneau</strong>."
 dashboardTemplate=
 
 [authentication]
-idp[] = alwaysyes
+idp[]=alwaysyes
+idp[]=loginpass
 sessionHandler = php
 
 [sessionauth]
 authRequired = off
 missingAuthAction = ""
 missingAuthAjaxAction = ""
+
+[loginpass_idp]
+backends[]=inifile
+after_login=
+
+[loginpass:common]
+passwordHashAlgo=1
+passwordHashOptions=
+deprecatedPasswordCryptFunction=
+deprecatedPasswordSalt=
+
+;ini file provider
+[loginpass:inifile]
+backend=inifile
+inifile="varconfig:users.ini.php"
+backendLabel=Native users
 
 
