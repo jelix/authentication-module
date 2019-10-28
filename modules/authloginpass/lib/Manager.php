@@ -17,6 +17,8 @@ class Manager
      */
     protected $backends = array();
 
+    protected $actionAfterLogin = '';
+
     /**
      * Manager constructor.
      * @param string[] $backends
@@ -25,6 +27,10 @@ class Manager
      */
     public function __construct($backends, $configuration)
     {
+        if (isset($configuration->loginpass_idp['afterLogin'])) {
+            $this->actionAfterLogin = $configuration->loginpass_idp['afterLogin'];
+        }
+
         $options = array(
             'passwordHashAlgo'=>1,
             'passwordHashOptions'=> null,
@@ -73,6 +79,13 @@ class Manager
             $plugin->setRegisterKey($backendName);
             $this->backends[$backendName] = $plugin;
         }
+    }
+
+    public function getUrlAfterLogin() {
+        if ($this->actionAfterLogin) {
+            return \jUrl::get($this->actionAfterLogin);
+        }
+        return '';
     }
 
     /**
