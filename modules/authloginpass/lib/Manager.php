@@ -98,7 +98,7 @@ class Manager
      * @param string $login
      * @return BackendPluginInterface|null
      */
-    protected function getBackendHavingUser($login) {
+    public function getBackendHavingUser($login) {
         foreach($this->backends as $backend) {
             if ($backend->userExists($login)) {
                 return $backend;

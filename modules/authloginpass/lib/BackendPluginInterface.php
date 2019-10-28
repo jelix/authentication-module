@@ -8,11 +8,17 @@ namespace Jelix\Authentication\LoginPass;
 
 interface BackendPluginInterface
 {
+    /** @var int the backend does not implement specific features */
+    const FEATURE_NONE = 0;
+
     /** @var int password of a user can be changed */
     const FEATURE_CHANGE_PASSWORD = 1;
 
-    /** @var int the backend does not implement specific features */
-    const FEATURE_NONE = 0;
+    /** @var int the backend can create user */
+    const FEATURE_CREATE_USER = 2;
+
+    /** @var int the backend can delete user */
+    const FEATURE_DELETE_USER = 4;
 
     const VERIF_AUTH_BAD = 0;
     const VERIF_AUTH_OK = 1;
@@ -47,6 +53,31 @@ interface BackendPluginInterface
      * @return integer a combination of FEATURE_* constants
      */
     public function getFeatures();
+
+    /**
+     * @param int $feature one of FEATURE_* constants or a combination of them
+     * @return boolean true if the backend has the given feature
+     */
+    public function hasFeature($feature);
+
+    /**
+     * Create a user into the backend
+     *
+     * @param string $login
+     * @param string $password
+     * @param string $email
+     * @param string $name
+     * @return boolean
+     */
+    public function createUser($login, $password, $email, $name = '');
+
+    /**
+     * Delete a user from the backend
+     *
+     * @param string $login
+     * @return boolean
+     */
+    public function deleteUser($login);
 
     /**
      * @param string $login login in lowercase, as stored into the database

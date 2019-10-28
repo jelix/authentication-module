@@ -17,7 +17,7 @@ abstract class BackendAbstract implements BackendPluginInterface
     protected $_params = array();
 
     protected $passwordHashAlgo = 1;
-    protected $passwordHashOptions;
+    protected $passwordHashOptions = array();
 
     public function __construct($params)
     {
@@ -29,6 +29,9 @@ abstract class BackendAbstract implements BackendPluginInterface
             }
         }
         $this->passwordHashOptions = $params['passwordHashOptions'];
+        if (!is_array($this->passwordHashOptions)) {
+            $this->passwordHashOptions = array($this->passwordHashOptions);
+        }
         if (isset($params['label'])) {
             $this->label = $params['label'];
         }
@@ -58,6 +61,12 @@ abstract class BackendAbstract implements BackendPluginInterface
     {
         return $this->_params;
     }
+
+    public function hasFeature($feat) {
+        $features = $this->getFeatures();
+        return ($features|$feat) > 0;
+    }
+
 
     /**
      * hash the given password with an old method used in deprecated jAuth system
