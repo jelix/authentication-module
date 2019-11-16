@@ -135,7 +135,7 @@ deprecatedPasswordSalt=
 ;ini file provider
 [loginpass:inifile]
 backend=inifile
-inifile="varconfig:users.ini.php"
+inifile="var:db/users.ini.php"
 backendLabel=Native users
 
 

@@ -8,9 +8,9 @@ var/mails/*
 !var/mails/.dummy
 var/db/*
 !var/db/.dummy
+!var/db/users.ini.php.dist
 var/config/profiles.ini.php
 var/config/localconfig.ini.php
 var/config/liveconfig.ini.php
-var/config/users.ini.php
 vendor/*
 composer.lock
