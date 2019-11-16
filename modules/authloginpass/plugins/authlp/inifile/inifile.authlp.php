@@ -7,7 +7,7 @@
 
 
 /**
- * user backend for the authloginpass module
+ * authentication backend for the authloginpass module
  *
  * it uses an ini file to store credentials and to check authentication
  *
@@ -31,12 +31,11 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
     {
         parent::__construct($params);
 
-        $file = $params['inifile'];
-        if ($file == '') {
+        if (!isset($params['inifile']) || $params['inifile'] == '') {
             throw new \Exception('Missing file name');
         }
 
-        $this->iniFile = \jFile::parseJelixPath($file);
+        $this->iniFile = \jFile::parseJelixPath($params['inifile']);
         $this->isWritable = is_writable($this->iniFile);
         $this->iniContent = \Jelix\IniFile\Util::read($this->iniFile);
 

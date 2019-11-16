@@ -123,6 +123,7 @@ missingAuthAction = ""
 missingAuthAjaxAction = ""
 
 [loginpass_idp]
+backends[]=daotablesqlite
 backends[]=inifile
 after_login=
 
@@ -134,8 +135,12 @@ deprecatedPasswordSalt=
 
 ;ini file provider
 [loginpass:inifile]
-backend=inifile
+backendType=inifile
 inifile="var:db/users.ini.php"
 backendLabel=Native users
+
+[loginpass:daotablesqlite]
+backendType=dbdao
+profile=daotablesqlite
 
 

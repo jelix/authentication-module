@@ -60,21 +60,21 @@ class Manager
 
             $backendConfig = array_merge($options, $configuration->$backendSection);
 
-            if (!isset($backendConfig['backend']) || !$backendConfig['backend']) {
-                throw new \Exception("No backend name for loginpass into the section '$backendSection'");
+            if (!isset($backendConfig['backendType']) || !$backendConfig['backendType']) {
+                throw new \Exception("No backend type for loginpass into the section '$backendSection'");
             }
-            $backend = $backendConfig['backend'];
+            $backendType = $backendConfig['backendType'];
 
             /** @var BackendPluginInterface $plugin */
             $plugin = \jApp::loadPlugin(
-                $backend,
+                $backendType,
                 'authlp',
                 '.authlp.php',
-                $backend.'Backend',
+                $backendType.'Backend',
                 $backendConfig
             );
             if (is_null($plugin)) {
-                throw new \Exception('Plugin "'.$backend.'" for loginpass backend "'.$backendName.'" is not found');
+                throw new \Exception('Plugin "'.$backendType.'" for loginpass backend "'.$backendName.'" is not found');
             }
             $plugin->setRegisterKey($backendName);
             $this->backends[$backendName] = $plugin;
