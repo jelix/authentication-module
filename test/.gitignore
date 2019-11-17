@@ -1,3 +1,5 @@
+docker-conf/certs/*
+!docker-conf/certs/.dummy
 var/config/installer.ini.php
 var/config/installer.bak.ini.php
 temp/*
