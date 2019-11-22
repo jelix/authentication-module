@@ -44,10 +44,10 @@ function resetApp() {
     if [ -f $APPDIR/var/config/localconfig.ini.php.dist ]; then
         cp $APPDIR/var/config/localconfig.ini.php.dist $APPDIR/var/config/localconfig.ini.php
     fi
-    if [ -f $APPDIR/var/config/users.ini.php.dist ]; then
-        cp $APPDIR/var/config/users.ini.php.dist $APPDIR/var/config/users.ini.php
+    if [ -f $APPDIR/var/db/users.ini.php.dist ]; then
+        cp $APPDIR/var/db/users.ini.php.dist $APPDIR/var/db/users.ini.php
     fi
-    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/config/users.ini.php
+    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/db/users.ini.php
 
     if [ -f $APPDIR/var/config/installer.ini.php ]; then
         rm -f $APPDIR/var/config/installer.ini.php
@@ -117,10 +117,10 @@ function launch() {
     if [ ! -f $APPDIR/var/config/localconfig.ini.php ]; then
         cp $APPDIR/var/config/localconfig.ini.php.dist $APPDIR/var/config/localconfig.ini.php
     fi
-    if [ ! -f $APPDIR/var/config/users.ini.php ]; then
-        cp $APPDIR/var/config/users.ini.php.dist $APPDIR/var/config/users.ini.php
+    if [ ! -f $APPDIR/var/db/users.ini.php -a -f $APPDIR/var/db/users.ini.php.dist ]; then
+        cp $APPDIR/var/db/users.ini.php.dist $APPDIR/var/db/users.ini.php
     fi
-    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/config/users.ini.php
+    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/db/users.ini.php
 
     if [ ! -d $APPDIR/vendor ]; then
       composerInstall
