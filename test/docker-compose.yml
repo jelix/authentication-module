@@ -14,3 +14,18 @@ services:
     container_name: jelix_auth_php
     volumes:
       - "../:/jelixapp/"
+  openldap:
+    build: ./docker-conf/openldap
+    container_name: jelix_auth_ldap
+    environment:
+      #SLAPD_FORCE_RECONFIGURE: false
+      SLAPD_PASSWORD: "passjelix"
+      SLAPD_ORGANISATION: "Jelix"
+      SLAPD_DOMAIN: "tests.jelix"
+      SLAPD_TLS_CRT_FILENAME: "ldap.jelix.crt"
+      SLAPD_TLS_KEY_FILENAME: "ldap.jelix.key"
+      SLAPD_TLS_CA_CRT_FILENAME: "tests.jelix-CA.crt"
+    volumes:
+      - "./docker-conf/certs:/customcerts"
+      - "./docker-conf/openldap/ldif:/customldif"
+
