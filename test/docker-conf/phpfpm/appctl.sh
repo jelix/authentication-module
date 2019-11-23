@@ -91,7 +91,6 @@ function setRights() {
     chown -R $USER:$GROUP $DIRS
     chmod -R ug+w $DIRS
     chmod -R o-w $DIRS
-
 }
 
 function composerInstall() {
@@ -131,6 +130,11 @@ function launch() {
     cleanTmp
 }
 
+function launchUnitTests() {
+    su $APP_USER -c "cd $APPDIR/tests/ && ../vendor/bin/phpunit"
+}
+
+
 case $COMMAND in
     clean_tmp)
         cleanTmp;;
@@ -146,6 +150,8 @@ case $COMMAND in
         composerInstall;;
     composer_update)
         composerUpdate;;
+    unittests)
+        launchUnitTests;;
     *)
         echo "wrong command"
         exit 2
