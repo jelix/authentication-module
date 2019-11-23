@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 COMMAND="$1"
+shift
 
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
@@ -25,6 +26,8 @@ case $COMMAND in
        docker exec -it --user usertest jelix_auth_php  /bin/sh -l;;
     shellroot)
        docker exec -it jelix_auth_php  /bin/sh  -l;;
+    ldapsearch)
+      docker exec jelix_auth_ldap ldapsearch $@
     *)
         echo "wrong command"
         exit 2

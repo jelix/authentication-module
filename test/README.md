@@ -2,9 +2,12 @@ This is an application to test the module.
 
 A docker configuration is provided to launch the application into a container.
 
-To launch containers:
+To launch containers the first time:
 
 ```
+cd docker-conf
+./setup.sh
+cd ..
 docker-compose build
 docker-compose up -d
 
