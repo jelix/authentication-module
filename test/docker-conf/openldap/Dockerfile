@@ -13,7 +13,6 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
       slapd \
       ldap-utils \
       openssl ssl-cert \
-      less vim \
     && apt-get clean \
     && adduser openldap ssl-cert \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
@@ -21,7 +20,6 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 
 COPY entrypoint.sh /entrypoint.sh
 COPY ctl.sh /bin/ctl.sh
-COPY ldap_ssl.ldif /etc/ldap.dist/
 
 # Expose default ldap and ldaps ports
 EXPOSE 389 636

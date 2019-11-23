@@ -27,7 +27,8 @@ case $COMMAND in
     shellroot)
        docker exec -it jelix_auth_php  /bin/sh  -l;;
     ldapsearch)
-      docker exec jelix_auth_ldap ldapsearch $@
+       docker exec jelix_auth_ldap ldapsearch $@
+       ;;
     *)
         echo "wrong command"
         exit 2

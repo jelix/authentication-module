@@ -12,8 +12,13 @@ services:
   php:
     build: ./docker-conf/phpfpm
     container_name: jelix_auth_php
+    environment:
+      LDAP_TLS_CRT_FILENAME: "ldap.jelix.crt"
+      LDAP_TLS_KEY_FILENAME: "ldap.jelix.key"
+      TLS_CA_CRT_FILENAME: "tests.jelix-CA.crt"
     volumes:
       - "../:/jelixapp/"
+      - "./docker-conf/certs:/customcerts"
   openldap:
     build: ./docker-conf/openldap
     container_name: jelix_auth_ldap
@@ -28,4 +33,3 @@ services:
     volumes:
       - "./docker-conf/certs:/customcerts"
       - "./docker-conf/openldap/ldif:/customldif"
-
