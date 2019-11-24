@@ -16,3 +16,4 @@ var/config/localconfig.ini.php
 var/config/liveconfig.ini.php
 vendor/*
 composer.lock
+tests/.phpunit.result.cache
