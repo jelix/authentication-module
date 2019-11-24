@@ -48,7 +48,7 @@ class AuthUser
         if (isset($this->attributes[self::ATTR_NAME]) && $this->attributes[self::ATTR_NAME] !== '') {
             return $this->attributes[self::ATTR_NAME];
         }
-        return $this->userId;
+        return $this->getLogin();
     }
 
     function getEmail() {

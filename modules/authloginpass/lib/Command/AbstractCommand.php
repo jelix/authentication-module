@@ -46,6 +46,24 @@ class AbstractCommand extends  \Jelix\Scripts\ModuleCommandAbstract
     /**
      * @param InputInterface $input
      * @param Manager $manager
+     * @return string
+     */
+    protected function getBackendName(InputInterface $input, $manager)
+    {
+        $backendName = $input->getOption('backend');
+        if ($backendName) {
+            $backend = $manager->getBackendByName($backendName);
+            if (!$backend) {
+                throw new \InvalidArgumentException("Unknown backend");
+            }
+        }
+        return $backendName;
+    }
+
+
+    /**
+     * @param InputInterface $input
+     * @param Manager $manager
      * @return BackendPluginInterface
      */
     protected function getBackend(InputInterface $input, $manager, $login, $userMustExists=true) {

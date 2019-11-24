@@ -6,6 +6,7 @@
  */
 namespace Jelix\Authentication\LoginPass\Command;
 
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 use Jelix\Authentication\LoginPass\BackendPluginInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,20 +35,12 @@ class DeleteUserCommand extends  AbstractCommand
     {
         $login = $input->getArgument('login');
         $manager = $this->getManager();
-        $backend = $manager->getBackendHavingUser($login);
+        $backendName = $this->getBackendName($input, $manager);
 
-        if (!$backend) {
-            $output->writeln('User already deleted');
-            return 0;
-        }
-
-        if (!$backend->hasFeature(BackendPluginInterface::FEATURE_DELETE_USER)) {
-            throw new \Exception('The backend doesn\'t support user deletion');
-        }
-
-        if (!$backend->deleteUser($login)) {
+        if (!$manager->deleteUser($login, $backendName)) {
             throw new \Exception('The user has not been deleted');
         }
+
         return 0;
     }
 }

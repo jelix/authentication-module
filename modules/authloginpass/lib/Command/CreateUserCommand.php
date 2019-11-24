@@ -6,6 +6,7 @@
  */
 namespace Jelix\Authentication\LoginPass\Command;
 
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 use Jelix\Authentication\LoginPass\BackendPluginInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,19 +40,19 @@ class CreateUserCommand extends  AbstractCommand
                 'backend',
                 'b',
                 InputOption::VALUE_REQUIRED,
-                'The backend name. By default the first one in the list.'
+                'The backend name. By default the first one in the list of configured backends.'
             )
             ->addOption(
                 'ask-pass',
                 'a',
                 InputOption::VALUE_NONE,
-                ''
+                'Asks the pass interactively in the shell'
             )
             ->addOption(
                 'set-pass',
                 'p',
                 InputOption::VALUE_REQUIRED,
-                ''
+                'Indicate the password to set. WARNING: not really safe, the password can appear in the history of the shell'
             )
         ;
 
@@ -68,16 +69,17 @@ class CreateUserCommand extends  AbstractCommand
 
 
         $manager = $this->getManager();
-
-        $backend = $this->getBackend($input, $manager, $login, false);
-
-        if (!$backend->hasFeature(BackendPluginInterface::FEATURE_CREATE_USER)) {
-            throw new \Exception('The backend doesn\'t support user creation');
+        $backendName = $this->getBackendName($input, $manager);
+        if (!$backendName) {
+            $backendName = $manager->getFirstBackendName();
         }
 
-        if (!$backend->createUser($login, $password, $userEmail, $userName)) {
+        if (!$manager->createUser($login, $password, array(
+            AuthUser::ATTR_NAME => $userName,
+            AuthUser::ATTR_EMAIL => $userEmail
+            ), $backendName)
+        ) {
             throw new \Exception('The user has not been created');
         }
-
     }
 }

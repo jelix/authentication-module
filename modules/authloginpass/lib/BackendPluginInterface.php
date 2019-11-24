@@ -75,7 +75,8 @@ interface BackendPluginInterface
      * Delete a user from the backend
      *
      * @param string $login
-     * @return boolean true if the user has been deleted
+     * @return false|AuthUser the AuthUser object corresponding to the deleted user
+     *   or false if the user has not been deleted
      */
     public function deleteUser($login);
 

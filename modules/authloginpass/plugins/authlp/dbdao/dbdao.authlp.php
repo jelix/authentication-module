@@ -46,6 +46,9 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             self::FEATURE_DELETE_USER;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function createUser($login, $password, $email, $name = '')
     {
         $record = $this->daoFactory->createRecord();
@@ -58,32 +61,23 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
 
         $this->daoFactory->insert($record);
 
-        $user = new AuthUser($login, array(
-            AuthUser::ATTR_NAME =>$record->username,
-            AuthUser::ATTR_EMAIL =>$email,
-        ));
-        \jEvent::notify('AuthenticationUserCreation', array(
-            'user' => $user,
-            'identProviderId' => 'loginpass'
-        ));
         return true;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function deleteUser($login)
     {
         $user = $this->daoFactory->getByLogin($login);
         if ($user) {
             $this->daoFactory->deleteByLogin($login);
-            $user = new AuthUser($login, array(
+            return new AuthUser($login, array(
                 AuthUser::ATTR_NAME => $user->username,
                 AuthUser::ATTR_EMAIL => $user->email
             ));
-            \jEvent::notify('AuthenticationUserDeletion', array(
-                'user' => $user,
-                'identProviderId' => 'loginpass'
-            ));
         }
-        return true;
+        return false;
     }
 
     /**

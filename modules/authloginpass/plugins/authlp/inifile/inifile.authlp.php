@@ -58,7 +58,9 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         }
     }
 
-
+    /**
+     * @inheritdoc
+     */
     public function createUser($login, $password, $email, $name = '')
     {
         if (!$this->isWritable) {
@@ -74,18 +76,12 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
                 'username' => $name
             ), $section);
         $ini->save();
-
-        $user = new AuthUser($login, array(
-            AuthUser::ATTR_NAME =>$name,
-            AuthUser::ATTR_EMAIL =>$email,
-        ));
-        \jEvent::notify('AuthenticationUserCreation', array(
-            'user' => $user,
-            'identProviderId' => 'loginpass'
-        ));
         return true;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function deleteUser($login)
     {
         if (!$this->isWritable) {
@@ -100,15 +96,10 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $ini->removeSection($section);
         $ini->save();
 
-        $user = new AuthUser($login, array(
+        return new AuthUser($login, array(
             AuthUser::ATTR_NAME =>$name,
             AuthUser::ATTR_EMAIL =>$email,
         ));
-        \jEvent::notify('AuthenticationUserDeletion', array(
-            'user' => $user,
-            'identProviderId' => 'loginpass'
-        ));
-        return true;
     }
 
     /**
