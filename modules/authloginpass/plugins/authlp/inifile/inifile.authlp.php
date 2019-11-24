@@ -5,6 +5,7 @@
  * @license   MIT
  */
 
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 
 /**
  * authentication backend for the authloginpass module
@@ -70,11 +71,14 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             array(
                 'password' => $this->hashPassword($password),
                 'email' => $email,
-                'name' => $name ?: $login
+                'username' => $name
             ), $section);
         $ini->save();
 
-        $user = new \Jelix\Authentication\Core\AuthSession\AuthUser($login, $name, array('email'=>$email));
+        $user = new AuthUser($login, array(
+            AuthUser::ATTR_NAME =>$name,
+            AuthUser::ATTR_EMAIL =>$email,
+        ));
         \jEvent::notify('AuthenticationUserCreation', array(
             'user' => $user,
             'identProviderId' => 'loginpass'
@@ -96,7 +100,10 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $ini->removeSection($section);
         $ini->save();
 
-        $user = new \Jelix\Authentication\Core\AuthSession\AuthUser($login, $name, array('email'=>$email));
+        $user = new AuthUser($login, array(
+            AuthUser::ATTR_NAME =>$name,
+            AuthUser::ATTR_EMAIL =>$email,
+        ));
         \jEvent::notify('AuthenticationUserDeletion', array(
             'user' => $user,
             'identProviderId' => 'loginpass'
@@ -123,9 +130,7 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
     }
 
     /**
-     * @param string $login the login as given by the user
-     * @param string $password
-     * @return int one of VERIF_AUTH_* const
+     * @inheritDoc
      */
     public function verifyAuthentication($login, $password)
     {

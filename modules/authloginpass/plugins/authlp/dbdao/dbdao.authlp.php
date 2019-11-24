@@ -5,6 +5,7 @@
  * @license   MIT
  */
 
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 
 /**
  * authentication backend for the authloginpass module
@@ -57,7 +58,10 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
 
         $this->daoFactory->insert($record);
 
-        $user = new \Jelix\Authentication\Core\AuthSession\AuthUser($login, $name, array('email'=>$email));
+        $user = new AuthUser($login, array(
+            AuthUser::ATTR_NAME =>$record->username,
+            AuthUser::ATTR_EMAIL =>$email,
+        ));
         \jEvent::notify('AuthenticationUserCreation', array(
             'user' => $user,
             'identProviderId' => 'loginpass'
@@ -70,7 +74,10 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $user = $this->daoFactory->getByLogin($login);
         if ($user) {
             $this->daoFactory->deleteByLogin($login);
-            $user = new \Jelix\Authentication\Core\AuthSession\AuthUser($login, $user->username, array('email'=>$user->email));
+            $user = new AuthUser($login, array(
+                AuthUser::ATTR_NAME => $user->username,
+                AuthUser::ATTR_EMAIL => $user->email
+            ));
             \jEvent::notify('AuthenticationUserDeletion', array(
                 'user' => $user,
                 'identProviderId' => 'loginpass'

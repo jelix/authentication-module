@@ -21,9 +21,13 @@ class AuthUser
 
     protected $userId;
 
-    protected $name;
-
     protected $attributes = array();
+
+    const ATTR_LOGIN = 'login';
+
+    const ATTR_NAME = 'username';
+
+    const ATTR_EMAIL = 'email';
 
     /**
      * SessionUser constructor.
@@ -31,10 +35,9 @@ class AuthUser
      * @param string $userName
      * @param array $attributes
      */
-    function __construct($userId, $name, array $attributes) {
+    function __construct($userId, array $attributes) {
         $this->attributes = $attributes;
         $this->userId = $userId;
-        $this->name = $name ?: $userId;
     }
 
     function getUserId() {
@@ -42,7 +45,24 @@ class AuthUser
     }
 
     function getName() {
-        return $this->name;
+        if (isset($this->attributes[self::ATTR_NAME]) && $this->attributes[self::ATTR_NAME] !== '') {
+            return $this->attributes[self::ATTR_NAME];
+        }
+        return $this->userId;
+    }
+
+    function getEmail() {
+        if (isset($this->attributes[self::ATTR_EMAIL]) && $this->attributes[self::ATTR_EMAIL] !== '') {
+            return $this->attributes[self::ATTR_EMAIL];
+        }
+        return '';
+    }
+
+    function getLogin() {
+        if (isset($this->attributes[self::ATTR_LOGIN]) && $this->attributes[self::ATTR_LOGIN] !== '') {
+            return $this->attributes[self::ATTR_LOGIN];
+        }
+        return $this->userId;
     }
 
     function getAttribute($name) {
