@@ -48,14 +48,14 @@ class AbstractCommand extends  \Jelix\Scripts\ModuleCommandAbstract
      * @param Manager $manager
      * @return BackendPluginInterface
      */
-    protected function getBackend(InputInterface $input, $manager, $login, $userExists=true) {
+    protected function getBackend(InputInterface $input, $manager, $login, $userMustExists=true) {
         $backendName = $input->getOption('backend');
         if ($backendName) {
             $backend = $manager->getBackendByName($backendName);
             if (!$backend) {
                 throw new \InvalidArgumentException("Unknown backend");
             }
-            if ($userExists) {
+            if ($userMustExists) {
                 if (!$backend->userExists($login)) {
                     throw new \InvalidArgumentException("User does not exist in the given backend");
                 }
@@ -70,7 +70,7 @@ class AbstractCommand extends  \Jelix\Scripts\ModuleCommandAbstract
 
         $backend = $manager->getBackendHavingUser($login);
 
-        if ($userExists) {
+        if ($userMustExists) {
             if (!$backend) {
                 throw new \InvalidArgumentException("The user does not exists");
             }

@@ -155,7 +155,11 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             $ini->save();
         }
 
-        return true;
+        $user = new AuthUser($login, array(
+            AuthUser::ATTR_NAME =>$userProperties['name'],
+            AuthUser::ATTR_EMAIL =>$userProperties['email'],
+        ));
+        return $user;
     }
 
     /**

@@ -101,17 +101,17 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
     public function verifyAuthentication($login, $password)
     {
         if (trim($password) == '') {
-            return self::VERIF_AUTH_BAD;
+            return false;
         }
 
         $userRec = $this->daoFactory->getByLogin($login);
         if (!$userRec) {
-            return self::VERIF_AUTH_BAD;
+            return false;
         }
 
         $result = $this->checkPassword($password, $userRec->password);
         if ($result === false) {
-            return self::VERIF_AUTH_BAD;
+            return false;
         }
 
         if ($result !== true) {
@@ -119,8 +119,11 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             $userRec->password = $result;
             $this->daoFactory->updatePassword($login, $result);
         }
-
-        return self::VERIF_AUTH_OK;
+        $user = new AuthUser($login, array(
+            AuthUser::ATTR_NAME =>$userRec->username,
+            AuthUser::ATTR_EMAIL =>$userRec->email,
+        ));
+        return $user;
     }
 
     /**
