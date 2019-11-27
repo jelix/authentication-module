@@ -90,6 +90,10 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $section = 'login:'.$login;
         $ini = new \Jelix\IniFile\IniModifier($this->iniFile);
 
+        if (!$ini->isSection($section)) {
+            return true;
+        }
+
         $name = $ini->getValue('name', $section);
         $email = $ini->getValue('email', $section);
 

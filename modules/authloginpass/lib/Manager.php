@@ -232,8 +232,8 @@ class Manager
         }
 
         $user = $backend->deleteUser($login);
-        if ($user === false) {
-            return false;
+        if (!is_object($user)) {
+            return $user;
         }
 
         \jEvent::notify('AuthenticationUserDeletion', array(

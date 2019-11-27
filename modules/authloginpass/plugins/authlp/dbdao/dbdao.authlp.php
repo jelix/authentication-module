@@ -70,14 +70,16 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
     public function deleteUser($login)
     {
         $user = $this->daoFactory->getByLogin($login);
-        if ($user) {
-            $this->daoFactory->deleteByLogin($login);
-            return new AuthUser($login, array(
-                AuthUser::ATTR_NAME => $user->username,
-                AuthUser::ATTR_EMAIL => $user->email
-            ));
+        if (!$user) {
+            return true;
         }
-        return false;
+        if (!$this->daoFactory->deleteByLogin($login)) {
+            return false;
+        }
+        return new AuthUser($login, array(
+            AuthUser::ATTR_NAME => $user->username,
+            AuthUser::ATTR_EMAIL => $user->email
+        ));
     }
 
     /**
