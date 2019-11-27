@@ -491,8 +491,8 @@ class ldapBackend extends BackendAbstract
             ldap_set_option($connect, LDAP_OPT_REFERRALS, 0);
 
             if ($this->_params['tlsMode'] == 'starttls') {
-                if (!ldap_start_tls($connect)) {
-                    jLog::log('authloginpass ldap: connection error: impossible to start TLS connection: '.ldap_errno($connect).':'.ldap_error($connect), 'auth');
+                if (!@ldap_start_tls($connect)) {
+                    jLog::log('authloginpass ldap: connection error: impossible to start TLS connection: '.ldap_errno($connect).':'.ldap_error($connect), 'error');
                     return false;
                 }
             }

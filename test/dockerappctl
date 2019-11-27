@@ -28,6 +28,9 @@ case $COMMAND in
        docker exec -it --user usertest jelix_auth_php  /bin/sh -l;;
     shellroot)
        docker exec -it jelix_auth_php  /bin/sh  -l;;
+    ldapreset)
+      docker exec -it jelix_auth_ldap /bin/ctl.sh reset
+      ;;
     ldapsearch)
        docker exec jelix_auth_ldap ldapsearch $@
        ;;

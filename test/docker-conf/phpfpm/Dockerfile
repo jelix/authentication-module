@@ -37,15 +37,15 @@ RUN set -eux; \
     sed -i "/^display_errors =/c\display_errors = On" /etc/php7/php.ini; \
     addgroup -g $FPM_GROUP_ID grouptest; \
     adduser -D -u $FPM_USER_ID -G grouptest usertest; \
-    mkdir -p /etc/ldap/ /etc/ssl/ldap/; \
-    chmod 755 /etc/ldap/ /etc/ssl/ldap/;
+    mkdir -p /etc/openldap/ /etc/ssl/ldap/; \
+    chmod 755 /etc/openldap/ /etc/ssl/ldap/;
 
 
 ## Install Composer
 RUN wget -O /bin/composer https://getcomposer.org/download/$composer_version/composer.phar \
     && chmod +x /bin/composer
 
-COPY ldap.conf /etc/ldap/ldap.conf
+COPY ldap.conf /etc/openldap/ldap.conf
 COPY www.conf /etc/php7/php-fpm.d/www.conf
 COPY entrypoint.sh /bin/
 COPY appctl.sh /bin/

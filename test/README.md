@@ -10,7 +10,7 @@ cd docker-conf
 cd ..
 docker-compose build
 docker-compose up -d
-
+./dockerappctl.sh ldapreset
 ```
 
 You can execute some commands into the php container, by using this command:

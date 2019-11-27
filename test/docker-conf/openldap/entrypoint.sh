@@ -84,10 +84,16 @@ EOF
           chmod 0444 /etc/ssl/certs/ldap.crt
           chmod 0440 /etc/ssl/private/ldap.key
 
-          slapcat -n0 -F /etc/ldap/slapd.d -l /tmp/config.ldif
-          sed -i "s/\(cn: config\)/\1\nolcTLSCACertificateFile: \/etc\/ssl\/certs\/ldap_CA.crt\nolcTLSCertificateFile: \/etc\/ssl\/certs\/ldap.crt\nolcTLSCertificateKeyFile: \/etc\/ssl\/private\/ldap.key/g" /tmp/config.ldif
+          #if [ ! -f /etc/ssl/ldap_dhparam.pem ]; then
+          #  openssl dhparam  -out /etc/ssl/ldap_dhparam.pem 2048
+          #fi
 
-          #slapadd -n0 -F /etc/ldap/slapd.d -l /etc/ldap/ldap_ssl.ldif
+          sed -i "s/^TLS_CACERT.*/TLS_CACERT \/etc\/ssl\/certs\/ldap_CA.crt/g" /etc/ldap/ldap.conf
+
+          slapcat -n0 -F /etc/ldap/slapd.d -l /tmp/config.ldif
+          sed -i "s/\(cn: config\)/\1\nolcTLSCACertificateFile: \/etc\/ssl\/certs\/ldap_CA.crt\nolcTLSCertificateFile: \/etc\/ssl\/certs\/ldap.crt\nolcTLSCertificateKeyFile: \/etc\/ssl\/private\/ldap.key\nolcTLSVerifyClient: never/g" /tmp/config.ldif
+          #sed -i "s/\(cn: config\)/\1\nolcTLSCACertificateFile: \/etc\/ssl\/certs\/ldap_CA.crt\nolcTLSCertificateFile: \/etc\/ssl\/certs\/ldap.crt\nolcTLSCertificateKeyFile: \/etc\/ssl\/private\/ldap.key\nolcTLSDHParamFile: \/etc\/ssl\/ldap_dhparam.pem\nolcTLSVerifyClient: never/g" /tmp/config.ldif
+
           rm -rf /etc/ldap/slapd.d/*
           slapadd -n0 -F /etc/ldap/slapd.d -l /tmp/config.ldif
           rm /tmp/config.ldif
@@ -117,8 +123,6 @@ EOF
              slapadd -n0 -F /etc/ldap/slapd.d -l "$module_file"
         done
     fi
-
-
 
 else
     slapd_configs_in_env=`env | grep 'SLAPD_'`

@@ -21,18 +21,42 @@ class authlp_ldap_auth_Test extends \Jelix\UnitTests\UnitTestCase {
 
     protected $ldapProfile = array(
         'hostname'      =>  'openldap',
-        'tlsMode'       => '',
+        'tlsMode'       => 'starttls',
         'port'          =>  389,
+        //'tlsMode'       => 'ldaps',
+        //'port'          =>  636,
         'adminUserDn'      =>  'cn=admin,dc=tests,dc=jelix',
         'adminPassword'      =>  'passjelix',
         'searchUserBaseDN' => 'ou=people,dc=tests,dc=jelix',
         'searchUserFilter' => "(&(objectClass=inetOrgPerson)(uid=%%LOGIN%%))",
         'bindUserDN' => "uid=%?%,ou=people,dc=tests,dc=jelix",
-        'searchAttributes'=>"uid:login,displayName:username,mail:email",
+        'searchAttributes' => "uid:login,displayName:username,mail:email",
     );
 
     function testUserExists() {
-        $ldap = new ldapBackend($this->ldapProfile, array());
+        $config = $this->ldapProfile;
+        $config['tlsMode'] = '';
+        $ldap = new ldapBackend($config, array());
+
+        $this->assertTrue($ldap->userExists('john'));
+        $this->assertFalse($ldap->userExists('johnny'));
+    }
+
+    function testUserExistsStartTls() {
+        $config = $this->ldapProfile;
+        $config['tlsMode'] = 'starttls';
+        $ldap = new ldapBackend($config, array());
+
+        $this->assertTrue($ldap->userExists('john'));
+        $this->assertFalse($ldap->userExists('johnny'));
+    }
+
+    function testUserExistsLdaps() {
+        $config = $this->ldapProfile;
+        $config['tlsMode'] = 'ldaps';
+        $config['port'] = 636;
+
+        $ldap = new ldapBackend($config, array());
 
         $this->assertTrue($ldap->userExists('john'));
         $this->assertFalse($ldap->userExists('johnny'));
