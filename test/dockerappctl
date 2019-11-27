@@ -31,8 +31,8 @@ case $COMMAND in
     ldapreset)
       docker exec -it jelix_auth_ldap /bin/ctl.sh reset
       ;;
-    ldapsearch)
-       docker exec jelix_auth_ldap ldapsearch $@
+    ldapusers)
+       docker exec -it jelix_auth_ldap /bin/ctl.sh showusers
        ;;
     *)
         echo "wrong command"

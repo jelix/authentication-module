@@ -15,6 +15,9 @@ case $COMMAND in
       ldapadd -x -D cn=admin,dc=tests,dc=jelix -w passjelix -f /customldif/prepopulate/ldap_users.ldif
       #ldapsearch -x -D cn=admin,dc=tests,dc=jelix -w passjelix -b "dc=tests,dc=jelix" "(objectClass=*)"
       ;;
+    showusers)
+      ldapsearch -x -D cn=admin,dc=tests,dc=jelix -w passjelix -b "dc=tests,dc=jelix" "(objectClass=*)"
+      ;;
     *)
         echo "wrong command"
         exit 2
