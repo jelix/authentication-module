@@ -30,6 +30,8 @@ class authlp_ldap_auth_Test extends \Jelix\UnitTests\UnitTestCase {
         'searchUserBaseDN' => 'ou=people,dc=tests,dc=jelix',
         'searchUserFilter' => "(&(objectClass=inetOrgPerson)(uid=%%LOGIN%%))",
         'bindUserDN' => "uid=%?%,ou=people,dc=tests,dc=jelix",
+        'newUserDN' => "uid=%%LOGIN%%,ou=people,dc=tests,dc=jelix",
+        'newUserLdapAttributes' => "objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%USERNAME%%,sn:%%USERNAME%%",
         'searchAttributes' => "uid:login,displayName:username,mail:email",
     );
 
@@ -70,5 +72,26 @@ class authlp_ldap_auth_Test extends \Jelix\UnitTests\UnitTestCase {
         $this->assertEquals('john@jelix.org' , $user->getEmail());
     }
 
+    function testCreateUser() {
+        $ldap = new ldapBackend($this->ldapProfile, array());
+        $this->assertTrue($ldap->createUser('testldap', 'passrobert', 'robert@tests.jelix', 'Robert Dupont'));
+        $this->assertTrue($ldap->userExists('testldap'));
+        $user = $ldap->verifyAuthentication('testldap', 'passrobert');
+        $this->assertIsObject($user);
+        $this->assertEquals('Robert Dupont' , $user->getName());
+        $this->assertEquals('robert@tests.jelix' , $user->getEmail());
+    }
 
+    /**
+     * @depends testCreateUser
+     */
+    function testDeleteUser() {
+        $ldap = new ldapBackend($this->ldapProfile, array());
+        $user = $ldap->deleteUser('testldap');
+        $this->assertIsObject($user);
+        $this->assertTrue($ldap->deleteUser('testldap'));
+        $this->assertEquals('Robert Dupont' , $user->getName());
+        $this->assertEquals('robert@tests.jelix' , $user->getEmail());
+        $this->assertFalse($ldap->userExists('testldap'));
+    }
 }

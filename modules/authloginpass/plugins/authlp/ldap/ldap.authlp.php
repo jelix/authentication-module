@@ -27,6 +27,12 @@ class ldapBackend extends BackendAbstract
         "name"=>"firstname"
     );
 
+    protected $_defaultNewUserAttributes = array(
+        "objectClass" => "inetOrgPerson",
+        "userPassword" => "%%PASSWORD%%"
+    );
+
+
     protected $uriConnect = '';
 
     /**
@@ -61,7 +67,8 @@ class ldapBackend extends BackendAbstract
             'searchGroupKeepUserInDefaultGroups' => true,
             'searchGroupProperty' => '',
             'searchGroupBaseDN' => '',
-            'dnPropertyName' => 'dn', // may be 'DistinguishedName' like in Active Directory
+            'bindUserDN' => '',
+            'newUserDN' => '',
             'featureCreateUser' => true,
             'featureDeleteUser' => true,
             'featureChangePassword' => true,
@@ -94,6 +101,19 @@ class ldapBackend extends BackendAbstract
             }
         }
 
+        if (!isset($this->_params['newUserLdapAttributes']) || $this->_params['newUserLdapAttributes'] == '') {
+            $this->_params['newUserLdapAttributes'] = $this->_defaultNewUserAttributes;
+        } else {
+            $attrs = explode(",", $this->_params['newUserLdapAttributes']);
+            $this->_params['newUserLdapAttributes'] = array();
+            foreach ($attrs as $attr) {
+                if (strpos($attr, ':') !== false) {
+                    $attr = explode(':', $attr);
+                    $this->_params['newUserLdapAttributes'][trim($attr[0])] = trim($attr[1]);
+                }
+            }
+        }
+
         if (!isset($this->_params['searchUserFilter']) || $this->_params['searchUserFilter'] == '') {
             throw new jException('authloginpass~ldap.error.searchUserFilter.missing');
         }
@@ -106,6 +126,10 @@ class ldapBackend extends BackendAbstract
         }
         if (!is_array($this->_params['bindUserDN'])) {
             $this->_params['bindUserDN'] = array($this->_params['bindUserDN']);
+        }
+
+        if ($this->_params['newUserDN'] == '') {
+            throw new jException('authloginpass~ldap.error.newUserDN.missing');
         }
 
         $uri = $this->_params['hostname'];
@@ -182,9 +206,35 @@ class ldapBackend extends BackendAbstract
         if (!$this->_params['featureCreateUser']) {
             return false;
         }
-// TODO
-        //return true;
-        return false;
+
+        $connectAdmin = $this->_bindLdapAdminUser();
+        if (!$connectAdmin) {
+            return false;
+        }
+
+        $ldapAttributes = $this->createLdapAttributes(array(
+            'email' => $email,
+            'username' => $name ?: $login
+        ));
+
+        foreach($this->_params['newUserLdapAttributes'] as $attr=>$val) {
+            if ($val[0] == '%') {
+                $val = str_replace(array('%%PASSWORD%%', '%%LOGIN%%', '%%USERNAME%%'),
+                    array($password, $login, $name ?: $login),
+                    $val
+                );
+            }
+            $ldapAttributes[$attr] = $val;
+        }
+
+        $dn = $this->createDn($this->_params['newUserDN'], $login, $ldapAttributes);
+        $result = @ldap_add ($connectAdmin , $dn, $ldapAttributes);
+        if (!$result) {
+            //echo('authloginpass ldap: error when trying to create a user "'.$login.'": '.ldap_errno($connectAdmin).':'.ldap_error($connectAdmin));
+            jLog::log('authloginpass ldap: error when trying to create a user "'.$login.'": '.ldap_errno($connectAdmin).':'.ldap_error($connectAdmin), 'auth');
+        }
+        ldap_close($connectAdmin);
+        return $result;
     }
 
     /**
@@ -195,11 +245,26 @@ class ldapBackend extends BackendAbstract
         if (!$this->_params['featureDeleteUser']) {
             return false;
         }
-        /*
-        $user = new AuthUser($login, array(
-            AuthUser::ATTR_NAME =>$name,
-            AuthUser::ATTR_EMAIL =>$email,
-        );
+        $connectAdmin = $this->_bindLdapAdminUser();
+        if (!$connectAdmin) {
+            return false;
+        }
+
+        // see if the user exists into the ldap directory
+        $attributes = $this->searchLdapUserAttributes($connectAdmin, $login);
+        if ($attributes === false) {
+            ldap_close($connectAdmin);
+            return true;
+        }
+
+        $user = new AuthUser($login, $attributes->userAttributes);
+
+        $result = ldap_delete($connectAdmin, $attributes->dn);
+        ldap_close($connectAdmin);
+
+        if (!$result) {
+            return false;
+        }
         return $user;
     }
 
@@ -319,9 +384,7 @@ class ldapBackend extends BackendAbstract
     protected function searchLdapUserAttributes($connect, $login)
     {
         $searchAttributes = array_keys($this->_params['searchAttributes']);
-        if (!isset($this->_params['searchAttributes'][$this->_params['dnPropertyName']])) {
-            $searchAttributes[] = $this->_params['dnPropertyName'];
-        }
+
         foreach ($this->_params['searchUserFilter'] as $searchUserFilter) {
             $filter = str_replace(
                 array('%%LOGIN%%', '%%USERNAME%%'), // USERNAME deprecated
@@ -335,8 +398,9 @@ class ldapBackend extends BackendAbstract
                 $searchAttributes
             );
             if ($search && ($entry = ldap_first_entry($connect, $search))) {
+                $dn = ldap_get_dn($connect, $entry);
                 $attributes = ldap_get_attributes($connect, $entry);
-                return $this->readLdapAttributes($attributes);
+                return $this->readLdapAttributes($dn, $attributes);
             }
         }
         return false;
@@ -408,7 +472,7 @@ class ldapBackend extends BackendAbstract
      * @param array $origLdapAttributes list of values provided by ldap_get_attributes
      * @return ldapBackendUserLdapAttributes
      */
-    protected function readLdapAttributes($origLdapAttributes)
+    protected function readLdapAttributes($dn, $origLdapAttributes)
     {
         $mapping = $this->_params['searchAttributes'];
         $attrs = new ldapBackendUserLdapAttributes();
@@ -436,9 +500,7 @@ class ldapBackend extends BackendAbstract
             }
         }
 
-        if (isset($attrs->ldapAttributes[$this->_params['dnPropertyName']])) {
-            $attrs->dn = $attrs->ldapAttributes[$this->_params['dnPropertyName']];
-        }
+        $attrs->dn = $dn;
 
         return $attrs;
     }
@@ -580,7 +642,5 @@ class ldapBackendUserLdapAttributes {
     public $ldapAttributes = array();
 
     public $userAttributes = array();
-
-
 
 }
