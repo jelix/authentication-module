@@ -276,9 +276,29 @@ class ldapBackend extends BackendAbstract
         if (!$this->_params['featureChangePassword']) {
             return false;
         }
-// TODO
-        // return true;
-        return false;
+
+        $connectAdmin = $this->_bindLdapAdminUser();
+        if (!$connectAdmin) {
+            return false;
+        }
+
+        // see if the user exists into the ldap directory
+        $attributes = $this->searchLdapUserAttributes($connectAdmin, $login);
+        if ($attributes === false) {
+            ldap_close($connectAdmin);
+            return true;
+        }
+
+        $entry = array(
+            "userPassword" => $newpassword
+        );
+
+        if (ldap_modify($connectAdmin, $attributes->dn, $entry) === false) {
+            jLog::log('authloginpass ldap: error when trying to change password of user "'.$login.'": '.ldap_errno($connectAdmin).':'.ldap_error($connectAdmin), 'auth');
+            ldap_close($connectAdmin);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -299,7 +319,6 @@ class ldapBackend extends BackendAbstract
         }
 
         // see if the user exists into the ldap directory
-        $userAttributes = array();
         $attributes = $this->searchLdapUserAttributes($connectAdmin, $login);
         if ($attributes === false) {
             jLog::log('authloginpass ldap: user '.$login.' not found into the ldap', 'auth');
