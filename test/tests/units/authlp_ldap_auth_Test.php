@@ -96,6 +96,23 @@ class authlp_ldap_auth_Test extends \Jelix\UnitTests\UnitTestCase {
         $this->assertEquals('robert@tests.jelix' , $user->getEmail());
     }
 
+    /**
+     * @throws jException
+     * @depends testChangePassword
+     */
+    function testChangeHashedPassword() {
+        $config = $this->ldapProfile;
+        $config['passwordLdapHashAlgo'] = 'SSHA';
+        $ldap = new ldapBackend($config, array());
+        $this->assertTrue($ldap->changePassword('testldap', 'passroberthashed'));
+        $this->assertTrue($ldap->userExists('testldap'));
+        $this->assertFalse($ldap->verifyAuthentication('testldap', 'passrobert'));
+        $user = $ldap->verifyAuthentication('testldap', 'passroberthashed');
+        $this->assertIsObject($user);
+        $this->assertEquals('Robert Dupont' , $user->getName());
+        $this->assertEquals('robert@tests.jelix' , $user->getEmail());
+    }
+
 
 
     /**

@@ -69,6 +69,8 @@ class ldapBackend extends BackendAbstract
             'searchGroupBaseDN' => '',
             'bindUserDN' => '',
             'newUserDN' => '',
+            'passwordLdapHashAlgo' => '',
+            'passwordLdapSaltLength' => 5,
             'featureCreateUser' => true,
             'featureDeleteUser' => true,
             'featureChangePassword' => true,
@@ -220,7 +222,7 @@ class ldapBackend extends BackendAbstract
         foreach($this->_params['newUserLdapAttributes'] as $attr=>$val) {
             if ($val[0] == '%') {
                 $val = str_replace(array('%%PASSWORD%%', '%%LOGIN%%', '%%USERNAME%%'),
-                    array($password, $login, $name ?: $login),
+                    array($this->hashPassword($password), $login, $name ?: $login),
                     $val
                 );
             }
@@ -290,7 +292,7 @@ class ldapBackend extends BackendAbstract
         }
 
         $entry = array(
-            "userPassword" => $newpassword
+            "userPassword" => $this->hashPassword($newpassword)
         );
 
         if (ldap_modify($connectAdmin, $attributes->dn, $entry) === false) {
@@ -651,6 +653,33 @@ class ldapBackend extends BackendAbstract
         return $connect;
     }
 
+
+    protected function hashPassword($password)
+    {
+        switch($this->_params['passwordLdapHashAlgo']) {
+            case 'SHA':
+                return "{SHA}" . base64_encode(pack( "H*", sha1( $password )));
+            case 'SSHA':
+                $salt = $this->generateSalt();
+                return "{SSHA}" . base64_encode(pack("H*", sha1($password . $salt)) . $salt);
+            case 'MD5':
+                return "{MD5}".base64_encode(pack( "H*", md5( $password )));
+            case 'SMD5':
+                $salt = $this->generateSalt();
+                return "{SMD5}" . base64_encode(pack("H*", md5($password . $salt)) . $salt);
+            case '':
+                return $password;
+            default:
+                throw new \Exception("ldap hash password: Unknown algorithm '".$this->_params['passwordLdapHashAlgo']."'");
+        }
+    }
+
+    protected function generateSalt() {
+        $generator = (new \RandomLib\Factory)->getMediumStrengthGenerator();
+        $length = $this->_params['passwordLdapSaltLength'];
+        $salt = $generator->generateString($length, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        return $salt;
+    }
 }
 
 
