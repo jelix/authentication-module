@@ -38,14 +38,23 @@ function resetApp() {
         chown $APP_USER:$APP_GROUP $APPDIR/var/log
     fi
 
+    rm -rf $APPDIR/var/log/*
+    rm -rf $APPDIR/var/db/*
+    rm -rf $APPDIR/var/mails/*
+    rm -rf $APPDIR/var/uploads/*
+    touch $APPDIR/var/log/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/log/.dummy
+    touch $APPDIR/var/db/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/db/.dummy
+    touch $APPDIR/var/mails/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/mails/.dummy
+    touch $APPDIR/var/uploads/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/uploads/.dummy
+
     if [ -f $APPDIR/var/config/profiles.ini.php.dist ]; then
         cp $APPDIR/var/config/profiles.ini.php.dist $APPDIR/var/config/profiles.ini.php
     fi
     if [ -f $APPDIR/var/config/localconfig.ini.php.dist ]; then
         cp $APPDIR/var/config/localconfig.ini.php.dist $APPDIR/var/config/localconfig.ini.php
     fi
-    if [ -f $APPDIR/var/db/users.ini.php.dist ]; then
-        cp $APPDIR/var/db/users.ini.php.dist $APPDIR/var/db/users.ini.php
+    if [ -f $APPDIR/var/users.ini.php.dist ]; then
+        cp $APPDIR/var/users.ini.php.dist $APPDIR/var/db/users.ini.php
     fi
     chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/db/users.ini.php
 
@@ -55,14 +64,6 @@ function resetApp() {
     if [ -f $APPDIR/var/config/liveconfig.ini.php ]; then
         rm -f $APPDIR/var/config/liveconfig.ini.php
     fi
-    rm -rf $APPDIR/var/log/*
-    rm -rf $APPDIR/var/db/*
-    rm -rf $APPDIR/var/mails/*
-    rm -rf $APPDIR/var/uploads/*
-    touch $APPDIR/var/log/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/log/.dummy
-    touch $APPDIR/var/db/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/db/.dummy
-    touch $APPDIR/var/mails/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/mails/.dummy
-    touch $APPDIR/var/uploads/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/uploads/.dummy
 
     cleanTmp
     setRights
@@ -116,8 +117,8 @@ function launch() {
     if [ ! -f $APPDIR/var/config/localconfig.ini.php ]; then
         cp $APPDIR/var/config/localconfig.ini.php.dist $APPDIR/var/config/localconfig.ini.php
     fi
-    if [ ! -f $APPDIR/var/db/users.ini.php -a -f $APPDIR/var/db/users.ini.php.dist ]; then
-        cp $APPDIR/var/db/users.ini.php.dist $APPDIR/var/db/users.ini.php
+    if [ ! -f $APPDIR/var/db/users.ini.php -a -f $APPDIR/var/users.ini.php.dist ]; then
+        cp $APPDIR/var/users.ini.php.dist $APPDIR/var/db/users.ini.php
     fi
     chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/db/users.ini.php
 

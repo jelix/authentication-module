@@ -10,7 +10,6 @@ testapp/var/mails/*
 !testapp/var/mails/.dummy
 testapp/var/db/*
 !testapp/var/db/.dummy
-!testapp/var/db/users.ini.php.dist
 testapp/var/config/profiles.ini.php
 testapp/var/config/localconfig.ini.php
 testapp/var/config/liveconfig.ini.php
