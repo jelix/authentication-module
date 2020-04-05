@@ -8,8 +8,8 @@ To launch containers the first time:
 cd docker-conf
 ./setup.sh
 cd ..
-docker-compose build
-docker-compose up -d
+./run-docker build
+./run-docker
 ./dockerappctl.sh ldapreset
 ```
 
