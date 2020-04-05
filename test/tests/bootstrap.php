@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__.'/../application.init.php');
+require_once(__DIR__.'/../testapp/application.init.php');
 
 jApp::setEnv('jelixtests');
 if (file_exists(jApp::tempPath())) {

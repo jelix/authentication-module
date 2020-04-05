@@ -1,5 +1,5 @@
 #!/bin/sh
-APPDIR="/jelixapp/test"
+APPDIR="/jelixapp/test/testapp"
 APP_USER=usertest
 APP_GROUP=grouptest
 
@@ -131,7 +131,7 @@ function launch() {
 }
 
 function launchUnitTests() {
-    su $APP_USER -c "cd $APPDIR/tests/ && ../vendor/bin/phpunit"
+    su $APP_USER -c "cd $APPDIR/../tests/ && ../testapp/vendor/bin/phpunit"
 }
 
 

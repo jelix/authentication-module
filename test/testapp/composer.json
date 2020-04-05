@@ -21,8 +21,8 @@
     },
     "autoload": {
         "psr-4": {
-          "Jelix\\Authentication\\LoginPass\\": "../modules/authloginpass/lib/",
-          "Jelix\\Authentication\\Core\\": "../modules/authcore/lib/Core"
+          "Jelix\\Authentication\\LoginPass\\": "../../modules/authloginpass/lib/",
+          "Jelix\\Authentication\\Core\\": "../../modules/authcore/lib/Core"
 
         }
     },
