@@ -74,9 +74,13 @@ notfoundAct="jelix~error:notfound"
 
 jelixWWWPath="jelix/"
 
+
+[logger]
+auth=file
+
 [fileLogger]
 default=messages.log
-
+auth=auth.log
 
 [mailer]
 webmasterEmail="laurent@jelix.org"
@@ -123,6 +127,7 @@ missingAuthAction = ""
 missingAuthAjaxAction = ""
 
 [loginpass_idp]
+backends[]=ldap
 backends[]=daotablesqlite
 backends[]=inifile
 after_login=
@@ -142,5 +147,12 @@ backendLabel=Native users
 [loginpass:daotablesqlite]
 backendType=dbdao
 profile=daotablesqlite
+
+[loginpass:ldap]
+backendType=ldap
+profile=openldap
+featureCreateUser=on
+featureDeleteUser=on
+featureChangePassword=on
 
 
