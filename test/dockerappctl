@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
 COMMAND="$1"
+shift
 
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
     echo "Possible commands: clean_tmp, reset, install, rights, composer_install, composer_update"
+    echo " unittests,  shell, shellroot"
+    echo " ldapreset, ldapusers"
     exit 1;
 fi
 
@@ -21,10 +24,18 @@ case $COMMAND in
         docker exec -t -i jelix_auth_php appctl.sh composer_install;;
     composer_update)
         docker exec -t -i jelix_auth_php appctl.sh composer_update;;
+    unittests)
+        docker exec -t -i jelix_auth_php appctl.sh unittests;;
     shell)
        docker exec -it --user usertest jelix_auth_php  /bin/sh -l;;
     shellroot)
        docker exec -it jelix_auth_php  /bin/sh  -l;;
+    ldapreset)
+      docker exec -it jelix_auth_ldap /bin/ctl.sh reset
+      ;;
+    ldapusers)
+       docker exec -it jelix_auth_ldap /bin/ctl.sh showusers
+       ;;
     *)
         echo "wrong command"
         exit 2

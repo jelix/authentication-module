@@ -22,5 +22,5 @@ require ($appPath.'vendor/jelix_app_path.php');
 
 jApp::declareModulesDir(array(
                         __DIR__.'/modules/',
-                        __DIR__.'/../modules/'
+                        __DIR__.'/../../modules/'
                     ));

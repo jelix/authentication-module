@@ -39,6 +39,7 @@ class adminuiListener extends jEventListener
                 '#profile');
         }
         else {
+            // FIXME : ajouter url de la page en cours, en paramètre, pour url de retour,  si pas requete post
             $accountMenu->setNotAuthenticated(jAuthentication::getSigninPageUrl());
         }
         //$accountMenu->setAuthenticated('laurentj', 'Laurent Jouanneau', '#signout', '#profile', \jApp::urlBasePath().'adminlte-assets/dist/img/user2-160x160.jpg');

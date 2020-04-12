@@ -5,6 +5,7 @@
  * @link     http://jelix.org
  * @licence MIT
  */
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 
 class alwaysyesCtrl extends jController {
     /**
@@ -13,8 +14,10 @@ class alwaysyesCtrl extends jController {
     function signin() {
         $rep = $this->getResponse('redirect');
 
-        // FIXME load attributes
-        $user = new \Jelix\Authentication\Core\AuthSession\AuthUser('testuser', 'User Test', array());
+        $user = new AuthUser('testuser',
+            array(
+                AuthUser::ATTR_NAME =>'User Test'
+            ));
         jAuthentication::session()->setSessionUser($user, 'alwaysyes');
         $rep->action = 'test~default:index';
         return $rep;

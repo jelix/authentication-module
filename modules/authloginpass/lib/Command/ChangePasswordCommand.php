@@ -29,19 +29,19 @@ class ChangePasswordCommand extends  AbstractCommand
                 'backend',
                 'b',
                 InputOption::VALUE_REQUIRED,
-                'The backend name. By default the first one in the list.'
+                'The backend name. By default, tries to find the backend managing the user.'
             )
             ->addOption(
                 'ask-pass',
                 'a',
                 InputOption::VALUE_NONE,
-                ''
+                'Asks the pass interactively in the shell'
             )
             ->addOption(
                 'set-pass',
                 'p',
                 InputOption::VALUE_REQUIRED,
-                ''
+                'Indicates the password to set. WARNING: not really safe, the password can appear in the history of the shell'
             )
         ;
 
@@ -56,13 +56,13 @@ class ChangePasswordCommand extends  AbstractCommand
 
         $manager = $this->getManager();
 
-        $backend = $this->getBackend($input, $manager, $login, true);
+        $backendName = $this->getBackendName($input, $manager);
 
-        if (!$backend->hasFeature(BackendPluginInterface::FEATURE_CHANGE_PASSWORD)) {
+        if (!$manager->canChangePassword($login, $backendName)) {
             throw new \Exception('The backend doesn\'t support password change');
         }
 
-        if (!$backend->changePassword($login, $password)) {
+        if (!$manager->changePassword($login, $password, $backendName)) {
             throw new \Exception('The password has not been changed');
         }
 

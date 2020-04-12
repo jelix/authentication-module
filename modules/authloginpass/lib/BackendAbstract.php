@@ -28,9 +28,11 @@ abstract class BackendAbstract implements BackendPluginInterface
                 $this->passwordHashAlgo = 1;
             }
         }
-        $this->passwordHashOptions = $params['passwordHashOptions'];
-        if (!is_array($this->passwordHashOptions)) {
-            $this->passwordHashOptions = array($this->passwordHashOptions);
+        if (isset($params['passwordHashOptions'])) {
+            $this->passwordHashOptions = $params['passwordHashOptions'];
+            if (!is_array($this->passwordHashOptions)) {
+                $this->passwordHashOptions = array($this->passwordHashOptions);
+            }
         }
         if (isset($params['label'])) {
             $this->label = $params['label'];

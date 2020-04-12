@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+
+export FPM_USER_ID=${FPM_USER_ID:-$(id -u)}
+export FPM_GROUP_ID=${FPM_GROUP_ID:-$(id -g)}
+
+CMD=$1
+
+if [ "$CMD" == "" ]; then
+    CMD="up -d"
+fi
+
+#if [ "$CMD" == "build" ]; then
+#    docker-compose -p jelix-auth-tests build --build-arg TEST_GROUP_ID=$TEST_GROUP_ID --build-arg TEST_USER_ID=$TEST_USER_ID
+#    exit 0
+#fi
+
+docker-compose -p jelix-auth-tests $CMD

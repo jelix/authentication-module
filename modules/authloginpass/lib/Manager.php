@@ -8,6 +8,7 @@
 
 namespace Jelix\Authentication\LoginPass;
 
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 
 class Manager
 {
@@ -120,31 +121,126 @@ class Manager
         return null;
     }
 
-    public function canChangePassword($login)
+    public function getFirstBackendName() {
+        if (!count($this->backends)) {
+            throw new \InvalidArgumentException("No configured backend");
+        }
+        return array_shift(array_keys($this->backends));
+    }
+
+    public function getFirstBackend() {
+        return $this->backends[$this->getFirstBackendName()];
+    }
+
+    /**
+     * @param string $login
+     * @param string $backendName if not given, it tries to find the backend managing the login
+     * @return bool true if the password can be changed
+     */
+    public function canChangePassword($login, $backendName = '')
     {
-        $backend = $this->getBackendHavingUser($login);
+        if ($backendName) {
+            $backend = $this->getBackendByName($backendName);
+        }
+        else {
+            $backend = $this->getBackendHavingUser($login);
+        }
+
         if ($backend && ($backend->getFeatures() & BackendPluginInterface::FEATURE_CHANGE_PASSWORD)) {
             return true;
         }
         return false;
     }
 
-    public function changePassword($login, $newpassword)
+    /**
+     * @param string $login
+     * @param string $backendName if not given, it tries to find the backend managing the login
+     * @return bool true if the password has been changed
+     */
+    public function changePassword($login, $newpassword, $backendName = '')
     {
-        $backend = $this->getBackendHavingUser($login);
+        if ($backendName) {
+            $backend = $this->getBackendByName($backendName);
+        }
+        else {
+            $backend = $this->getBackendHavingUser($login);
+        }
         if ($backend && $backend->getFeature() & BackendPluginInterface::FEATURE_CHANGE_PASSWORD) {
             return $backend->changePassword($login, $newpassword);
         }
         return false;
     }
 
-    public function verifyPassword($login, $password)
+    /**
+     * @param $login
+     * @param $password
+     * @param string $backendName if not given, it tries to find the backend managing the login
+     * @return false|AuthUser
+     */
+    public function verifyPassword($login, $password, $backendName = '')
     {
-        $backend = $this->getBackendHavingUser($login);
+        if ($backendName) {
+            $backend = $this->getBackendByName($backendName);
+        }
+        else {
+            $backend = $this->getBackendHavingUser($login);
+        }
         if ($backend) {
             return $backend->verifyAuthentication($login, $password);
         }
 
         return false;
     }
+
+    public function createUser($login, $password, array $attributes, $backendName = '')
+    {
+        if ($backendName) {
+            $backend = $this->getBackendByName($backendName);
+        }
+        else {
+            $backend = $this->getFirstBackend();
+        }
+        if (!$backend->hasFeature(BackendPluginInterface::FEATURE_CREATE_USER)) {
+            throw new \Exception('The backend doesn\'t support user creation');
+        }
+
+        $user = new AuthUser($login, $attributes);
+
+        if ($backend->createUser($login, $password, $user->getEmail(), $user->getName())) {
+            \jEvent::notify('AuthenticationUserCreation', array(
+                'user' => $user,
+                'identProviderId' => 'loginpass'
+            ));
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public function deleteUser($login, $backendName = '')
+    {
+        if ($backendName) {
+            $backend = $this->getBackendByName($backendName);
+        }
+        else {
+            $backend = $this->getFirstBackend();
+        }
+
+        if (!$backend->hasFeature(BackendPluginInterface::FEATURE_DELETE_USER)) {
+            throw new \Exception('The backend doesn\'t support user deletion');
+        }
+
+        $user = $backend->deleteUser($login);
+        if (!is_object($user)) {
+            return $user;
+        }
+
+        \jEvent::notify('AuthenticationUserDeletion', array(
+            'user' => $user,
+            'identProviderId' => 'loginpass'
+        ));
+        return true;
+    }
+
 }

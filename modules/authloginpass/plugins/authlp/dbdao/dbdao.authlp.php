@@ -5,6 +5,7 @@
  * @license   MIT
  */
 
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 
 /**
  * authentication backend for the authloginpass module
@@ -45,6 +46,9 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             self::FEATURE_DELETE_USER;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function createUser($login, $password, $email, $name = '')
     {
         $record = $this->daoFactory->createRecord();
@@ -57,26 +61,25 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
 
         $this->daoFactory->insert($record);
 
-        $user = new \Jelix\Authentication\Core\AuthSession\AuthUser($login, $name, array('email'=>$email));
-        \jEvent::notify('AuthenticationUserCreation', array(
-            'user' => $user,
-            'identProviderId' => 'loginpass'
-        ));
         return true;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function deleteUser($login)
     {
         $user = $this->daoFactory->getByLogin($login);
-        if ($user) {
-            $this->daoFactory->deleteByLogin($login);
-            $user = new \Jelix\Authentication\Core\AuthSession\AuthUser($login, $user->username, array('email'=>$user->email));
-            \jEvent::notify('AuthenticationUserDeletion', array(
-                'user' => $user,
-                'identProviderId' => 'loginpass'
-            ));
+        if (!$user) {
+            return true;
         }
-        return true;
+        if (!$this->daoFactory->deleteByLogin($login)) {
+            return false;
+        }
+        return new AuthUser($login, array(
+            AuthUser::ATTR_NAME => $user->username,
+            AuthUser::ATTR_EMAIL => $user->email
+        ));
     }
 
     /**
@@ -94,17 +97,17 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
     public function verifyAuthentication($login, $password)
     {
         if (trim($password) == '') {
-            return self::VERIF_AUTH_BAD;
+            return false;
         }
 
         $userRec = $this->daoFactory->getByLogin($login);
         if (!$userRec) {
-            return self::VERIF_AUTH_BAD;
+            return false;
         }
 
         $result = $this->checkPassword($password, $userRec->password);
         if ($result === false) {
-            return self::VERIF_AUTH_BAD;
+            return false;
         }
 
         if ($result !== true) {
@@ -112,8 +115,11 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             $userRec->password = $result;
             $this->daoFactory->updatePassword($login, $result);
         }
-
-        return self::VERIF_AUTH_OK;
+        $user = new AuthUser($login, array(
+            AuthUser::ATTR_NAME =>$userRec->username,
+            AuthUser::ATTR_EMAIL =>$userRec->email,
+        ));
+        return $user;
     }
 
     /**

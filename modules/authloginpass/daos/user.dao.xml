@@ -13,7 +13,7 @@
                 maxlength="120" selectpattern="%s" updatepattern="" insertpattern="%s" />
       
       <property name="status" fieldname="status" datatype="integer" required="yes"/>
-      <!-- status :
+      <!-- status for administration:
            -2 deleted
            -1 deactivate
            0 new user, invalid account
@@ -23,7 +23,7 @@
       <property name="username" fieldname="username" datatype="string" maxlength="255" />
       <property name="create_date" fieldname="create_date" datatype="datetime"
                 insertpattern="now()" updatepattern=""/>
-       <property name="attributes" fieldname="attributes" datatype="json" />
+      <property name="attributes" fieldname="attributes" datatype="json" />
    </record>
    <factory>
      <method name="getByLoginPassword" type="selectfirst">

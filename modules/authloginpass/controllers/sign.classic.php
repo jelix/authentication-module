@@ -47,7 +47,7 @@ class signCtrl extends jController {
         $lpManager = $idp->getManager();
 
         if ($this->request->isPostMethod() &&
-            $lpManager->verifyPassword($this->param('login'), $this->param('password'))
+            $user = $lpManager->verifyPassword($this->param('login'), $this->param('password'))
         ) {
 
             $rep->url = $this->param('urlback');
@@ -58,8 +58,6 @@ class signCtrl extends jController {
                 $rep->url = '/';
             }
 
-            // FIXME load attributes
-            $user = new \Jelix\Authentication\Core\AuthSession\AuthUser($this->param('login'), $this->param('login'), array());
             jAuthentication::session()->setSessionUser($user, 'loginpass');
         } else {
             $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));

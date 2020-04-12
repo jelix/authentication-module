@@ -1,5 +1,5 @@
 #!/bin/sh
-APPDIR="/jelixapp/test"
+APPDIR="/jelixapp/test/testapp"
 APP_USER=usertest
 APP_GROUP=grouptest
 
@@ -38,23 +38,6 @@ function resetApp() {
         chown $APP_USER:$APP_GROUP $APPDIR/var/log
     fi
 
-    if [ -f $APPDIR/var/config/profiles.ini.php.dist ]; then
-        cp $APPDIR/var/config/profiles.ini.php.dist $APPDIR/var/config/profiles.ini.php
-    fi
-    if [ -f $APPDIR/var/config/localconfig.ini.php.dist ]; then
-        cp $APPDIR/var/config/localconfig.ini.php.dist $APPDIR/var/config/localconfig.ini.php
-    fi
-    if [ -f $APPDIR/var/config/users.ini.php.dist ]; then
-        cp $APPDIR/var/config/users.ini.php.dist $APPDIR/var/config/users.ini.php
-    fi
-    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/config/users.ini.php
-
-    if [ -f $APPDIR/var/config/installer.ini.php ]; then
-        rm -f $APPDIR/var/config/installer.ini.php
-    fi
-    if [ -f $APPDIR/var/config/liveconfig.ini.php ]; then
-        rm -f $APPDIR/var/config/liveconfig.ini.php
-    fi
     rm -rf $APPDIR/var/log/*
     rm -rf $APPDIR/var/db/*
     rm -rf $APPDIR/var/mails/*
@@ -63,6 +46,24 @@ function resetApp() {
     touch $APPDIR/var/db/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/db/.dummy
     touch $APPDIR/var/mails/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/mails/.dummy
     touch $APPDIR/var/uploads/.dummy && chown $APP_USER:$APP_GROUP $APPDIR/var/uploads/.dummy
+
+    if [ -f $APPDIR/var/config/profiles.ini.php.dist ]; then
+        cp $APPDIR/var/config/profiles.ini.php.dist $APPDIR/var/config/profiles.ini.php
+    fi
+    if [ -f $APPDIR/var/config/localconfig.ini.php.dist ]; then
+        cp $APPDIR/var/config/localconfig.ini.php.dist $APPDIR/var/config/localconfig.ini.php
+    fi
+    if [ -f $APPDIR/var/users.ini.php.dist ]; then
+        cp $APPDIR/var/users.ini.php.dist $APPDIR/var/db/users.ini.php
+    fi
+    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/db/users.ini.php
+
+    if [ -f $APPDIR/var/config/installer.ini.php ]; then
+        rm -f $APPDIR/var/config/installer.ini.php
+    fi
+    if [ -f $APPDIR/var/config/liveconfig.ini.php ]; then
+        rm -f $APPDIR/var/config/liveconfig.ini.php
+    fi
 
     cleanTmp
     setRights
@@ -91,7 +92,6 @@ function setRights() {
     chown -R $USER:$GROUP $DIRS
     chmod -R ug+w $DIRS
     chmod -R o-w $DIRS
-
 }
 
 function composerInstall() {
@@ -117,10 +117,10 @@ function launch() {
     if [ ! -f $APPDIR/var/config/localconfig.ini.php ]; then
         cp $APPDIR/var/config/localconfig.ini.php.dist $APPDIR/var/config/localconfig.ini.php
     fi
-    if [ ! -f $APPDIR/var/config/users.ini.php ]; then
-        cp $APPDIR/var/config/users.ini.php.dist $APPDIR/var/config/users.ini.php
+    if [ ! -f $APPDIR/var/db/users.ini.php -a -f $APPDIR/var/users.ini.php.dist ]; then
+        cp $APPDIR/var/users.ini.php.dist $APPDIR/var/db/users.ini.php
     fi
-    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/config/users.ini.php
+    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/db/users.ini.php
 
     if [ ! -d $APPDIR/vendor ]; then
       composerInstall
@@ -130,6 +130,11 @@ function launch() {
     setRights
     cleanTmp
 }
+
+function launchUnitTests() {
+    su $APP_USER -c "cd $APPDIR/../tests/ && ../testapp/vendor/bin/phpunit"
+}
+
 
 case $COMMAND in
     clean_tmp)
@@ -146,6 +151,8 @@ case $COMMAND in
         composerInstall;;
     composer_update)
         composerUpdate;;
+    unittests)
+        launchUnitTests;;
     *)
         echo "wrong command"
         exit 2

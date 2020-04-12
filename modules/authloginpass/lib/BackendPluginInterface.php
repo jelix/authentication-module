@@ -6,6 +6,8 @@
  */
 namespace Jelix\Authentication\LoginPass;
 
+use Jelix\Authentication\Core\AuthSession\AuthUser;
+
 interface BackendPluginInterface
 {
     /** @var int the backend does not implement specific features */
@@ -20,8 +22,6 @@ interface BackendPluginInterface
     /** @var int the backend can delete user */
     const FEATURE_DELETE_USER = 4;
 
-    const VERIF_AUTH_BAD = 0;
-    const VERIF_AUTH_OK = 1;
 
     /**
      * BackendPluginInterface constructor.
@@ -75,7 +75,8 @@ interface BackendPluginInterface
      * Delete a user from the backend
      *
      * @param string $login
-     * @return boolean true if the user has been deleted
+     * @return bool|AuthUser the AuthUser object corresponding to the deleted user,
+     *   true if already deleted, or false if the user has not been deleted
      */
     public function deleteUser($login);
 
@@ -89,7 +90,7 @@ interface BackendPluginInterface
     /**
      * @param string $login the login as given by the user
      * @param string $password
-     * @return int one of VERIF_AUTH_* const
+     * @return false|AuthUser
      */
     public function verifyAuthentication($login, $password);
 

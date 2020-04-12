@@ -2,8 +2,8 @@ FROM alpine:3.9
 
 ARG composer_version=1.8.6
 
-ENV FPM_USER_ID=1000 \
-    FPM_GROUP_ID=1000
+ARG FPM_USER_ID=1000
+ARG FPM_GROUP_ID=1000
 
 RUN apk update && apk upgrade
 RUN apk --no-cache add git php7 php7-fpm \
@@ -29,19 +29,23 @@ RUN apk --no-cache add git php7 php7-fpm \
     php7-phar \
     php7-gettext \
     php7-ctype \
+    php7-ldap \
     openssl \
     wget
 
 RUN set -eux; \
     sed -i "/^display_errors =/c\display_errors = On" /etc/php7/php.ini; \
     addgroup -g $FPM_GROUP_ID grouptest; \
-    adduser -D -u $FPM_USER_ID -G grouptest usertest;
+    adduser -D -u $FPM_USER_ID -G grouptest usertest; \
+    mkdir -p /etc/openldap/ /etc/ssl/ldap/; \
+    chmod 755 /etc/openldap/ /etc/ssl/ldap/;
 
 
 ## Install Composer
 RUN wget -O /bin/composer https://getcomposer.org/download/$composer_version/composer.phar \
     && chmod +x /bin/composer
 
+COPY ldap.conf /etc/openldap/ldap.conf
 COPY www.conf /etc/php7/php-fpm.d/www.conf
 COPY entrypoint.sh /bin/
 COPY appctl.sh /bin/
