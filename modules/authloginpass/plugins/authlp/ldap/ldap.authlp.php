@@ -36,7 +36,9 @@ class ldapBackend extends BackendAbstract
     protected $uriConnect = '';
 
     /**
-     * @inheritdoc
+     * @param array $params configuration parameters
+     * @param array|null profile data. if not given, it will use the profile
+     *                   indicated into the profile parameter
      */
     public function __construct($params, $profile = null)
     {
@@ -46,11 +48,11 @@ class ldapBackend extends BackendAbstract
         parent::__construct($params);
 
         if ($profile === null) {
-            if (!isset($this->_params['ldapprofile']) || $this->_params['ldapprofile'] == '') {
+            if (!isset($this->_params['profile']) || $this->_params['profile'] == '') {
                 throw new jException('authloginpass~ldap.error.ldap.profile.missing');
             }
 
-            $profile = jProfiles::get('ldap', $this->_params['ldapprofile']);
+            $profile = jProfiles::get('ldap', $this->_params['profile']);
         }
         $this->_params = array_merge($this->_params, $profile);
 
@@ -323,14 +325,12 @@ class ldapBackend extends BackendAbstract
         // see if the user exists into the ldap directory
         $attributes = $this->searchLdapUserAttributes($connectAdmin, $login);
         if ($attributes === false) {
-            jLog::log('authloginpass ldap: user '.$login.' not found into the ldap', 'auth');
             ldap_close($connectAdmin);
             return false;
         }
 
         $connect = $this->_getLinkId();
         if (!$connect) {
-            jLog::log('authloginpass ldap: impossible to connect to ldap', 'auth');
             ldap_close($connectAdmin);
             return false;
         }
@@ -340,8 +340,8 @@ class ldapBackend extends BackendAbstract
 
         if ($userDn === false) {
             jLog::log('authloginpass ldap: cannot authenticate to ldap with given bindUserDN for the login ' . $login. '. Wrong DN or password', 'auth');
-            foreach ($this->bindUserDnTries as $dn) {
-                jLog::log('authloginpass ldap:  tried to connect with bindUserDN=' . $dn, 'auth');
+            foreach ($this->bindUserDnTries as $erroMessage) {
+                jLog::log($erroMessage, 'auth');
             }
             ldap_close($connectAdmin);
             return false;
@@ -405,7 +405,7 @@ class ldapBackend extends BackendAbstract
     protected function searchLdapUserAttributes($connect, $login)
     {
         $searchAttributes = array_keys($this->_params['searchAttributes']);
-
+        $filters = array();
         foreach ($this->_params['searchUserFilter'] as $searchUserFilter) {
             $filter = str_replace(
                 array('%%LOGIN%%', '%%USERNAME%%'), // USERNAME deprecated
@@ -418,12 +418,19 @@ class ldapBackend extends BackendAbstract
                 $filter,
                 $searchAttributes
             );
-            if ($search && ($entry = ldap_first_entry($connect, $search))) {
+            if (!$search) {
+                $this->logLdapError($connect, 'ldap error during search of the user "'.$login.'" with the filter "'.$filter.'"');
+            }
+            else if (($entry = @ldap_first_entry($connect, $search))) {
                 $dn = ldap_get_dn($connect, $entry);
                 $attributes = ldap_get_attributes($connect, $entry);
                 return $this->readLdapAttributes($dn, $attributes);
             }
+            else {
+                $filters[] = $filter;
+            }
         }
+        jLog::log('authloginpass: ldap user "'.$login.'" not found with the filters :"'.implode('", "', $filters).'"', 'auth');
         return false;
     }
 
@@ -439,8 +446,7 @@ class ldapBackend extends BackendAbstract
             if ($bind) {
                 break;
             } else {
-                jLog::log('authloginpass ldap: error when trying to connect with '.$realDn.': '.ldap_errno($connect).':'.ldap_error($connect), 'auth');
-                $this->bindUserDnTries[] = $realDn;
+                $this->bindUserDnTries[] = $this->getLdapError($connect, 'tried to connect with "'.$realDn.'"');;
             }
         }
         return ($bind ? $realDn : false);
@@ -598,6 +604,12 @@ class ldapBackend extends BackendAbstract
                     }
                 } while ($entry = ldap_next_entry($connect, $entry));
             }
+            else {
+                jLog::log('authloginpass ldap: no groups found for the user  "'.$login.'", with the searchGroupFilter query "'.$filter.'"', 'auth');
+            }
+        }
+        else {
+            $this->logLdapError($connect, 'ldap error during group search for "'.$login.'", with the searchGroupFilter query "'.$filter.'"');
         }
         return $groups;
     }
@@ -607,19 +619,20 @@ class ldapBackend extends BackendAbstract
      */
     protected function _getLinkId()
     {
-        if ($connect = ldap_connect($this->uriConnect)) {
+        if ($connect = @ldap_connect($this->uriConnect)) {
             //ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
             ldap_set_option($connect, LDAP_OPT_PROTOCOL_VERSION, $this->_params['protocolVersion']);
             ldap_set_option($connect, LDAP_OPT_REFERRALS, 0);
 
             if ($this->_params['tlsMode'] == 'starttls') {
                 if (!@ldap_start_tls($connect)) {
-                    jLog::log('authloginpass ldap: connection error: impossible to start TLS connection: '.ldap_errno($connect).':'.ldap_error($connect), 'error');
+                    $this->logLdapError($connect, 'connection error: impossible to start TLS connection');
                     return false;
                 }
             }
             return $connect;
         }
+        jLog::log('authloginpass: ldap error, bad syntax in the given uri "'.$this->uriConnect.'"', 'auth');
         return false;
     }
 
@@ -632,14 +645,13 @@ class ldapBackend extends BackendAbstract
     {
         $connect = $this->_getLinkId();
         if (!$connect) {
-            jLog::log('authloginpass ldap: impossible to connect to ldap', 'auth');
             return false;
         }
 
         if ($this->_params['adminUserDn'] == '') {
-            $bind = ldap_bind($connect);
+            $bind = @ldap_bind($connect);
         } else {
-            $bind = ldap_bind($connect, $this->_params['adminUserDn'], $this->_params['adminPassword']);
+            $bind = @ldap_bind($connect, $this->_params['adminUserDn'], $this->_params['adminPassword']);
         }
         if (!$bind) {
             if ($this->_params['adminUserDn'] == '') {
@@ -680,6 +692,22 @@ class ldapBackend extends BackendAbstract
         $salt = $generator->generateString($length, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
         return $salt;
     }
+
+    protected function getLdapError($connect, $contextMessage)
+    {
+        $message = "ldapdao error: $contextMessage \n";
+        $message .= "\tldap error " . ldap_errno($connect) . ':' . ldap_error($connect);
+        if (@ldap_get_option($connect, LDAP_OPT_DIAGNOSTIC_MESSAGE, $diagnostic)) {
+            $message .= "\n\t" . $diagnostic;
+        }
+        return $message;
+    }
+
+    protected function logLdapError($connect, $contextMessage)
+    {
+        jLog::log($this->getLdapError($connect, $contextMessage), 'auth');
+    }
+
 }
 
 
