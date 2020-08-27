@@ -325,12 +325,14 @@ class ldapBackend extends BackendAbstract
         // see if the user exists into the ldap directory
         $attributes = $this->searchLdapUserAttributes($connectAdmin, $login);
         if ($attributes === false) {
+            jLog::log('authloginpass ldap: user '.$login.' not found into the ldap', 'auth');
             ldap_close($connectAdmin);
             return false;
         }
 
         $connect = $this->_getLinkId();
         if (!$connect) {
+            jLog::log('authloginpass ldap: impossible to connect to ldap', 'auth');
             ldap_close($connectAdmin);
             return false;
         }
@@ -471,6 +473,7 @@ class ldapBackend extends BackendAbstract
             if (isset($userLdapAttributes[$dnAttribute])) {
                 $realDn = $userLdapAttributes[$dnAttribute];
             } else {
+                jLog::log('authloginpass ldap bindUser notice: attribute '.$dnAttribute.' not found into user attributes', 'auth');
                 return false;
             }
         } elseif (preg_match_all('/(\w+)=%\?%/', $dnPattern, $m)) {
@@ -479,6 +482,7 @@ class ldapBackend extends BackendAbstract
                 if (isset($userLdapAttributes[$attr])) {
                     $realDn = str_replace($m[0][$k], $attr.'='.$userLdapAttributes[$attr], $realDn);
                 } else {
+                    jLog::log('authloginpass ldap bindUser notice: attribute '.$attr.' not found into user attributes', 'auth');
                     return false;
                 }
             }
@@ -645,6 +649,7 @@ class ldapBackend extends BackendAbstract
     {
         $connect = $this->_getLinkId();
         if (!$connect) {
+            jLog::log('authloginpass ldap: impossible to connect to ldap', 'auth');
             return false;
         }
 
