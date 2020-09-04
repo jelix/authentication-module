@@ -165,7 +165,7 @@ class Manager
         else {
             $backend = $this->getBackendHavingUser($login);
         }
-        if ($backend && $backend->getFeature() & BackendPluginInterface::FEATURE_CHANGE_PASSWORD) {
+        if ($backend && $backend->getFeatures() & BackendPluginInterface::FEATURE_CHANGE_PASSWORD) {
             return $backend->changePassword($login, $newpassword);
         }
         return false;
