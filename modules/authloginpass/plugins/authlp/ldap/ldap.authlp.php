@@ -80,7 +80,7 @@ class ldapBackend extends BackendAbstract
 
         // iterate each default parameter and apply it to actual params if missing in $params.
         foreach ($_default_params as $name => $value) {
-            if (!isset($this->_params[$name]) || $this->_params[$name] == '') {
+            if (!isset($this->_params[$name]) || $this->_params[$name] === '') {
                 $this->_params[$name] = $value;
             }
         }
@@ -132,7 +132,7 @@ class ldapBackend extends BackendAbstract
             $this->_params['bindUserDN'] = array($this->_params['bindUserDN']);
         }
 
-        if ($this->_params['newUserDN'] == '') {
+        if ($this->_params['newUserDN'] == '' && $this->_params['featureCreateUser']) {
             throw new jException('authloginpass~ldap.error.newUserDN.missing');
         }
 
