@@ -1,6 +1,6 @@
 FROM alpine:3.9
 
-ARG composer_version=1.8.6
+ARG composer_version=2.0.8
 
 ARG FPM_USER_ID=1000
 ARG FPM_GROUP_ID=1000
