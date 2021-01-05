@@ -36,7 +36,7 @@ class signCtrl extends jController {
     /**
      * Check credentials given into the form of the loginform zone
      *
-     * @return jResponse|jResponseHtml|jResponseJson|jResponseRedirect
+     * @return jResponseRedirect
      */
     public function checkCredentials()
     {
