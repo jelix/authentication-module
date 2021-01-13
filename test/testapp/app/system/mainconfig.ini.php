@@ -30,8 +30,9 @@ adminui.installparam[wwwfiles]=vhost
 authcore.enabled=on
 authloginpass.enabled=on
 
+account.enabled=on
 [coordplugins]
-sessionauth = on
+sessionauth=on
 
 
 [responses]
@@ -119,12 +120,12 @@ dashboardTemplate=
 [authentication]
 idp[]=loginpass
 idp[]=alwaysyes
-sessionHandler = php
+sessionHandler=php
 
 [sessionauth]
-authRequired = off
-missingAuthAction = ""
-missingAuthAjaxAction = ""
+authRequired=off
+missingAuthAction=
+missingAuthAjaxAction=
 
 [loginpass_idp]
 backends[]=ldap
@@ -142,7 +143,7 @@ deprecatedPasswordSalt=
 [loginpass:inifile]
 backendType=inifile
 inifile="var:db/users.ini.php"
-backendLabel=Native users
+backendLabel="Native users"
 
 [loginpass:daotablesqlite]
 backendType=dbdao
@@ -155,4 +156,9 @@ featureCreateUser=on
 featureDeleteUser=on
 featureChangePassword=on
 
+[account_idp]
+backends[]=daotablesqlite
 
+[account:daotablesqlite]
+backendType=dbdao
+profile=daotablesqlite
