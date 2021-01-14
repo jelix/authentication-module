@@ -25,11 +25,14 @@
      <method name="findByName" type="selectfirst">
          <parameter name="pattern" />
          <conditions>
-             <like property="name" expr="$pattern" />
+             <eq property="name" expr="$pattern" />
          </conditions>
-         <order>
-             <orderitem property="name" way="asc" />
-          </order>
+     </method>
+     <method name="findByEmail" type="selectfirst">
+         <parameter name="pattern" />
+         <conditions>
+             <eq property="email" expr="$pattern" />
+         </conditions>
      </method>
      <method name="findAll" type="select">
          <order>

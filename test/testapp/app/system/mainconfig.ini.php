@@ -155,10 +155,3 @@ profile=openldap
 featureCreateUser=on
 featureDeleteUser=on
 featureChangePassword=on
-
-[account_idp]
-backends[]=daotablesqlite
-
-[account:daotablesqlite]
-backendType=dbdao
-profile=daotablesqlite

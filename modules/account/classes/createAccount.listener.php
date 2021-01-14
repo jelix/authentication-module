@@ -15,7 +15,6 @@ class createAccountListener extends jEventListener
 
         $name = $user->getName();
         if (Account\Manager::accountExists($name)) {
-            \jLog::log('An Account already exists with the same username, cannot create it !', 'error');
             return false;
         }
 
