@@ -36,7 +36,7 @@ class adminuiListener extends jEventListener
                 $user->getUserId(),
                 $user->getName(),
                 jAuthentication::getSignoutPageUrl(),
-                '#profile');
+                jUrl::get('account~profile:index'));
         }
         else {
             // FIXME : ajouter url de la page en cours, en paramètre, pour url de retour,  si pas requete post

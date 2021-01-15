@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+   <datasources>
+      <primarytable name="accounts" realname="accounts" primarykey="account_id" />
+   </datasources>
+   <record>
+      <property name="account_id" fieldname="account_id" datatype="autoincrement"/>
+       
+      <property name="name" fieldname="name"
+          required="yes" datatype="string"  maxlength="50" />
+      
+      <property name="status" fieldname="status" datatype="integer" required="yes"/>
+      <!-- status for administration:
+           -2 deleted
+           -1 deactivate
+           0 new user, invalid account
+           1 valid user
+           -->
+      <property name="email" fieldname="email" datatype="string" required="yes" maxlength="255" />
+      <property name="provider" fieldname="provider" datatype="string" required="yes" maxlength="255" />
+      <property name="create_date" fieldname="create_date" datatype="datetime"
+                insertpattern="now()" updatepattern=""/>
+   </record>
+   <factory>
+     <method name="findByName" type="selectfirst">
+         <parameter name="pattern" />
+         <conditions>
+             <eq property="name" expr="$pattern" />
+         </conditions>
+     </method>
+     <method name="findByEmail" type="selectfirst">
+         <parameter name="pattern" />
+         <conditions>
+             <eq property="email" expr="$pattern" />
+         </conditions>
+     </method>
+     <method name="findAll" type="select">
+         <order>
+             <orderitem property="name" way="asc" />
+         </order>
+     </method>
+   </factory>
+</dao>

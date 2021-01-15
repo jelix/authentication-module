@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+
+<output type="string" ref="name">
+    <label locale="account~account.profile.th.name"/>
+</output>
+
+<input type="email" ref="email">
+    <label locale="account~account.profile.th.email"/>
+</input>
+
+<output ref="create_date">
+    <label locale="account~account.profile.th.createdate"/>
+</output>
+
+<submit ref="submit">
+    <label locale="account~account.profile.button.modify"/>
+</submit>
+
+</form>
