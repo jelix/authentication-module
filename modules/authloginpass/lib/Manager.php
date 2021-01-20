@@ -243,4 +243,30 @@ class Manager
         return true;
     }
 
+    /**
+     * Looks for the user corresponding to $login in all the backends
+     * 
+     * @param string $login The login to search
+     * @return AuthUser|null The user corresponding to login, null if not found.
+     */
+    public function getUser($login) {
+        $back = $this->getBackendHavingUser($login);
+        if (!$back) {
+            return null;
+        }
+        $user = $back->getUser($login);
+        return $user;
+    }
+
+    /**
+     * Updates $user's infos
+     * 
+     * @param AuthUser $user The user to modify
+     */
+    public function updateUser($user)
+    {
+        $login = $user->getLogin();
+        $back = $this->getBackendHavingUser($login);
+        $back->updateUser($login, $user->getAttributes());
+    }
 }

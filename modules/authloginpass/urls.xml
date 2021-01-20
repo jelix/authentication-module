@@ -2,4 +2,10 @@
 <suburls xmlns="http://jelix.org/ns/suburls/1.0">
     <url pathinfo="/signin" action="sign:in"/>
     <url pathinfo="/signin/check" action="sign:checkCredentials" />
+    <url pathinfo="/signin/reset" action="password_reset:index" />
+    <url pathinfo="/signin/reset/send" action="password_reset:send" />
+    <url pathinfo="/signin/reset/sent" action="password_reset:sent" />
+    <url pathinfo="/signin/reset/form" action="password_reset:resetform" />
+    <url pathinfo="/signin/reset/save" action="password_reset:save" />
+    <url pathinfo="/signin/reset/changed" action="password_reset:changed" />
 </suburls>

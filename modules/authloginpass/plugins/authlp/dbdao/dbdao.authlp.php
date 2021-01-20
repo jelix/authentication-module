@@ -130,4 +130,41 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $userRec = $this->daoFactory->getByLogin($login);
         return !!$userRec;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUser($login)
+    {
+        if (!$this->userExists($login)) {
+            return null;
+        }
+        $userRec = $this->daoFactory->getByLogin($login);
+        return new AuthUser($userRec->user_id, array_merge(json_decode($userRec->attributes),
+            array(
+                AuthUser::ATTR_LOGIN => $userRec->login,
+                AuthUser::ATTR_EMAIL => $userRec->email,
+                AuthUser::ATTR_NAME => $userRec->username)
+            )
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateUser($login, $attributes)
+    {
+        if (!$this->userExists($login)) {
+            return ;
+        }
+        $userRec = $this->daoFactory->getByLogin($login);
+        foreach($attributes as $key => $value) {
+            if (property_exists($userRec, $key)) {
+                $userRec->$key = $value;
+            } else {
+                $userRec->attributes[$key] = $value;
+            }
+        }
+        $this->daoFactory->update($userRec);
+    }
 }

@@ -29,6 +29,13 @@ class AuthUser
 
     const ATTR_EMAIL = 'email';
 
+    const STATUS_PWD_CHANGED = 3;
+    const STATUS_MAIL_CHANGED = 2;
+    const STATUS_VALID = 1;
+    const STATUS_NEW = 0;
+    const STATUS_DEACTIVATED = -1;
+    const STATUS_DELETED = -2;
+
     /**
      * SessionUser constructor.
      * @param string $userId
@@ -74,5 +81,11 @@ class AuthUser
 
     function getAttributes() {
         return $this->attributes;
+    }
+
+    function setAttribute($name, $value) {
+        if (!in_array($name, array('login', 'email'))) {
+            $this->attributes[$name] = $value;
+        }
     }
 }
