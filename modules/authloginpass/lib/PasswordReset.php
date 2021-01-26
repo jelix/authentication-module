@@ -22,33 +22,43 @@ class PasswordReset {
 
     protected $tplLocaleId = '';
 
+    protected $manager;
 
-    function __construct($forRegistration = false, $byAdmin = false) {
+    protected $config;
+
+    function __construct($forRegistration = false, $byAdmin = false, $manager = null, $config = null) {
         $this->forRegistration = $forRegistration;
         $this->byAdmin = $byAdmin;
-
+        if (!$manager) {
+            $this->manager = jAuthentication::manager()->getIdpById('loginpass')->getManager();
+        } else {
+            $this->manager = $manager;
+        }
+        if (!$config) {
+            $this->config = \jApp::config();
+        } else {
+            $this->config = $config;
+        }
         if ($byAdmin) {
-            $this->subjectLocaleId = 'authloginpass~auth.password.admin.reset.subject';
-            $this->tplLocaleId = 'authloginpass~auth.password.admin.reset.body.html';
+            $this->subjectLocaleId = 'authloginpass~mail.password.admin.reset.subject';
+            $this->tplLocaleId = 'authloginpass~mail.password.admin.reset.body.html';
         }
         else {
-            $this->subjectLocaleId = 'authloginpass~auth.password.reset.subject';
-            $this->tplLocaleId = 'authloginpass~auth.password.reset.body.html';
+            $this->subjectLocaleId = 'authloginpass~mail.password.reset.subject';
+            $this->tplLocaleId = 'authloginpass~mail.password.reset.body.html';
         }
     }
 
 
     function sendEmail($login, $email)
     {
-        $idp = jAuthentication::manager()->getIdpById('loginpass');
-        $manager = $idp->getManager();
-        $user = $manager->getUser($login);
+        $user = $this->manager->getUser($login);
         if (!$user || $user->getEmail() == '' || $user->getEmail() != $email) {
             \jLog::log('A password reset is attempted for unknown user "'.$login.'" and/or unknown email  "'.$email.'"', 'warning');
             return self::RESET_BAD_LOGIN_EMAIL;
         }
 
-        if (!$manager->canChangePassword($user->getLogin())) {
+        if (!$this->manager->canChangePassword($user->getLogin())) {
             return self::RESET_BAD_STATUS;
         }
 
@@ -68,23 +78,9 @@ class PasswordReset {
         $user->setAttribute('keyactivate', ($this->byAdmin?'A:':'U:').$key);
         $user->setAttribute('status', $status);
 
-        if (method_exists('jServer', 'getDomainName')) {
-            $domain = \jServer::getDomainName();
-            $websiteUri =  \jServer::getServerURI();
-        }
-        else {
-            // old version of jelix < 1.7.5 && < 1.6.30
-            $domain = \jApp::coord()->request->getDomainName();
-            $websiteUri = \jApp::coord()->request->getServerURI();
-        }
+        list($domain, $websiteUri) = $this->getWebInfos();
 
-        $mail = new \jMailer();
-        $mail->From = \jApp::config()->mailer['webmasterEmail'];
-        $mail->FromName = \jApp::config()->mailer['webmasterName'];
-        $mail->Sender = \jApp::config()->mailer['webmasterEmail'];
-        $mail->Subject = \jLocale::get($this->subjectLocaleId, $domain);
-        $mail->AddAddress($user->getEmail());
-        $mail->isHtml(true);
+        $mail = $this->getMail($user->getEmail(), $domain);
 
         $tpl = new \jTpl();
         $tpl->assign('user', $user->getLogin());
@@ -109,7 +105,7 @@ class PasswordReset {
             return self::RESET_MAIL_SERVER_ERROR;
         }
 
-        $manager->updateUser($user);
+        $this->manager->updateUser($user);
 
         return self::RESET_OK;
     }
@@ -134,9 +130,7 @@ class PasswordReset {
         if ($login == '' || $key == '') {
             return self::RESET_BAD_KEY;
         }
-        $idp = jAuthentication::manager()->getIdpById('loginpass');
-        $manager = $idp->getManager();
-        $user = $manager->getUser($login);
+        $user = $this->manager->getUser($login);
         if (!$user) {
             return self::RESET_BAD_KEY;
         }
@@ -165,11 +159,11 @@ class PasswordReset {
             return self::RESET_BAD_STATUS;
         }
 
-        if (!$manager->canChangePassword($login)) {
+        if (!$this->manager->canChangePassword($login)) {
             return self::RESET_BAD_STATUS;
         }
 
-        $config = new Config();
+        $config = new Config($this->config);
         $dt = new \DateTime($request_date);
         $dtNow = new \DateTime();
         $dt->add($config->getValidationKeyTTL());
@@ -179,13 +173,45 @@ class PasswordReset {
         return $user;
     }
 
+    /**
+     * Configures the jMailer object to send the mail
+     * 
+     * @param string $email The email address
+     * @param string $domain The domain name
+     * @return \jMailer The mailer object
+     */
+    protected function getMail($email, $domain)
+    {
+        $mail = new \jMailer();
+        $mail->From = $this->config->mailer['webmasterEmail'];
+        $mail->FromName = $this->config->mailer['webmasterName'];
+        $mail->Sender = $this->config->mailer['webmasterEmail'];
+        $mail->Subject = \jLocale::get($this->subjectLocaleId, $domain);
+        $mail->AddAddress($email);
+        $mail->isHtml(true);
+        return $mail;
+    }
+
+    protected function getWebInfos()
+    {
+        if (method_exists('jServer', 'getDomainName')) {
+            $domain = \jServer::getDomainName();
+            $websiteUri =  \jServer::getServerURI();
+        }
+        else {
+            // old version of jelix < 1.7.5 && < 1.6.30
+            $domain = \jApp::coord()->request->getDomainName();
+            $websiteUri = \jApp::coord()->request->getServerURI();
+        }
+
+        return array($domain, $websiteUri);
+    }
+
     function changePassword($user, $newPassword) {
-        $idp = jAuthentication::manager()->getIdpById('loginpass');
-        $manager = $idp->getManager();
         $user->setAttribute('status', AuthUser::STATUS_VALID);
         $user->setAttribute('keyactivate', '');
         $user->setAttribute('password', $newPassword);
-        $manager->updateUser($user);
+        $this->manager->updateUser($user);
     }
 
 }

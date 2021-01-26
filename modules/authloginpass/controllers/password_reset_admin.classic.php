@@ -44,8 +44,9 @@ class password_reset_adminCtrl extends \Jelix\Authentication\LoginPass\AbstractC
         $rep = $this->_getLoginPassResponse();
         $rep->title = jLocale::get('password.form.title');
 
+        $manager = jAuthentication::manager()->getIdpById('loginpass')->getManager();
         $login = $this->param('login');
-        $user = \jAuth::getUser($login);
+        $user = $manager->getUser($login);
         if (!$user || $user->email == '') {
             return $this->showError($rep, 'no_access_wronguser');
         }
@@ -68,7 +69,8 @@ class password_reset_adminCtrl extends \Jelix\Authentication\LoginPass\AbstractC
         }
 
         $login = $this->param('pass_login');
-        $user = \jAuth::getUser($login);
+        $manager = jAuthentication::manager()->getIdpById('loginpass')->getManager();
+        $user = $manager->getUser($login);
         if (!$user || $user->email == '') {
             $rep = $this->_getLoginPassResponse();
             $rep->title = jLocale::get('password.form.title');

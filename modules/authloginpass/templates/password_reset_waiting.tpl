@@ -1,7 +1,7 @@
 <div>
-    <h1>{@auth.form.title@}</h1>
+    <h1>{@authloginpass~password.form.title@}</h1>
 
-    {@auth.waiting.text.html@}
+    {@authloginpass~auth.waiting.text.html@}
 
-    <p><a href="{jurl 'authloginpass~sign:in'}">{@auth.back.to.login@}</a></p>
+    <p><a href="{jurl 'authloginpass~sign:in'}">{@authloginpass~auth.back.to.login@}</a></p>
 </div>

@@ -84,7 +84,7 @@ class AuthUser
     }
 
     function setAttribute($name, $value) {
-        if (!in_array($name, array('login', 'email'))) {
+        if (!in_array($name, array(self::ATTR_LOGIN, self::ATTR_EMAIL))) {
             $this->attributes[$name] = $value;
         }
     }

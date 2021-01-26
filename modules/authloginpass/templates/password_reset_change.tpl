@@ -1,14 +1,14 @@
 <div>
-    <h1>{@auth.form.change.title@}</h1>
+    <h1>{@authloginpass~password.form.change.title@}</h1>
 {if $error_status}
-    <p>{@auth.form.change.error.$error_status@}</p>
+    <p>{@authloginpass~password.form.change.error.$error_status@}</p>
 {else}
 
-    {@auth.form.change.text.html@}
+    {@authloginpass~password.form.change.text.html@}
 
     {formfull $form,'authloginpass~password_reset:save', array()}
 
 {/if}
 
-    <p><a href="{jurl 'authloginpass~login:index'}">{@auth.cancel.and.back.to.login@}</a></p>
+    <p><a href="{jurl 'authloginpass~login:index'}">{@authloginpass~auth.cancel.and.back.to.login@}</a></p>
 </div>

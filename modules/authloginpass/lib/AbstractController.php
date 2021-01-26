@@ -56,8 +56,8 @@ class AbstractController extends \jController
     protected function _getLoginPassResponse()
     {
         $response = 'html';
-        if ($this->responseId == ''  && isset(\jApp::config()->logimpass)) {
-            $conf = \jApp::config()->loginpass;
+        if ($this->responseId == ''  && isset(\jApp::config()->loginpass_idp)) {
+            $conf = \jApp::config()->loginpass_idp;
             $response = (isset($conf['loginResponse']) ? $conf['loginResponse'] : 'html');
         }
 

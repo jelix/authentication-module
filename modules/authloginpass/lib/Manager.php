@@ -267,6 +267,9 @@ class Manager
     {
         $login = $user->getLogin();
         $back = $this->getBackendHavingUser($login);
+        if (!$back) {
+            return ;
+        }
         $back->updateUser($login, $user->getAttributes());
     }
 }

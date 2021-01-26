@@ -27,6 +27,8 @@ class Config
 
     protected $publicProperties = array('login', 'nickname', 'create_date');
 
+    protected $config;
+
     /**
      * @var integer  TTL in minutes
      */
@@ -42,9 +44,14 @@ class Config
 
     /**
      */
-    public function __construct()
+    public function __construct($appConfig = null)
     {
-        $config = (isset(\jApp::config()->loginpass) ? \jApp::config()->loginpass : array());
+        if ($appConfig) {
+            $this->config = $appConfig;
+        } else {
+            $this->config = \jApp::config();
+        }
+        $config = (isset($this->config->loginpass_idp) ? $this->config->loginpass_idp : array());
 
         foreach(array(
             'responseType' => 'loginResponse',
@@ -77,7 +84,7 @@ class Config
         if (array_key_exists('resetAdminPasswordEnabled', $config)) {
             $this->resetAdminPasswordEnabled = (bool) $config['resetAdminPasswordEnabled'];
         }
-        $sender = filter_var(\jApp::config()->mailer['webmasterEmail'], FILTER_VALIDATE_EMAIL);
+        $sender = filter_var($this->config->mailer['webmasterEmail'], FILTER_VALIDATE_EMAIL);
         if (!$sender) {
             // if the sender email is not configured, deactivate features that
             // need to send an email
@@ -168,13 +175,13 @@ class Config
 
         $str = '';
         if ($ttl->d > 0) {
-            $str .= $ttl->d . ' '.\jLocale::get('auth.account.duration.day'.($ttl->d > 1?'s':''));
+            $str .= $ttl->d . ' '.\jLocale::get('authloginpass~auth.account.duration.day'.($ttl->d > 1?'s':''));
         }
         if ($ttl->h > 0) {
-            $str .= ' ' . $ttl->h . ' '.\jLocale::get('auth.account.duration.hour'.($ttl->h > 1?'s':''));
+            $str .= ' ' . $ttl->h . ' '.\jLocale::get('authloginpass~auth.account.duration.hour'.($ttl->h > 1?'s':''));
         }
         if ($ttl->i > 0) {
-            $str .= ' ' . $ttl->i . ' '.\jLocale::get('auth.account.duration.minute'.($ttl->i > 1?'s':''));
+            $str .= ' ' . $ttl->i . ' '.\jLocale::get('authloginpass~auth.account.duration.minute'.($ttl->i > 1?'s':''));
         }
 
         return trim($str);
@@ -182,7 +189,7 @@ class Config
 
     public function getPublicUserProperties()
     {
-        if ($this->useJAuthDbAdminRights && ! \jAcl2::check('auth.user.view')) {
+        if ($this->useJAuthDbAdminRights && ! \jAcl2::check('authloginpass~auth.user.view')) {
             return array('login');
         }
         return $this->publicProperties;

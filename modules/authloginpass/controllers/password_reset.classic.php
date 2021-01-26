@@ -27,7 +27,7 @@ class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswor
         }
 
         $rep = $this->_getLoginPassResponse();
-        $rep->title = jLocale::get('auth.form.title');
+        $rep->title = jLocale::get('authloginpass~password.form.title');
         $rep->body->assignZone('MAIN', 'passwordReset');
 
         return $rep;
@@ -60,7 +60,7 @@ class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswor
         $passReset = new \Jelix\Authentication\LoginPass\PasswordReset();
         $result = $passReset->sendEmail($login, $email);
         if ($result != $passReset::RESET_OK && $result != $passReset::RESET_BAD_LOGIN_EMAIL) {
-            $form->setErrorOn('pass_login', jLocale::get('auth.form.change.error.'.$result));
+            $form->setErrorOn('pass_login', jLocale::get('authloginpass~password.form.change.error.'.$result));
             return $rep;
         }
 
@@ -84,7 +84,7 @@ class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswor
         }
 
         $rep = $this->_getLoginPassResponse();
-        $rep->title = jLocale::get('auth.form.title');
+        $rep->title = jLocale::get('authloginpass~password.form.title');
         $tpl = new jTpl();
         $rep->body->assign('MAIN', $tpl->fetch('password_reset_waiting'));
 
