@@ -16,6 +16,7 @@
         </div>
         <div class="row">
             <div class="col-xs-8">
+                <a href="{jurl 'authloginpass~password_reset:index'}">{@authloginpass~auth.form.password.forget@}</a>
                 {formurlparam 'authloginpass~sign:checkCredentials'}
             </div>
             <!-- /.col -->

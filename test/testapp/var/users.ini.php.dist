@@ -6,3 +6,4 @@
 password="$2y$10$DT9NlAi5bC1dx74sDw9Jc.9K5PNpePgCaBPrk4vb3vzHpJPb42Kc."
 email="admin@kocotier.net"
 name=Administrator
+status=1

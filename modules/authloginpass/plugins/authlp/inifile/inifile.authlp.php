@@ -173,4 +173,29 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         }
         return true;
     }
+
+    public function getUser($login)
+    {
+        if (!$this->userExists($login)) {
+            return null;
+        }
+        $section = 'login:'.$login;
+        $userRec = $this->iniContent[$section];
+        $propTab = array();
+        return new AuthUser($login, array_merge($userRec, array(
+            AuthUser::ATTR_NAME => $userRec['name'],
+            AuthUser::ATTR_EMAIL => $userRec['email'],
+        )));
+    }
+
+    public function updateUser($login, $attributes)
+    {
+        if (!$this->userExists($login)) {
+            return ;
+        }
+        $section = 'login:'.$login;
+        $ini = new \Jelix\IniFile\IniModifier($this->iniFile);
+        $ini->setValues($attributes, $section);
+        $ini->save();
+    }
 }

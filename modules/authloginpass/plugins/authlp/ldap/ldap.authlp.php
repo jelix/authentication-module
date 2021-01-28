@@ -202,8 +202,36 @@ class ldapBackend extends BackendAbstract
         return ($result !== false);
     }
 
+    public function getUser($login) {
+        if (!$this->userExists($login)) {
+            return null;
+        }
+        $connectAdmin = $this->_bindLdapAdminUser();
+        if (!$connectAdmin) {
+            return null;
+        }
+        // see if the user exists into the ldap directory
+        $result = $this->searchLdapUserAttributes($connectAdmin, $login);
+        ldap_close($connectAdmin);
+        return new AuthUser($login, $result->userAttributes);
+    }
+
+    public function updateUser($login, $attributes)
+    {
+        if (!$this->userExists($login)) {
+            return ;
+        }
+        $connectAdmin = $this->_bindLdapAdminUser();
+        if (!$connectAdmin) {
+            return ;
+        }
+        $ldapAttributes = $this->searchLdapUserAttributes($connectAdmin, $login);
+        ldap_mod_replace($connectAdmin, $ldapAttributes->dn, $attributes);
+        ldap_close($connectAdmin);
+    }
+
     /**
-     *  @inheritdoc
+     * @inheritdoc
      */
     public function createUser($login, $password, $email, $name = '')
     {
@@ -414,7 +442,7 @@ class ldapBackend extends BackendAbstract
                 $login,
                 $searchUserFilter
             );
-            $search = ldap_search(
+            $search = @ldap_search(
                 $connect,
                 $this->_params['searchUserBaseDN'],
                 $filter,

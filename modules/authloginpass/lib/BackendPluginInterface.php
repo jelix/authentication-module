@@ -99,4 +99,22 @@ interface BackendPluginInterface
      * @return boolean true if a user with this login exists
      */
     public function userExists($login);
+
+    /**
+     * Gets an user by its login
+     * 
+     * @param string $login The user to get
+     * @return AuthUser The user corresponding to $login, null if none.
+     */
+    public function getUser($login);
+
+    /**
+     * Updates user informations
+     * 
+     * @param string $login The user's login
+     * @param array $attributes The attributes to modify
+     * 
+     * @return void
+     */
+    public function updateUser($login, $attributes);
 }
