@@ -58,7 +58,7 @@ interface IdentityProviderInterface {
      * in case of a lack of authentication.
      *
      * The identity provider can also throw a jHttp401UnauthorizedException exception
-     * if it cannot provides an action to process the case of a lack of authentication.
+     * if it cannot provide an action to process the case of a lack of authentication.
      *
      * @param \jRequest $request
      * @param AuthSession\AuthUser|null $authUser the user identified into the session. null if there is no user

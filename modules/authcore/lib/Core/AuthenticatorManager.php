@@ -50,7 +50,7 @@ class AuthenticatorManager
     }
 
     /**
-     * @return IdentityProviderInterface[]
+     * @return IdentityProviderInterface
      */
     public function getMainIdp() {
         return reset($this->idpList);

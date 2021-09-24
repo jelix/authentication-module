@@ -125,7 +125,8 @@ class Manager
         if (!count($this->backends)) {
             throw new \InvalidArgumentException("No configured backend");
         }
-        return array_shift(array_keys($this->backends));
+        $backendNames = array_keys($this->backends);
+        return array_shift($backendNames);
     }
 
     public function getFirstBackend() {
