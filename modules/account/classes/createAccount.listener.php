@@ -10,12 +10,13 @@ class createAccountListener extends jEventListener
 
     function onAuthenticationUserCreation($event)
     {
+        /** @var \Jelix\Authentication\Core\AuthSession\AuthUser $user */
         $user = $event->getParam('user');
         $provider = $event->getParam('identProviderId');
 
         $name = $user->getName();
         if (Account\Manager::accountExists($name)) {
-            return false;
+            return;
         }
 
         Account\Manager::createAccount($user, $provider);
