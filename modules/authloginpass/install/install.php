@@ -38,7 +38,9 @@ class authloginpassModuleInstaller extends \Jelix\Installer\Module\Installer
                     $this->installIniFileBackend($properties);
                     break;
                 case 'dbdao':
-                    $this->installDbDaoBackend($properties);
+                    if (!$this->getParameter('nodbdaotablecreation')) {
+                        $this->installDbDaoBackend($properties);
+                    }
                     break;
             }
         }
