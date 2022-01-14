@@ -100,7 +100,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             return false;
         }
 
-        $userRec = $this->daoFactory->getByLogin($login);
+        $userRec = $this->daoFactory->getByLoginForAuthentication($login);
         if (!$userRec) {
             return false;
         }

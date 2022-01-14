@@ -26,21 +26,18 @@
       <property name="attributes" fieldname="attributes" datatype="json" />
    </record>
    <factory>
-     <method name="getByLoginPassword" type="selectfirst">
+     <method name="getByLogin" type="selectfirst">
          <parameter name="login" />
-         <parameter name="password" />
-
          <conditions>
              <eq property="login" expr="$login" />
-             <eq property="password" expr="$password" />
          </conditions>
      </method>
 
-     <method name="getByLogin" type="selectfirst">
+     <method name="getByLoginForAuthentication" type="selectfirst">
          <parameter name="login" />
-
          <conditions>
              <eq property="login" expr="$login" />
+             <eq property="status" value="1" />
          </conditions>
      </method>
 
@@ -63,7 +60,7 @@
          </conditions>
      </method>
 
-     <method name="findByLogin" type="select">
+     <method name="findByLoginPattern" type="select">
          <parameter name="pattern" />
          <conditions>
              <like property="login" expr="$pattern" />
@@ -72,6 +69,7 @@
              <orderitem property="login" way="asc" />
           </order>
      </method>
+
      <method name="findAll" type="select">
          <order>
              <orderitem property="login" way="asc" />
