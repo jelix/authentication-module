@@ -30,6 +30,15 @@ Parameters:
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
 - `identProviderId`: the id of the authentication provider
 
+`AuthenticationFail`
+--------------------
+
+Event triggered when the authentication failed.
+
+Parameters:
+
+- `login` (optional): it may contain the login. Some identities providers may not provide it.
+
 
 `AuthenticationLogout`
 ---------------------
