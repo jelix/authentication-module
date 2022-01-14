@@ -35,7 +35,7 @@ class AuthSession {
             'user' => $user,
             'identProviderId' => $IdpId
         ));
-        if (! $event->allResponsesByKeyAreTrue('canUseApp')) {
+        if (false === $event->allResponsesByKeyAreTrue('canUseApp')) {
             return false;
         }
 
