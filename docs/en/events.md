@@ -3,7 +3,22 @@ Events and listeners
 =====================
 
 Some events are triggered by the module. You can implement listeners to react to
-these events.
+these events (see [`jEvent` documentation](https://docs.jelix.org/en/manual/components/events)).
+
+`AuthenticationCanUseApp`
+-------------------------
+
+Event triggered when a user has been authenticated but he has no session yet.
+Listen it to verify that the user can access to the application.
+
+Parameters:
+
+- `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
+- `identProviderId`: the id of the authentication provider
+
+Response to give:
+
+- `canUseApp` : a boolean. True if the user can use the application, else false.
 
 `AuthenticationLogin`
 ---------------------

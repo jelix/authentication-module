@@ -50,19 +50,21 @@ class signCtrl extends jController {
             $user = $lpManager->verifyPassword($this->param('login'), $this->param('password'))
         ) {
 
-            $rep->url = $this->param('urlback');
-            if ($rep->url == '') {
-                $rep->url = $lpManager->getUrlAfterLogin();
+            $sessionOk = jAuthentication::session()->setSessionUser($user, 'loginpass');
+            if ($sessionOk) {
+                $rep->url = $this->param('urlback');
+                if ($rep->url == '') {
+                    $rep->url = $lpManager->getUrlAfterLogin();
+                }
+                if ($rep->url == '') {
+                    $rep->url = '/';
+                }
+                return $rep;
             }
-            if ($rep->url == '') {
-                $rep->url = '/';
-            }
-
-            jAuthentication::session()->setSessionUser($user, 'loginpass');
-        } else {
-            $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
-            $rep->url = jUrl::get('authcore~sign:in', $params);
         }
+
+        $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
+        $rep->url = jUrl::get('authcore~sign:in', $params);
 
         return $rep;
     }
