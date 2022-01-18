@@ -67,12 +67,14 @@ Options configuration of the `inifile` backend
 
 
 ```ini
+[loginpass:<configuration name>]
+backendType=inifile
 ; value is the path to the inifile
 inifile="var:db/users.ini.php"
-
+sessionAttributes=
 ```
 
-The inifile should contain a section for each user:
+The inifile should contain a section for each user, with at least these values:
 
 ```ini
 [login:<user login>]
@@ -89,6 +91,27 @@ password="$2y$10$DT9NlAi5bC1dx74sDw9Jc.9K5PNpePgCaBPrk4vb3vzHpJPb42Kc."
 email="admin@example.com"
 name=Administrator
 ```
+
+It can contain more attributes. For example : 
+
+```ini
+[login:admin]
+;...
+role=admin
+birthdayDate=
+```
+
+If you want to set these additional attributes into the session, you should set
+the `sessionAttributes` parameter into the `[loginpass:<configuration name>]` section:
+
+
+```ini
+[loginpass:<configuration name>]
+;...
+sessionAttributes=role,birthdayDate
+```
+
+A special value, `ALL`, indicate to set all attributes.
 
 
 Options configuration of the `dbdao` backend

@@ -64,6 +64,14 @@ abstract class BackendAbstract implements BackendPluginInterface
         return $this->_params;
     }
 
+    public function getConfigurationParameter($name)
+    {
+        if (isset($this->_params[$name])) {
+            return $this->_params[$name];
+        }
+        return null;
+    }
+
     public function hasFeature($feat) {
         $features = $this->getFeatures();
         return ($features|$feat) > 0;

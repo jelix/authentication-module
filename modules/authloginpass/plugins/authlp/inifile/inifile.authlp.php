@@ -160,10 +160,30 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             $ini->save();
         }
 
-        $user = new AuthUser($login, array(
+        $attributes = array(
             AuthUser::ATTR_NAME =>$userProperties['name'],
             AuthUser::ATTR_EMAIL =>$userProperties['email'],
-        ));
+        );
+
+        $sessionAttributes = $this->getConfigurationParameter('sessionAttributes');
+        if ($sessionAttributes == 'ALL') {
+            unset($userProperties['name']);
+            unset($userProperties['email']);
+            $attributes = array_merge($userProperties, $attributes);
+        }
+        else if ($sessionAttributes != '') {
+            $sessionAttributes = preg_split('/\s*,\s*/', $sessionAttributes);
+            foreach($sessionAttributes as $prop) {
+                if ($prop == AuthUser::ATTR_NAME || $prop == AuthUser::ATTR_EMAIL) {
+                    continue;
+                }
+                if (isset($userProperties[$prop])) {
+                    $attributes[$prop] = $userProperties[$prop];
+                }
+            }
+        }
+
+        $user = new AuthUser($login, $attributes);
         return $user;
     }
 
