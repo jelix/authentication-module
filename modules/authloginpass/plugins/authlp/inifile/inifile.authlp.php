@@ -68,14 +68,16 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         }
         $name = $name ?: $login;
         $section = 'login:'.$login;
+        $properties = array(
+            'password' => $this->hashPassword($password),
+            'email' => $email,
+            'name' => $name
+        );
+
         $ini = new \Jelix\IniFile\IniModifier($this->iniFile);
-        $ini->setValues(
-            array(
-                'password' => $this->hashPassword($password),
-                'email' => $email,
-                'username' => $name
-            ), $section);
+        $ini->setValues($properties, $section);
         $ini->save();
+        $this->iniContent[$section] = $properties;
         return true;
     }
 
@@ -100,6 +102,8 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $ini->removeSection($section);
         $ini->save();
 
+        unset($this->iniContent[$section]);
+
         return new AuthUser($login, array(
             AuthUser::ATTR_NAME =>$name,
             AuthUser::ATTR_EMAIL =>$email,
@@ -123,8 +127,10 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             return false;
         }
 
-        $ini->setValue('password', $this->hashPassword($newpassword), $section);
+        $hash = $this->hashPassword($newpassword);
+        $ini->setValue('password', $hash, $section);
         $ini->save();
+        $this->iniContent[$section]['password'] = $hash;
         return true;
     }
 
