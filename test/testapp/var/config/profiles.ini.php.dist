@@ -17,6 +17,11 @@ database="var:db/daotablesqlite.sqlite"
 persistent= on
 force_encoding = on
 
+[jdb:dbdaotest]
+driver="sqlite3"
+database="var:db/dbdaotest.sqlite"
+
+
 [ldap:openldap]
 hostname=openldap
 tlsMode=starttls',

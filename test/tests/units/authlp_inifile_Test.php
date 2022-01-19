@@ -9,7 +9,7 @@
 require_once('/jelixapp/modules/authloginpass/plugins/authlp/inifile/inifile.authlp.php');
 
 /**
- * Tests ldap backend for the authloginpass idp
+ * Tests inifile backend for the authloginpass idp
  */
 class authlp_inifile_Test extends \Jelix\UnitTests\UnitTestCase
 {

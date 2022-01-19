@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019 Laurent Jouanneau
+ * @copyright  2019-2022 Laurent Jouanneau
  * @license   MIT
  */
 
@@ -115,10 +115,33 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             $userRec->password = $result;
             $this->daoFactory->updatePassword($login, $result);
         }
-        $user = new AuthUser($login, array(
+
+        $attributes = array(
             AuthUser::ATTR_NAME =>$userRec->username,
             AuthUser::ATTR_EMAIL =>$userRec->email,
-        ));
+        );
+
+
+        $sessionAttributes = $this->getConfigurationParameter('sessionAttributes');
+        if ($sessionAttributes == 'ALL') {
+            $userProperties = get_object_vars($userRec);
+            unset($userProperties['username']);
+            unset($userProperties['email']);
+            $attributes = array_merge($userProperties, $attributes);
+        }
+        else if ($sessionAttributes != '') {
+            $sessionAttributes = preg_split('/\s*,\s*/', $sessionAttributes);
+            foreach($sessionAttributes as $prop) {
+                if ($prop == AuthUser::ATTR_NAME || $prop == AuthUser::ATTR_EMAIL) {
+                    continue;
+                }
+                if (property_exists($userRec, $prop)) {
+                    $attributes[$prop] = $userRec->$prop;
+                }
+            }
+        }
+
+        $user = new AuthUser($login, $attributes);
         return $user;
     }
 

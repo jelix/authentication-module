@@ -111,24 +111,41 @@ the `sessionAttributes` parameter into the `[loginpass:<configuration name>]` se
 sessionAttributes=role,birthdayDate
 ```
 
-A special value, `ALL`, indicate to set all attributes.
+A special value, `ALL`, indicate to retrieve all attributes.
 
 
 Options configuration of the `dbdao` backend
 ---------------------------------------------
 
-There is only a `profile` option, and a `dao` option.
+There is only a `profile` parameter, a `dao` parameter and an optional `sessionAttributes`.
 
 
 ```ini
+[loginpass:<configuration name>]
+backend=dbdao
 ; name of the jDb connection profile to use
 profile=
 ; selector to the dao mapped to the user table
 dao="authloginpass~user"
+sessionAttributes=
 ```
 
 You can use any dao, but it should have at least all fields you found into the
 `user` dao of the `authloginpass` module.
+
+With `sessionAttributes`, you can indicate the properties to load into the
+user object in session. It is a liste of properties separated by a comma.
+
+
+```ini
+[loginpass:<configuration name>]
+;...
+sessionAttributes=role,birthdayDate
+```
+
+A special value, `ALL`, indicate to retrieve all properties.
+
+
 
 Options configuration of the `ldap` backend
 --------------------------------------------
