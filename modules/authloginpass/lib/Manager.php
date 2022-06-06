@@ -187,9 +187,14 @@ class Manager
             $backend = $this->getBackendHavingUser($login);
         }
         if ($backend) {
-            return $backend->verifyAuthentication($login, $password);
+            $user = $backend->verifyAuthentication($login, $password);
+            if (is_object($user)) {
+               return $user;
+            }
         }
-
+        \jEvent::notify('AuthenticationFail', array(
+            'login' => $login
+        ));
         return false;
     }
 

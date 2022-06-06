@@ -67,12 +67,14 @@ Options configuration of the `inifile` backend
 
 
 ```ini
+[loginpass:<configuration name>]
+backendType=inifile
 ; value is the path to the inifile
 inifile="var:db/users.ini.php"
-
+sessionAttributes=
 ```
 
-The inifile should contain a section for each user:
+The inifile should contain a section for each user, with at least these values:
 
 ```ini
 [login:<user login>]
@@ -90,22 +92,60 @@ email="admin@example.com"
 name=Administrator
 ```
 
+It can contain more attributes. For example : 
+
+```ini
+[login:admin]
+;...
+role=admin
+birthdayDate=
+```
+
+If you want to set these additional attributes into the session, you should set
+the `sessionAttributes` parameter into the `[loginpass:<configuration name>]` section:
+
+
+```ini
+[loginpass:<configuration name>]
+;...
+sessionAttributes=role,birthdayDate
+```
+
+A special value, `ALL`, indicate to retrieve all attributes.
+
 
 Options configuration of the `dbdao` backend
 ---------------------------------------------
 
-There is only a `profile` option, and a `dao` option.
+There is only a `profile` parameter, a `dao` parameter and an optional `sessionAttributes`.
 
 
 ```ini
+[loginpass:<configuration name>]
+backend=dbdao
 ; name of the jDb connection profile to use
 profile=
 ; selector to the dao mapped to the user table
 dao="authloginpass~user"
+sessionAttributes=
 ```
 
 You can use any dao, but it should have at least all fields you found into the
 `user` dao of the `authloginpass` module.
+
+With `sessionAttributes`, you can indicate the properties to load into the
+user object in session. It is a liste of properties separated by a comma.
+
+
+```ini
+[loginpass:<configuration name>]
+;...
+sessionAttributes=role,birthdayDate
+```
+
+A special value, `ALL`, indicate to retrieve all properties.
+
+
 
 Options configuration of the `ldap` backend
 --------------------------------------------

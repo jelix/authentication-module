@@ -60,6 +60,6 @@ the session handler. Two session handlers are provided:
   credentials should be given at each http request. Or to use authentication
   in a script running in a shell.
 
-Session handlers are implemented also as plugins of type `authsession`.
+Session handlers are implemented as plugins of type `authsession`.
 
 

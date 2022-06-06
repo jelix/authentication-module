@@ -27,15 +27,26 @@ class AuthSession {
     /**
      * @param AuthUser $user
      * @param string $IPid
+     * @return bool false if the authenticated user is not allowed to use the application
      */
     public function setSessionUser(AuthUser $user, $IdpId)
     {
+        $event = \jEvent::notify('AuthenticationCanUseApp', array(
+            'user' => $user,
+            'identProviderId' => $IdpId
+        ));
+        if (false === $event->allResponsesByKeyAreTrue('canUseApp')) {
+            return false;
+        }
+
         $this->handler->setSessionUser($user, $IdpId);
 
         \jEvent::notify('AuthenticationLogin', array(
             'user' => $user,
             'identProviderId' => $IdpId
         ));
+
+        return true;
     }
 
     public function unsetSessionUser()

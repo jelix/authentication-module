@@ -24,6 +24,8 @@
       <property name="create_date" fieldname="create_date" datatype="datetime"
                 insertpattern="now()" updatepattern=""/>
       <property name="attributes" fieldname="attributes" datatype="json" />
+      <property name="role" fieldname="role" datatype="string" maxlength="255" />
+      <property name="birthdayDate" fieldname="birthday_date" datatype="string" maxlength="255" />
    </record>
    <factory>
      <method name="getByLogin" type="selectfirst">
