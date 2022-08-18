@@ -23,10 +23,10 @@ database="var:db/dbdaotest.sqlite"
 
 
 [ldap:openldap]
-hostname=openldap
-tlsMode=starttls',
-port=389,
-;tlsMode=ldaps',
+hostname=ldap.jelix
+tlsMode=starttls
+port=389
+;tlsMode=ldaps
 ;port=636,
 adminUserDn="cn=admin,dc=tests,dc=jelix"
 adminPassword="passjelix"

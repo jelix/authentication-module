@@ -5,18 +5,15 @@ A docker configuration is provided to launch the application into a container.
 To launch containers the first time:
 
 ```
-cd docker-conf
-./setup.sh
-cd ..
 ./run-docker build
 ./run-docker
-./dockerappctl ldapreset
+./appctl ldapreset
 ```
 
 You can execute some commands into the php container, by using this command:
 
 ```
-./dockerappctl <command>
+./appctl <command>
 ```
 
 Available commands:

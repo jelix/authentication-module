@@ -3,7 +3,7 @@
 #
 # from https://github.com/dinkel/docker-openldap
 # -----------------
-FROM debian:stretch
+FROM debian:bullseye-slim
 MAINTAINER Jelix
 
 # properly setup debian sources

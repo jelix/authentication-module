@@ -20,7 +20,7 @@ class authlp_ldap_auth_Test extends \Jelix\UnitTests\UnitTestCase {
     protected $ldapProfileName = 'lpldap';
 
     protected $ldapProfile = array(
-        'hostname'      =>  'openldap',
+        'hostname'      =>  'ldap.jelix',
         'tlsMode'       => 'starttls',
         'port'          =>  389,
         //'tlsMode'       => 'ldaps',
