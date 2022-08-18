@@ -9,7 +9,7 @@
 namespace Jelix\Authentication\Core\AuthSession;
 
 /**
- * Properties about a user in a authentication session
+ * Properties about a user in an authentication session
  *
  * This object contains user attributes.
  *
