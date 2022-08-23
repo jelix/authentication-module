@@ -31,7 +31,7 @@ authRequired=off
 ```
 
 
-Authentication into your application can rely on several identity providers (or "idp").
+Authentication into your application can rely on several identity providers (aka "idp").
 An identity provider is a component that handle a type of authentication, or 
 an authentication protocol. Its role is to verify that the user is authenticated,
 or to check credentials when a user log in etc. 

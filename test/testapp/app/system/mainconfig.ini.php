@@ -36,9 +36,9 @@ sessionauth=on
 
 
 [responses]
-html="module:adminui~adminuiResponse"
-htmlerror="module:adminui~adminuiResponse"
-htmllogin="module:adminui~adminuiBareResponse"
+html="\Jelix\AdminUI\Responses\AdminUIResponse"
+htmlerror="\Jelix\AdminUI\Responses\AdminUIResponse"
+htmllogin="\Jelix\AdminUI\Responses\AdminUIBareResponse"
 
 [error_handling]
 messageLogFormat="%date%\t%ip%\t[%code%]\t%msg%\n\tat: %file%\t%line%\n\turl: %url%\n\t%http_method%: %params%\n\treferer: %referer%\n%trace%\n\n"
@@ -71,7 +71,7 @@ multiview=off
 ; : basePath="/aaa/" )
 basePath=
 
-notfoundAct="jelix~error:notfound"
+notFoundAct="manager~default:notfound"
 
 jelixWWWPath="jelix/"
 
@@ -92,30 +92,99 @@ mailerType=file
 email="root@localhost"
 
 [webassets_common]
+adminlte-bootstrap.require=jquery,jquery_ui
+adminlte-bootstrap.js[]=adminlte-assets/plugins/bootstrap/js/bootstrap.bundle.min.js
 
-adminlte-bootstrap.require=jquery
-adminlte-bootstrap.css[]="adminlte-assets/bower_components/bootstrap/dist/css/bootstrap.min.css"
-adminlte-bootstrap.js[]="adminlte-assets/bower_components/bootstrap/dist/js/bootstrap.min.js"
+adminlte-fontawesome.css[]=adminlte-assets/plugins/fontawesome-free/css/all.min.css
 
-adminlte-fontawesome.css[]="adminlte-assets/bower_components/font-awesome/css/font-awesome.min.css"
-
-adminlte.require="jquery,adminlte-bootstrap,adminlte-fontawesome"
-adminlte.css[]="adminlte-assets/bower_components/Ionicons/css/ionicons.min.css"
-adminlte.css[]="adminlte-assets/dist/css/AdminLTE.min.css"
-adminlte.css[]="adminlte-assets/dist/css/skins/_all-skins.min.css"
-adminlte.css[]="adminlte-assets/SourceSansPro/SourceSansPro.css"
-adminlte.css[]="adminlte-assets/adminui.css"
-adminlte.js[]="adminlte-assets/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"
-adminlte.js[]="adminlte-assets/bower_components/fastclick/lib/fastclick.js"
-adminlte.js[]="adminlte-assets/dist/js/adminlte.min.js"
-adminlte.js[]="adminlte-assets/adminui.js"
+adminlte.require=jquery,adminlte-bootstrap,adminlte-fontawesome
+adminlte.css[]=adminlte-assets/dist/css/adminlte.min.css
+adminlte.css[]=adminlte-assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css
+adminlte.css[]=adminui-assets/SourceSansPro/SourceSansPro.css
+adminlte.css[]=adminui-assets/adminui.css
+adminlte.js[]=adminlte-assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js
+adminlte.js[]=adminlte-assets/plugins/jquery-mousewheel/jquery.mousewheel.js
+adminlte.js[]=adminlte-assets/plugins/fastclick/fastclick.js
+adminlte.js[]=adminlte-assets/dist/js/adminlte.min.js
+adminlte.js[]=adminui-assets/adminui.js
 
 [adminui]
 appVersion=0.0.1
 htmlLogo="Jelix<b>Auth</b>"
 htmlLogoMini="J<b>Auth</b>"
-htmlCopyright="<strong>Copyright &copy; 2019 Laurent Jouanneau</strong>."
+htmlCopyright="<strong>Copyright &copy; 2019-2022 Laurent Jouanneau</strong>."
 dashboardTemplate=
+
+appTitle=Auth test app
+bodyCSSClass="hold-transition "
+bareBodyCSSClass="hold-transition login-page"
+adminlteAssetsUrl="adminlte-assets/"
+
+; hide the dashboard item into the sidebar
+disableDashboardMenuItem=off
+
+; show the button into the header, to activate the full screen mode
+fullScreenModeEnabled=off
+
+; activate the dark mode
+darkmode=off
+
+; the header/navbar is fixed
+header.fixed=off
+
+; the header/navbar has a border
+header.border=on
+
+; Text of the header/navbar is small
+header.smalltext=off
+
+; Color of the header/navbar. see https://adminlte.io/docs/3.2/layout.html
+header.color=cyan
+
+; the text of the navbar is dark
+header.darktext=on
+
+; the text of the logo is small
+header.brand.smalltext = off
+
+; the sidebar is collapsed by default
+sidebar.collapsed=off
+
+; the sidebar is fixed
+sidebar.fixed=off
+
+; when collapsed, the sidebar is still visible in a mini format
+sidebar.mini=on
+
+; the sidebar has a flat style
+sidebar.nav.flat.style=off
+
+; the sidebar items are compact
+sidebar.nav.compact=off
+
+; child items into the sidebar, are indented
+sidebar.nav.child.indent=off
+
+;
+sidebar.nav.child.collapsed=
+
+; the text of the sidebar is small
+sidebar.nav.smalltext = off
+
+; the background of the sidebar is dark
+sidebar.dark=on
+
+; the selected item of the sidebar has the "primary" color. see https://adminlte.io/docs/3.2/layout.html
+sidebar.current-item.color=cyan
+
+; the footer is fixed
+footer.fixed=off
+
+; text of the footer is small
+footer.smalltext = off
+
+; the general text is small
+body.smalltext = off
 
 [authentication]
 idp[]=loginpass
@@ -124,14 +193,14 @@ sessionHandler=php
 
 [sessionauth]
 authRequired=off
-missingAuthAction=
-missingAuthAjaxAction=
+missingAuthAction="authcore~sign:in"
+missingAuthAjaxAction=""
 
 [loginpass_idp]
 backends[]=ldap
 backends[]=daotablesqlite
 backends[]=inifile
-after_login=
+after_login="adminui~default:index"
 
 [loginpass:common]
 passwordHashAlgo=1
