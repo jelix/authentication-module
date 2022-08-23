@@ -4,6 +4,7 @@ namespace Jelix\Authentication\Account;
 
 use jAuthentication;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\IdentityProviderInterface;
 
 class Manager
 {
@@ -38,7 +39,7 @@ class Manager
      * Creates a new account
      * 
      * @param AuthUser $user The user to create
-     * @param string $provider The IdentityProvider used to create the Account
+     * @param IdentityProviderInterface $provider The IdentityProvider used to create the Account
      * 
      * @return \jDaoRecordBase The record containing the new account or null if account already exists.
      */
@@ -53,7 +54,7 @@ class Manager
         $newAccount->name = $name;
         $newAccount->email = $user->getEmail();
         $newAccount->status = self::STATUS_VALID;
-        $newAccount->provider = $provider;
+        $newAccount->provider = $provider->getId();
         $dao->insert($newAccount);
         return $newAccount;
     }

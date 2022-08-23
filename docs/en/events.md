@@ -14,7 +14,7 @@ Listen it to verify that the user can access to the application.
 Parameters:
 
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
-- `identProviderId`: the id of the authentication provider
+- `identProvider`: the authentication provider object
 
 Response to give:
 
@@ -28,7 +28,7 @@ Event triggered when a user has been authenticated.
 Parameters:
 
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
-- `identProviderId`: the id of the authentication provider
+- `identProvider`: the authentication provider object
 
 `AuthenticationFail`
 --------------------
@@ -62,7 +62,7 @@ application.
 Parameters:
 
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
-- `identProviderId`: `"loginpass"`
+- `identProvider`: the `loginpass` authentication provider object
 
 `AuthenticationUserDeletion`
 ----------------------------
@@ -76,7 +76,7 @@ application.
 Parameters:
 
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
-- `identProviderId`: `"loginpass"`
+- `identProvider`: the `loginpass` authentication provider object
 
 
 

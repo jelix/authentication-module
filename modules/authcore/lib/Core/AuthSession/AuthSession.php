@@ -1,12 +1,14 @@
 <?php
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2022 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
 
 namespace Jelix\Authentication\Core\AuthSession;
+
+use Jelix\Authentication\Core\IdentityProviderInterface;
 
 /**
  * Manage the authenticated session
@@ -26,24 +28,24 @@ class AuthSession {
 
     /**
      * @param AuthUser $user
-     * @param string $IPid
+     * @param IdentityProviderInterface $idp
      * @return bool false if the authenticated user is not allowed to use the application
      */
-    public function setSessionUser(AuthUser $user, $IdpId)
+    public function setSessionUser(AuthUser $user, $idp)
     {
         $event = \jEvent::notify('AuthenticationCanUseApp', array(
             'user' => $user,
-            'identProviderId' => $IdpId
+            'identProvider' => $idp
         ));
         if (false === $event->allResponsesByKeyAreTrue('canUseApp')) {
             return false;
         }
 
-        $this->handler->setSessionUser($user, $IdpId);
+        $this->handler->setSessionUser($user, $idp->getId());
 
         \jEvent::notify('AuthenticationLogin', array(
             'user' => $user,
-            'identProviderId' => $IdpId
+            'identProvider' => $idp
         ));
 
         return true;

@@ -18,7 +18,8 @@ class alwaysyesCtrl extends jController {
             array(
                 AuthUser::ATTR_NAME =>'User Test'
             ));
-        jAuthentication::session()->setSessionUser($user, 'alwaysyes');
+        $idp = jAuthentication::manager()->getIdpById('alwaysyes');
+        jAuthentication::session()->setSessionUser($user, $idp);
         $rep->action = 'test~default:index';
         return $rep;
     }

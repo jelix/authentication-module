@@ -42,15 +42,17 @@ class signCtrl extends jController {
     {
         $rep = $this->getResponse('redirectUrl');
 
+        /** @var \loginpassIdentityProvider */
         $idp = jAuthentication::manager()->getIdpById('loginpass');
-        /** @var \Jelix\Authentication\LoginPass\Manager $lpManager */
+        
+        /** @var \Jelix\Authentication\LoginPass\Manager */
         $lpManager = $idp->getManager();
 
         if ($this->request->isPostMethod() &&
             $user = $lpManager->verifyPassword($this->param('login'), $this->param('password'))
         ) {
 
-            $sessionOk = jAuthentication::session()->setSessionUser($user, 'loginpass');
+            $sessionOk = jAuthentication::session()->setSessionUser($user, $idp);
             if ($sessionOk) {
                 $rep->url = $this->param('urlback');
                 if ($rep->url == '') {

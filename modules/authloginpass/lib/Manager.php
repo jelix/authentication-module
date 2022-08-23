@@ -215,7 +215,7 @@ class Manager
         if ($backend->createUser($login, $password, $user->getEmail(), $user->getName())) {
             \jEvent::notify('AuthenticationUserCreation', array(
                 'user' => $user,
-                'identProviderId' => 'loginpass'
+                'identProvider' => \jAuthentication::manager()->getIdpById('loginpass')
             ));
             return true;
         }
@@ -244,7 +244,7 @@ class Manager
 
         \jEvent::notify('AuthenticationUserDeletion', array(
             'user' => $user,
-            'identProviderId' => 'loginpass'
+            'identProvider' => \jAuthentication::manager()->getIdpById('loginpass')
         ));
         return true;
     }

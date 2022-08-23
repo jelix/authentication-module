@@ -64,6 +64,7 @@ class jAuthentication {
             else {
                 $sessHandName = 'php';
             }
+            /** @var \Jelix\Authentication\Core\AuthSession\AuthSessionHandlerInterface */
             $sessionHandler = \jApp::loadPlugin($sessHandName, 'authsession', '.authsession.php', $sessHandName.'AuthSessionHandler', array());
             self::$session = new Jelix\Authentication\Core\AuthSession\AuthSession($sessionHandler);
 
