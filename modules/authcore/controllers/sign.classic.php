@@ -1,12 +1,14 @@
 <?php
+
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2022 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
 
-class signCtrl extends jController {
+class signCtrl extends jController
+{
 
     public $pluginParams = array(
         '*' => array('auth.required' => false),
@@ -21,7 +23,7 @@ class signCtrl extends jController {
         $rep->title = jLocale::get('authcore~auth.titlePage.login');
 
         $tpl = new jTpl();
-        if ( ! jAuthentication::isCurrentUserAuthenticated()) {
+        if (!jAuthentication::isCurrentUserAuthenticated()) {
             $manager = jAuthentication::manager();
             $htmlForms = array();
             foreach ($manager->getIdpList() as $idp) {
@@ -45,6 +47,4 @@ class signCtrl extends jController {
         $rep->url = jAuthentication::signout();
         return $rep;
     }
-
 }
-

@@ -1,13 +1,15 @@
 <?php
+
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2022 Laurent Jouanneau
  * @link     http://jelix.org
- * @licence MIT
+ * @license MIT
  */
 
 namespace Jelix\Authentication\Core\AuthSession;
 
+use Jelix\Authentication\Core\Workflow;
 
 interface AuthSessionHandlerInterface
 {
@@ -25,4 +27,12 @@ interface AuthSessionHandlerInterface
 
     public function getIdentityProviderId();
 
+    public function setWorkflow(Workflow $workflow);
+
+    public function unsetWorkflow();
+
+    /**
+     * @return Workflow
+     */
+    public function getWorkflow();
 }

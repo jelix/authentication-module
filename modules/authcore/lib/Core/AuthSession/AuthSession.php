@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author   Laurent Jouanneau
  * @copyright 2019-2022 Laurent Jouanneau
@@ -9,12 +10,14 @@
 namespace Jelix\Authentication\Core\AuthSession;
 
 use Jelix\Authentication\Core\IdentityProviderInterface;
+use Jelix\Authentication\Core\Workflow;
 
 /**
  * Manage the authenticated session
  *
  */
-class AuthSession {
+class AuthSession
+{
 
     /**
      * @var AuthSessionHandlerInterface
@@ -57,8 +60,7 @@ class AuthSession {
             $user = $this->handler->getSessionUser();
             $this->handler->unsetSessionUser();
             \jEvent::notify('AuthenticationLogout', array('user' => $user));
-        }
-        else {
+        } else {
             $this->handler->unsetSessionUser();
         }
     }
@@ -79,5 +81,21 @@ class AuthSession {
     public function getIdentityProviderId()
     {
         return $this->handler->getIdentityProviderId();
+    }
+
+
+    public function setWorkflow(Workflow $workflow)
+    {
+        $this->handler->setWorkflow($workflow);
+    }
+
+    public function unsetWorkflow()
+    {
+        $this->handler->unsetWorkflow();
+    }
+
+    public function getWorkflow()
+    {
+        return $this->handler->getWorkflow();
     }
 }

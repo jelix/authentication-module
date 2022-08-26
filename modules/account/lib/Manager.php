@@ -90,7 +90,7 @@ class Manager
      * @param array $newInfos An associative array containing the information to modify and their new values
      * @param Account $user the user to modify, if null, the modified user will be the current one.
      * 
-     * @return bool False if an error occured
+     * @return bool False if an error occurred
      */
     public static function modifyInfos($newInfos, $user = null)
     {

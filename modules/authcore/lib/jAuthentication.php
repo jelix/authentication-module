@@ -1,20 +1,25 @@
 <?php
+
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2022 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
 
 use Jelix\Authentication\Core\AuthenticatorManager;
 use Jelix\Authentication\Core\AuthSession\AuthSession;
+use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\IdentityProviderInterface;
+use Jelix\Authentication\Core\Workflow;
 
 /**
  * Proxy class to access to authentication features in a Jelix framework context
  *
  * modules should call this API, and not underlying classes of authcore
  */
-class jAuthentication {
+class jAuthentication
+{
 
     /**
      * @var AuthenticatorManager
@@ -29,7 +34,8 @@ class jAuthentication {
     /**
      * @return AuthenticatorManager
      */
-    public static function manager() {
+    public static function manager()
+    {
         if (self::$manager === null) {
             $idpList = array();
             if (isset(jApp::config()->authentication['idp'])) {
@@ -37,13 +43,13 @@ class jAuthentication {
                 if (!is_array($idpPlugins)) {
                     $idpPlugins = array($idpPlugins);
                 }
-                foreach($idpPlugins as $idpPlugin) {
+                foreach ($idpPlugins as $idpPlugin) {
                     $options = array();
-                    $optionName = $idpPlugin.'_idp';
+                    $optionName = $idpPlugin . '_idp';
                     if (isset(jApp::config()->$optionName)) {
                         $options = jApp::config()->$optionName;
                     }
-                    $idpList[] = \jApp::loadPlugin($idpPlugin, 'authidp', '.authidp.php', $idpPlugin.'IdentityProvider', $options);
+                    $idpList[] = \jApp::loadPlugin($idpPlugin, 'authidp', '.authidp.php', $idpPlugin . 'IdentityProvider', $options);
                 }
             }
             self::$manager = new AuthenticatorManager($idpList);
@@ -54,38 +60,63 @@ class jAuthentication {
     /**
      * @return AuthSession
      */
-    public static function session() {
+    public static function session()
+    {
         if (self::$session === null) {
-            if (isset(jApp::config()->authentication['sessionHandler']) &&
+            if (
+                isset(jApp::config()->authentication['sessionHandler']) &&
                 jApp::config()->authentication['sessionHandler'] != ''
             ) {
                 $sessHandName = jApp::config()->authentication['sessionHandler'];
-            }
-            else {
+            } else {
                 $sessHandName = 'php';
             }
             /** @var \Jelix\Authentication\Core\AuthSession\AuthSessionHandlerInterface */
-            $sessionHandler = \jApp::loadPlugin($sessHandName, 'authsession', '.authsession.php', $sessHandName.'AuthSessionHandler', array());
+            $sessionHandler = \jApp::loadPlugin($sessHandName, 'authsession', '.authsession.php', $sessHandName . 'AuthSessionHandler', array());
             self::$session = new Jelix\Authentication\Core\AuthSession\AuthSession($sessionHandler);
-
         }
         return self::$session;
     }
 
-    public static function isCurrentUserAuthenticated() {
+    public static function isCurrentUserAuthenticated()
+    {
         return self::session()->hasSessionUser();
     }
 
-    public static function getCurrentUser()  {
+    public static function startAuthenticationWorkflow(AuthUser $user, IdentityProviderInterface $idp)
+    {
+        // FIXME : generate the step list corresponding to the idp
+        $workflow = new Workflow($user, $idp->getId(), []);
+        self::session()->setWorkflow($workflow);
+        return $workflow;
+    }
+
+    /**
+     * @return Workflow
+     */
+    public static function getAuthenticationWorkflow()
+    {
+        return self::session()->getWorkflow();
+    }
+
+    public static function stopAuthenticationWorkflow()
+    {
+        self::session()->unsetWorkflow();
+    }
+
+    public static function getCurrentUser()
+    {
         return self::session()->getSessionUser();
     }
 
-    public static function getSigninPageUrl() {
+    public static function getSigninPageUrl()
+    {
         // TODO url should be get from configuration
         return jUrl::get('authcore~sign:in');
     }
 
-    public static function getSignoutPageUrl() {
+    public static function getSignoutPageUrl()
+    {
         // TODO url should be get from configuration
         return jUrl::get('authcore~sign:out');
     }
@@ -97,7 +128,8 @@ class jAuthentication {
      * It returns an url where to redirect to finish the sign up
      * @return string url
      */
-    public static function signout() {
+    public static function signout()
+    {
         $url = '';
         $idpId = self::session()->getIdentityProviderId();
         if ($idpId) {
@@ -112,7 +144,4 @@ class jAuthentication {
         self::session()->unsetSessionUser();
         return $url;
     }
-
-
-
 }

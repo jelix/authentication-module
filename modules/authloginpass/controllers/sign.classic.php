@@ -1,13 +1,16 @@
 <?php
+
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2022 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
+
 use \Jelix\Authentication\Core\Session;
 
-class signCtrl extends jController {
+class signCtrl extends jController
+{
 
     public $sensitiveParameters = array('password');
 
@@ -44,25 +47,26 @@ class signCtrl extends jController {
 
         /** @var \loginpassIdentityProvider */
         $idp = jAuthentication::manager()->getIdpById('loginpass');
-        
+
         /** @var \Jelix\Authentication\LoginPass\Manager */
         $lpManager = $idp->getManager();
 
-        if ($this->request->isPostMethod() &&
+        if (
+            $this->request->isPostMethod() &&
             $user = $lpManager->verifyPassword($this->param('login'), $this->param('password'))
         ) {
-
-            $sessionOk = jAuthentication::session()->setSessionUser($user, $idp);
-            if ($sessionOk) {
-                $rep->url = $this->param('urlback');
-                if ($rep->url == '') {
-                    $rep->url = $lpManager->getUrlAfterLogin();
-                }
-                if ($rep->url == '') {
-                    $rep->url = '/';
-                }
-                return $rep;
+            $urlBack = $this->param('urlback');
+            if ($urlBack == '') {
+                $urlBack = $lpManager->getUrlAfterLogin();
             }
+            if ($urlBack == '') {
+                $urlBack = jApp::urlBasePath();
+            }
+
+            $workflow = jAuthentication::startAuthenticationWorkflow($user, $idp);
+            $workflow->setFinalUrl($urlBack);
+            $rep->url = $workflow->getAuthenticationNextStepUrl();
+            return $rep;
         }
 
         $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
@@ -70,6 +74,4 @@ class signCtrl extends jController {
 
         return $rep;
     }
-
 }
-

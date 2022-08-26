@@ -1,16 +1,18 @@
 <?php
+
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2022 Laurent Jouanneau
  * @link     http://jelix.org
- * @licence MIT
+ * @license MIT
  */
 
 use Jelix\Authentication\Core\AuthSession\AuthSessionHandlerInterface;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\Workflow;
 
-
-class varAuthSessionHandler implements AuthSessionHandlerInterface {
+class varAuthSessionHandler implements AuthSessionHandlerInterface
+{
 
     /**
      * @var AuthUser|null
@@ -23,6 +25,11 @@ class varAuthSessionHandler implements AuthSessionHandlerInterface {
     protected $identProviderId = null;
 
     /**
+     * @var Workflow
+     */
+    protected $workflow;
+
+    /**
      * @param AuthUser $user
      * @param string $IPid
      */
@@ -30,6 +37,7 @@ class varAuthSessionHandler implements AuthSessionHandlerInterface {
     {
         $this->user = $user;
         $this->identProviderId = $IdpId;
+        $this->workflow = null;
     }
 
     public function unsetSessionUser()
@@ -55,5 +63,19 @@ class varAuthSessionHandler implements AuthSessionHandlerInterface {
     {
         return $this->identProviderId;
     }
-}
 
+    public function setWorkflow(Workflow $workflow)
+    {
+        $this->workflow = $workflow;
+    }
+
+    public function unsetWorkflow()
+    {
+        $this->workflow = null;
+    }
+
+    public function getWorkflow()
+    {
+        return $this->workflow;
+    }
+}
