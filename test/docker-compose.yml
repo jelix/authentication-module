@@ -18,7 +18,7 @@ services:
     networks:
       default:
         aliases:
-           - ldap.jelix
+          - ldap.jelix
   php:
     build:
       context: ./docker-conf/phpfpm
