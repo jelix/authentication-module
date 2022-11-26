@@ -4,7 +4,7 @@
         <version>0.1</version>
     </info>
     <dependencies>
-        <jelix minversion="1.6.24" maxversion="1.7.*"/>
+        <jelix minversion="1.8.0-alpha.2" maxversion="1.8.*"/>
     </dependencies>
     <autoload>
         <namespacePathMap name="TestAuth\" dir="lib/" />
