@@ -23,6 +23,11 @@ class AuthUser
 
     protected $attributes = array();
 
+    /**
+     * @var UserAccountInterface
+     */
+    protected $account;
+
     const ATTR_LOGIN = 'login';
 
     const ATTR_NAME = 'username';
@@ -87,5 +92,19 @@ class AuthUser
         if (!in_array($name, array(self::ATTR_LOGIN, self::ATTR_EMAIL))) {
             $this->attributes[$name] = $value;
         }
+    }
+
+
+    public function setAccount(UserAccountInterface $account)
+    {
+        $this->account = $account;
+    }
+
+    /**
+     * @return UserAccountInterface
+     */
+    public function getAccount()
+    {
+        return $this->account;
     }
 }

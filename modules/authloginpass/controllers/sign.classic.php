@@ -39,16 +39,14 @@ class signCtrl extends jController
     /**
      * Check credentials given into the form of the loginform zone
      *
-     * @return jResponseRedirect
+     * @return jResponseRedirectUrl
      */
     public function checkCredentials()
     {
-        $rep = $this->getResponse('redirectUrl');
-
-        /** @var \loginpassIdentityProvider */
+        /** @var $idp \loginpassIdentityProvider */
         $idp = jAuthentication::manager()->getIdpById('loginpass');
 
-        /** @var \Jelix\Authentication\LoginPass\Manager */
+        /** @var $lpManager \Jelix\Authentication\LoginPass\Manager */
         $lpManager = $idp->getManager();
 
         if (
@@ -65,13 +63,11 @@ class signCtrl extends jController
 
             $workflow = jAuthentication::startAuthenticationWorkflow($user, $idp);
             $workflow->setFinalUrl($urlBack);
-            $rep->url = $workflow->getAuthenticationNextStepUrl();
-            return $rep;
+            return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
         }
 
         $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
-        $rep->url = jUrl::get('authcore~sign:in', $params);
 
-        return $rep;
+        return $this->redirectToUrl(jUrl::get('authcore~sign:in', $params));
     }
 }

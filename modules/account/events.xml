@@ -2,5 +2,6 @@
    <listener name="createAccount">
        <event name="AuthenticationUserCreation"/>
        <event name="AuthenticationLogin"/>
+       <event name="AuthenticationCanUseApp"/>
    </listener>
 </events>

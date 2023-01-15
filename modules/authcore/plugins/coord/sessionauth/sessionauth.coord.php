@@ -2,7 +2,7 @@
 
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019-2022 Laurent Jouanneau
+ * @copyright  2019-2023 Laurent Jouanneau
  * @licence   MIT
  */
 
@@ -56,8 +56,10 @@ class sessionauthCoordPlugin implements jICoordPlugin
                 }
             } else {
 
-                // the user is not authenticated, check with all identity provider
+                // The user is not authenticated, check with all identity provider
+                // because some of them may support stateless authentication.
                 foreach (jAuthentication::manager()->getIdpList() as $authenticator) {
+                    // we may have here a \jHttp401UnauthorizedException
                     $selector = $authenticator->checkSessionValidity(
                         $request,
                         null,
@@ -105,10 +107,7 @@ class sessionauthCoordPlugin implements jICoordPlugin
             // if needed, force to use the action of the current step of the workflow
             $step = $workflow->getCurrentStep();
             if ($step) {
-                $stepSelector = $step->getAction();
-                if ($stepSelector != jApp::coord()->action) {
-                    $selector = $stepSelector;
-                }
+                $selector = $step->getExpectedAction(jApp::coord()->action);
             } else {
                 // no more step, so the workflow has ended
                 if ($workflow->isFinished()) {

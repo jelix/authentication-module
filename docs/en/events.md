@@ -78,7 +78,14 @@ Parameters:
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
 - `identProvider`: the `loginpass` authentication provider object
 
+`AuthWorkflowStep`
+------------------
 
+When the user starts the authentication, this event is emitted at each step of the
+authentication. The step name is indicated into a `stepName` parameter, and the 
+class of the event is `Jelix\Authentication\Core\Workflow\Event\WorkflowStepEvent`.
+
+For the step `get_account`, the class is `Jelix\Authentication\Core\Workflow\Event\GetAccountEvent`.
 
 
 

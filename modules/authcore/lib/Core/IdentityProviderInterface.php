@@ -50,11 +50,11 @@ interface IdentityProviderInterface {
     public function getHtmlLoginForm(\jRequest $request);
 
     /**
-     * verify if the session is valid
+     * Verify if the session is valid.
      *
      * The identity provider should indicate by the returned value,
      * if the target action can be executed (the method must return null), or
-     * if an other action should be executed (the method must return a jSelectorAct object),
+     * if another action should be executed (the method must return a jSelectorAct object),
      * in case of a lack of authentication.
      *
      * The identity provider can also throw a jHttp401UnauthorizedException exception

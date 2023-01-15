@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__.'/../testapp/application.init.php');
+require_once(__DIR__.'/units/lib/EventDispatcherForTests.php');
 
 jApp::setEnv('jelixtests');
 jApp::loadConfig('index/config.ini.php');

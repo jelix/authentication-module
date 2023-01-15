@@ -2,8 +2,8 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
- * @link     http://jelix.org
+ * @copyright 2019-2023 Laurent Jouanneau
+ * @link     https://jelix.org
  * @licence MIT
  */
 
@@ -16,8 +16,6 @@ class alwaysyesCtrl extends jController
      */
     function signin()
     {
-        $rep = $this->getResponse('redirect');
-
         $user = new AuthUser(
             'testuser',
             array(
@@ -26,7 +24,10 @@ class alwaysyesCtrl extends jController
         );
         $idp = jAuthentication::manager()->getIdpById('alwaysyes');
         jAuthentication::session()->setSessionUser($user, $idp);
-        $rep->action = 'test~default:index';
-        return $rep;
+
+        $workflow = jAuthentication::startAuthenticationWorkflow($user, $idp);
+        $workflow->setFinalUrl(jUrl::get('test~default:index'));
+
+        return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
     }
 }

@@ -10,7 +10,7 @@
 namespace Jelix\Authentication\Core\AuthSession;
 
 use Jelix\Authentication\Core\IdentityProviderInterface;
-use Jelix\Authentication\Core\Workflow;
+use Jelix\Authentication\Core\Workflow\WorkflowState;
 
 /**
  * Manage the authenticated session
@@ -83,19 +83,25 @@ class AuthSession
         return $this->handler->getIdentityProviderId();
     }
 
-
-    public function setWorkflow(Workflow $workflow)
+    /**
+     * @param WorkflowState $workflow
+     * @return void
+     */
+    public function setWorkflowState(WorkflowState $workflow)
     {
-        $this->handler->setWorkflow($workflow);
+        $this->handler->setWorkflowState($workflow);
     }
 
-    public function unsetWorkflow()
+    public function unsetWorkflowState()
     {
-        $this->handler->unsetWorkflow();
+        $this->handler->unsetWorkflowState();
     }
 
-    public function getWorkflow()
+    /**
+     * @return WorkflowState
+     */
+    public function getWorkflowState()
     {
-        return $this->handler->getWorkflow();
+        return $this->handler->getWorkflowState();
     }
 }

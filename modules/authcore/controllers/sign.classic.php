@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019-2022 Laurent Jouanneau
+ * @copyright 2019-2023 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
@@ -43,8 +43,6 @@ class signCtrl extends jController
 
     public function out()
     {
-        $rep = $this->getResponse('redirectUrl');
-        $rep->url = jAuthentication::signout();
-        return $rep;
+        return $this->redirectToUrl(jAuthentication::signout());
     }
 }

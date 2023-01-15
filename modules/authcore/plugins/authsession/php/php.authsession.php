@@ -2,14 +2,14 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019-2022 Laurent Jouanneau
- * @link     http://jelix.org
+ * @copyright 2019-2023 Laurent Jouanneau
+ * @link     https://jelix.org
  * @license MIT
  */
 
 use Jelix\Authentication\Core\AuthSession\AuthSessionHandlerInterface;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
-use Jelix\Authentication\Core\Workflow;
+use Jelix\Authentication\Core\Workflow\WorkflowState;
 
 class phpAuthSessionHandler implements AuthSessionHandlerInterface
 {
@@ -59,19 +59,19 @@ class phpAuthSessionHandler implements AuthSessionHandlerInterface
         return null;
     }
 
-    public function setWorkflow(Workflow $workflow)
+    public function setWorkflowState(WorkflowState $workflow)
     {
         $_SESSION[self::SESSION_NAME]['workflow'] = $workflow;
     }
 
-    public function unsetWorkflow()
+    public function unsetWorkflowState()
     {
         if (isset($_SESSION[self::SESSION_NAME]['workflow'])) {
             unset($_SESSION[self::SESSION_NAME]['workflow']);
         }
     }
 
-    public function getWorkflow()
+    public function getWorkflowState()
     {
         if (isset($_SESSION[self::SESSION_NAME]['workflow'])) {
             return $_SESSION[self::SESSION_NAME]['workflow'];

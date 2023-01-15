@@ -2,8 +2,8 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019-2022 Laurent Jouanneau
- * @link     http://jelix.org
+ * @copyright 2019-2023 Laurent Jouanneau
+ * @link     https://jelix.org
  * @licence MIT
  */
 
@@ -83,25 +83,86 @@ class jAuthentication
         return self::session()->hasSessionUser();
     }
 
+    /**
+     * @param Workflow\WorkflowState $workflowState
+     * @return Workflow\Workflow
+     */
+    protected static function getWorkflowInstance(Workflow\WorkflowState $workflowState)
+    {
+        $workflow = new Workflow\Workflow($workflowState);
+        $evDispatcher = \jApp::services()->eventDispatcher();
+        $steps = array (
+            new Workflow\GetAccountStep($evDispatcher, $workflowState),
+            new Workflow\CreateAccountStep($evDispatcher, $workflowState),
+            new Workflow\SecondFactorAuthStep($evDispatcher, $workflowState),
+            new Workflow\AccessValidationStep($evDispatcher, $workflowState),
+            new Workflow\AuthDoneStep($evDispatcher, $workflowState),
+            new Workflow\AuthFailStep($evDispatcher, $workflowState)
+        );
+
+        $transitions = array(
+            'account_found' => array(
+                'from' => 'get_account',
+                'to' => 'second_factor'
+            ),
+            'account_not_found' => array(
+                'from' => 'get_account',
+                'to' => 'create_account'
+            ),
+            'account_not_supported' => array(
+                'from' => 'get_account',
+                'to' => 'access_validation'
+            ),
+            'account_created' => array(
+                'from' => 'create_account',
+                'to' => 'access_validation'
+            ),
+            'second_factor_success' => array(
+                'from' => 'second_factor',
+                'to' => 'access_validation'
+            ),
+            'validation' => array(
+                'from' => 'access_validation',
+                'to' => 'auth_done'
+            ),
+            'fail' => array(
+                'from' => ['get_account', 'create_account', 'second_factor', 'access_validation', ],
+                'to' => 'auth_fail'
+            )
+        );
+
+        $workflow->setup($steps, $transitions, 'get_account');
+        return $workflow;
+    }
+
     public static function startAuthenticationWorkflow(AuthUser $user, IdentityProviderInterface $idp)
     {
-        // FIXME : generate the step list corresponding to the idp
-        $workflow = new Workflow($user, $idp->getId(), []);
-        self::session()->setWorkflow($workflow);
+        $workflowState = new Workflow\WorkflowState($user, $idp->getId());
+
+        self::session()->setWorkflowState($workflowState);
+
+        $workflow = self::getWorkflowInstance($workflowState);
+        $workflow->apply('start');
         return $workflow;
     }
 
     /**
-     * @return Workflow
+     * @return Workflow\Workflow
      */
     public static function getAuthenticationWorkflow()
     {
-        return self::session()->getWorkflow();
+
+        $workflowState = self::session()->getWorkflowState();
+        if (!$workflowState) {
+            return null;
+        }
+
+        return self::getWorkflowInstance($workflowState);
     }
 
     public static function stopAuthenticationWorkflow()
     {
-        self::session()->unsetWorkflow();
+        self::session()->unsetWorkflowState();
     }
 
     public static function getCurrentUser()
