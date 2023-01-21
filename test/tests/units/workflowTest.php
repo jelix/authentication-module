@@ -14,8 +14,8 @@ class workflowTest extends TestCase
         $evDispatcher = new EventDispatcherForTests();
 
         $steps = array (
-           new Workflow\GenericStep($evDispatcher, $wkfState, 'first'),
-           new Workflow\GenericStep($evDispatcher, $wkfState, 'second'),
+           new Workflow\Step\GenericStep($evDispatcher, $wkfState, 'first'),
+           new Workflow\Step\GenericStep($evDispatcher, $wkfState, 'second'),
         );
 
         $transitions = array(
@@ -44,8 +44,8 @@ class workflowTest extends TestCase
         $evDispatcher = new EventDispatcherForTests();
 
         $steps = array (
-           new Workflow\GenericStep($evDispatcher, $wkfState, 'first', 'transit1'),
-           new Workflow\GenericStep($evDispatcher, $wkfState, 'second'),
+           new Workflow\Step\GenericStep($evDispatcher, $wkfState, 'first', 'transit1'),
+           new Workflow\Step\GenericStep($evDispatcher, $wkfState, 'second'),
         );
 
         $transitions = array(
@@ -75,8 +75,8 @@ class workflowTest extends TestCase
         $evDispatcher = new EventDispatcherForTests();
 
         $steps = array (
-           new Workflow\GenericStep($evDispatcher, $wkfState, 'hasoneaction', 'transit1'),
-           new Workflow\GenericStep($evDispatcher, $wkfState, 'second'),
+           new Workflow\Step\GenericStep($evDispatcher, $wkfState, 'hasoneaction', 'transit1'),
+           new Workflow\Step\GenericStep($evDispatcher, $wkfState, 'second'),
         );
 
         $transitions = array(

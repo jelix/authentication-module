@@ -7,10 +7,13 @@
  * @license  MIT
  */
 
-namespace Jelix\Authentication\Core\Workflow;
+namespace Jelix\Authentication\Core\Workflow\Step;
 
 
 use Jelix\Authentication\Core\Workflow\Event\WorkflowStepEvent;
+use Jelix\Authentication\Core\Workflow\StepInterface;
+use Jelix\Authentication\Core\Workflow\WorkflowAction;
+use Jelix\Authentication\Core\Workflow\WorkflowState;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**

@@ -92,12 +92,12 @@ class jAuthentication
         $workflow = new Workflow\Workflow($workflowState);
         $evDispatcher = \jApp::services()->eventDispatcher();
         $steps = array (
-            new Workflow\GetAccountStep($evDispatcher, $workflowState),
-            new Workflow\CreateAccountStep($evDispatcher, $workflowState),
-            new Workflow\SecondFactorAuthStep($evDispatcher, $workflowState),
-            new Workflow\AccessValidationStep($evDispatcher, $workflowState),
-            new Workflow\AuthDoneStep($evDispatcher, $workflowState),
-            new Workflow\AuthFailStep($evDispatcher, $workflowState)
+            new Workflow\Step\GetAccountStep($evDispatcher, $workflowState),
+            new Workflow\Step\CreateAccountStep($evDispatcher, $workflowState),
+            new Workflow\Step\SecondFactorAuthStep($evDispatcher, $workflowState),
+            new Workflow\Step\AccessValidationStep($evDispatcher, $workflowState),
+            new Workflow\Step\AuthDoneStep($evDispatcher, $workflowState),
+            new Workflow\Step\AuthFailStep($evDispatcher, $workflowState)
         );
 
         $transitions = array(

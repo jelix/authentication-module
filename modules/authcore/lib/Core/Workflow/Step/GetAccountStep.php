@@ -7,10 +7,11 @@
  * @license  MIT
  */
 
-namespace Jelix\Authentication\Core\Workflow;
+namespace Jelix\Authentication\Core\Workflow\Step;
 
 
 use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;
+use Jelix\Authentication\Core\Workflow\WorkflowState;
 
 class GetAccountStep extends AbstractStep
 {

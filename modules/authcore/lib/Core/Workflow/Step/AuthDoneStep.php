@@ -7,12 +7,14 @@
  * @license  MIT
  */
 
-namespace Jelix\Authentication\Core\Workflow;
+namespace Jelix\Authentication\Core\Workflow\Step;
 
+use Jelix\Authentication\Core\Workflow\WorkflowState;
 
-class AuthFailStep extends AbstractStep
+class AuthDoneStep extends AbstractStep
 {
-    protected $name = 'auth_fail';
+    protected $name = 'auth_done';
+
 
     /**
      * @return void
@@ -21,6 +23,7 @@ class AuthFailStep extends AbstractStep
     {
 
     }
+
 
     public function getNextActionUrl()
     {

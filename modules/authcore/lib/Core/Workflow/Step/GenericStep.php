@@ -7,8 +7,9 @@
  * @license  MIT
  */
 
-namespace Jelix\Authentication\Core\Workflow;
+namespace Jelix\Authentication\Core\Workflow\Step;
 
+use Jelix\Authentication\Core\Workflow\WorkflowState;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class GenericStep extends AbstractStep

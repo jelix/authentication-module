@@ -7,8 +7,7 @@
  * @license  MIT
  */
 
-namespace Jelix\Authentication\Core\Workflow;
-
+namespace Jelix\Authentication\Core\Workflow\Step;
 
 class SecondFactorAuthStep extends AbstractStep
 {
