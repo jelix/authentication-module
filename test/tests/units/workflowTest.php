@@ -63,8 +63,7 @@ class workflowTest extends TestCase
         $url = $workflow->getNextAuthenticationUrl();
         $this->assertEquals('http://localhost', $url);
         $step = $workflow->getCurrentStep();
-        $this->assertNotNull($step);
-        $this->assertEquals('second', $step->getName());
+        $this->assertNull($step);
     }
 
     function testStepOneAction()
@@ -97,8 +96,7 @@ class workflowTest extends TestCase
         $url = $workflow->getNextAuthenticationUrl();
         $this->assertEquals('http://localhost', $url);
         $step = $workflow->getCurrentStep();
-        $this->assertNotNull($step);
-        $this->assertEquals('second', $step->getName());
+        $this->assertNull($step);
     }
 
 }

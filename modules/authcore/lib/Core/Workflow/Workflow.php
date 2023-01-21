@@ -140,17 +140,28 @@ class Workflow
     /**
      * Set the status workflow as canceled. 
      * 
-     * No more steps will be executed, and the workflow will end at the cancel url.
+     * No more steps will be executed, and the workflow will end.
      * There will not be authenticated user at the current session
      */
     public function cancel()
     {
-        $this->state->setPriorityTransition('fail');
+        if (!$this->apply('fail')) {
+            // no fail transition, or current step do not apply fail, we
+            // force to terminate.
+            $this->state->setCurrentStepName('');
+            $this->state->setEndStatus($this->state::END_STATUS_FAIL);
+        }
     }
 
     public function isFinished()
     {
-        return $this->getCurrentStep() === null;
+        return ($this->state->getEndStatus() !== $this->state::END_STATUS_NONE)
+            || $this->state->getCurrentStepName() == '';
+    }
+
+    public function isSuccess()
+    {
+        return ($this->state->getEndStatus() === $this->state::END_STATUS_SUCCESS);
     }
 
     public function setFinalUrl(string $url)
@@ -175,12 +186,8 @@ class Workflow
 
             // No url means that the step does not require (anymore) a user action
 
-            // apply the priority transition if set (probably the 'fail' transition),
-            // instead of the transition given by the step.
-            $transition = $this->state->getPriorityTransition();
-            if ($transition == '') {
-                $transition = $step->getTransition();
-            }
+            // Retrieve the transition that the step indicate
+            $transition = $step->getTransition();
 
             if ($transition == '') {
                 // no more possible transition, so no more step

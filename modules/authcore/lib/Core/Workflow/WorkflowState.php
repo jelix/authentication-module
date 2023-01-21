@@ -27,13 +27,6 @@ class WorkflowState
     protected $idpId;
 
     /**
-     * if not empty, the name of the transition into priorityTransition will
-     * be the next transition, else the next transition
-     * will be the transition indicated by the step
-     */
-    protected $priorityTransition = '';
-
-    /**
      * @var string
      */
     protected $finalUrl;
@@ -52,6 +45,17 @@ class WorkflowState
      */
     protected $currentAction;
 
+    const END_STATUS_NONE = 0;
+
+    const END_STATUS_SUCCESS = 1;
+
+    const END_STATUS_FAIL = -1;
+
+    /**
+     * @var int one of END_STATUS_* const.
+     */
+    protected $endStatus = 0;
+
     public function __construct(AuthUser $temporaryUser, $idpId)
     {
         $this->user = $temporaryUser;
@@ -69,16 +73,6 @@ class WorkflowState
     public function getIdpId()
     {
         return $this->idpId;
-    }
-
-    public function getPriorityTransition()
-    {
-        return $this->priorityTransition;
-    }
-
-    public function setPriorityTransition(string $transition)
-    {
-        $this->priorityTransition = $transition;
     }
 
     public function setFinalUrl(string $url)
@@ -105,6 +99,11 @@ class WorkflowState
     {
         $this->actions = $actions;
         $this->currentAction = null;
+    }
+
+    public function setNextAction(WorkflowAction $action)
+    {
+        array_unshift($this->actions, $action);
     }
 
     /**
@@ -163,4 +162,21 @@ class WorkflowState
     {
         return $this->currentAction;
     }
+
+    /**
+     * Should be called by the latest step of the workflow,
+     * to indicate a success or a fail
+     * @param int $endStatus one of END_STATUS_* const
+     * @return void
+     */
+    public function setEndStatus($endStatus)
+    {
+        $this->endStatus = $endStatus;
+    }
+
+    public function getEndStatus()
+    {
+        return $this->endStatus;
+    }
+
 }

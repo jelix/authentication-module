@@ -16,6 +16,13 @@ interface AuthSessionHandlerInterface
 
     public function setSessionUser(AuthUser $user, $IPid);
 
+    /**
+     * No more user registered into the session
+     *
+     * The workflow state and the idp ID are also deleted from the session
+     *
+     * @return void
+     */
     public function unsetSessionUser();
 
     public function hasSessionUser();

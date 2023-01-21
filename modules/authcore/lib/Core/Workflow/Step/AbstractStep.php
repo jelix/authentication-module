@@ -62,6 +62,11 @@ abstract class AbstractStep implements StepInterface
         $this->workflowState->setActions($event->getActions());
     }
 
+    public function setNextAction(WorkflowAction $action)
+    {
+        $this->workflowState->setNextAction($action);
+    }
+
     /**
      * Give the URL of a controller that need a user action for the step
      * 

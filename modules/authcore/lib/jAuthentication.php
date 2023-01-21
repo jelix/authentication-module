@@ -32,6 +32,11 @@ class jAuthentication
     protected static $session = null;
 
     /**
+     * @var Workflow\StandardWorkflow
+     */
+    protected static $workflow = null;
+
+    /**
      * @return AuthenticatorManager
      */
     public static function manager()
@@ -62,7 +67,7 @@ class jAuthentication
      */
     public static function session()
     {
-        if (self::$session === null) {
+        if (static::$session === null) {
             if (
                 isset(jApp::config()->authentication['sessionHandler']) &&
                 jApp::config()->authentication['sessionHandler'] != ''
@@ -71,11 +76,12 @@ class jAuthentication
             } else {
                 $sessHandName = 'php';
             }
-            /** @var \Jelix\Authentication\Core\AuthSession\AuthSessionHandlerInterface */
+            /** @var $sessionHandler \Jelix\Authentication\Core\AuthSession\AuthSessionHandlerInterface */
             $sessionHandler = \jApp::loadPlugin($sessHandName, 'authsession', '.authsession.php', $sessHandName . 'AuthSessionHandler', array());
-            self::$session = new Jelix\Authentication\Core\AuthSession\AuthSession($sessionHandler);
+            $evDispatcher = \jApp::services()->eventDispatcher();
+            static::$session = new AuthSession($sessionHandler, $evDispatcher);
         }
-        return self::$session;
+        return static::$session;
     }
 
     public static function isCurrentUserAuthenticated()
@@ -84,66 +90,25 @@ class jAuthentication
     }
 
     /**
-     * @param Workflow\WorkflowState $workflowState
-     * @return Workflow\Workflow
+     * @return Workflow\StandardWorkflow
      */
-    protected static function getWorkflowInstance(Workflow\WorkflowState $workflowState)
+    protected static function standardWorkflow()
     {
-        $workflow = new Workflow\Workflow($workflowState);
-        $evDispatcher = \jApp::services()->eventDispatcher();
-        $steps = array (
-            new Workflow\Step\GetAccountStep($evDispatcher, $workflowState),
-            new Workflow\Step\CreateAccountStep($evDispatcher, $workflowState),
-            new Workflow\Step\SecondFactorAuthStep($evDispatcher, $workflowState),
-            new Workflow\Step\AccessValidationStep($evDispatcher, $workflowState),
-            new Workflow\Step\AuthDoneStep($evDispatcher, $workflowState),
-            new Workflow\Step\AuthFailStep($evDispatcher, $workflowState)
-        );
-
-        $transitions = array(
-            'account_found' => array(
-                'from' => 'get_account',
-                'to' => 'second_factor'
-            ),
-            'account_not_found' => array(
-                'from' => 'get_account',
-                'to' => 'create_account'
-            ),
-            'account_not_supported' => array(
-                'from' => 'get_account',
-                'to' => 'access_validation'
-            ),
-            'account_created' => array(
-                'from' => 'create_account',
-                'to' => 'access_validation'
-            ),
-            'second_factor_success' => array(
-                'from' => 'second_factor',
-                'to' => 'access_validation'
-            ),
-            'validation' => array(
-                'from' => 'access_validation',
-                'to' => 'auth_done'
-            ),
-            'fail' => array(
-                'from' => ['get_account', 'create_account', 'second_factor', 'access_validation', ],
-                'to' => 'auth_fail'
-            )
-        );
-
-        $workflow->setup($steps, $transitions, 'get_account');
-        return $workflow;
+        if (!self::$workflow) {
+            self::$workflow = new Workflow\StandardWorkflow(
+                self::session(),
+                \jApp::services()->eventDispatcher()
+            );
+        }
+        return self::$workflow;
     }
+
 
     public static function startAuthenticationWorkflow(AuthUser $user, IdentityProviderInterface $idp)
     {
         $workflowState = new Workflow\WorkflowState($user, $idp->getId());
 
-        self::session()->setWorkflowState($workflowState);
-
-        $workflow = self::getWorkflowInstance($workflowState);
-        $workflow->apply('start');
-        return $workflow;
+        return self::standardWorkflow()->start($workflowState);
     }
 
     /**
@@ -151,18 +116,19 @@ class jAuthentication
      */
     public static function getAuthenticationWorkflow()
     {
-
-        $workflowState = self::session()->getWorkflowState();
-        if (!$workflowState) {
-            return null;
-        }
-
-        return self::getWorkflowInstance($workflowState);
+        return self::standardWorkflow()->getWorkflow();
     }
+
 
     public static function stopAuthenticationWorkflow()
     {
-        self::session()->unsetWorkflowState();
+        self::standardWorkflow()->stop();
+    }
+
+
+    public static function checkWorkflowAndAction(&$isLogonned, jSelectorAct $action)
+    {
+        return self::standardWorkflow()->checkWorkflowAndAction($isLogonned, $action, self::manager());
     }
 
     public static function getCurrentUser()

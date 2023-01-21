@@ -32,7 +32,7 @@ class sessionauthCoordPlugin implements jICoordPlugin
         /** @var jRequest $request */
         $request = jApp::coord()->request;
 
-        $selector = $this->checkWorkflow($isLogonned);
+        $selector = jAuthentication::checkWorkflowAndAction($isLogonned, jApp::coord()->action);
         if ($selector) {
             // the workflow force to go to a controller of a workflow step
             return $selector;
@@ -83,40 +83,6 @@ class sessionauthCoordPlugin implements jICoordPlugin
                 $selector = new jSelectorAct($action);
             } else {
                 throw $e;
-            }
-        }
-
-        return $selector;
-    }
-
-    protected function checkWorkflow(&$isLogonned)
-    {
-
-        $workflow = jAuthentication::getAuthenticationWorkflow();
-        if (!$workflow) {
-            return null;
-        }
-
-        $selector = null;
-        if ($isLogonned) {
-            // the user is authenticated, so we must destroy the authentication workflow,
-            // as it is not relevant anymore
-            jAuthentication::stopAuthenticationWorkflow();
-        } else {
-            // the user is not authenticated.
-            // if needed, force to use the action of the current step of the workflow
-            $step = $workflow->getCurrentStep();
-            if ($step) {
-                $selector = $step->getExpectedAction(jApp::coord()->action);
-            } else {
-                // no more step, so the workflow has ended
-                if ($workflow->isFinished()) {
-                    $isLogonned = jAuthentication::session()->setSessionUser(
-                        $workflow->getTemporaryUser(),
-                        jAuthentication::manager()->getIdpById($workflow->getIdpId())
-                    );
-                }
-                jAuthentication::stopAuthenticationWorkflow();
             }
         }
 

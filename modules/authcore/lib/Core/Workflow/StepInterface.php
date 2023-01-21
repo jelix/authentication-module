@@ -49,6 +49,15 @@ interface StepInterface
     public function getNextActionUrl();
 
     /**
+     * Give the url of the current web page to execute the step,
+     * when the steps has pages.
+     *
+     * @return string|null the url or null if there is no page to display
+     *                     for the step.
+     */
+    public function getCurrentActionUrl();
+
+    /**
      * @return mixed
      */
     public function getTransition();

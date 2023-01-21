@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019-2022 Laurent Jouanneau
+ * @copyright 2019-2023 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
@@ -11,6 +11,7 @@ namespace Jelix\Authentication\Core\AuthSession;
 
 use Jelix\Authentication\Core\IdentityProviderInterface;
 use Jelix\Authentication\Core\Workflow\WorkflowState;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Manage the authenticated session
@@ -24,9 +25,15 @@ class AuthSession
      */
     protected $handler;
 
-    public function __construct(AuthSessionHandlerInterface $handler)
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $evDispatcher;
+
+    public function __construct(AuthSessionHandlerInterface $handler, EventDispatcherInterface $evDispatcher)
     {
         $this->handler = $handler;
+        $this->evDispatcher = $evDispatcher;
     }
 
     /**
@@ -36,20 +43,22 @@ class AuthSession
      */
     public function setSessionUser(AuthUser $user, $idp)
     {
-        $event = \jEvent::notify('AuthenticationCanUseApp', array(
+        $event = new \jEvent('AuthenticationCanUseApp', array(
             'user' => $user,
             'identProvider' => $idp
         ));
+        $event = $this->evDispatcher->dispatch($event);
         if (false === $event->allResponsesByKeyAreTrue('canUseApp')) {
             return false;
         }
 
         $this->handler->setSessionUser($user, $idp->getId());
 
-        \jEvent::notify('AuthenticationLogin', array(
+        $event = new \jEvent('AuthenticationLogin', array(
             'user' => $user,
             'identProvider' => $idp
         ));
+        $this->evDispatcher->dispatch($event);
 
         return true;
     }
@@ -59,7 +68,10 @@ class AuthSession
         if ($this->handler->hasSessionUser()) {
             $user = $this->handler->getSessionUser();
             $this->handler->unsetSessionUser();
-            \jEvent::notify('AuthenticationLogout', array('user' => $user));
+            $event = new \jEvent('AuthenticationLogout', array(
+                'user' => $user,
+            ));
+            $this->evDispatcher->dispatch($event);
         } else {
             $this->handler->unsetSessionUser();
         }

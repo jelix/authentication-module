@@ -20,7 +20,7 @@ class AuthFailStep extends AbstractStep
      */
     public function startStep($transition, WorkflowState $workflowState)
     {
-
+        $workflowState->setEndStatus($workflowState::END_STATUS_FAIL);
     }
 
     public function getNextActionUrl()
