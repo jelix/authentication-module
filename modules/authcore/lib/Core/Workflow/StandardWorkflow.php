@@ -113,7 +113,7 @@ class StandardWorkflow
     }
 
     /**
-     * @return Workflow
+     * @return Workflow|null
      */
     public function getWorkflow()
     {
@@ -125,7 +125,13 @@ class StandardWorkflow
         return $this->getWorkflowInstance($workflowState);
     }
 
-    public function checkWorkflowAndAction(&$isLogonned, \jSelectorAct $action, AuthenticatorManager $authManager)
+    /**
+     * @param $isLogonned
+     * @param \jIActionSelector $action
+     * @param AuthenticatorManager $authManager
+     * @return \jIActionSelector|null
+     */
+    public function checkWorkflowAndAction(&$isLogonned, \jIActionSelector $action, AuthenticatorManager $authManager)
     {
         $workflow = $this->getWorkflow();
         if (!$workflow) {

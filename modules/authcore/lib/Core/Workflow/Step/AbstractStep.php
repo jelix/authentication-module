@@ -105,10 +105,10 @@ abstract class AbstractStep implements StepInterface
      * It should check that the given action is an action allowed by the step.
      * If it is not the case, it should return null
      *
-     * @param \jSelectorActFast $currentRequestAction the action asked to be executed
-     * @return \jSelectorActFast|null the action to execute
+     * @param \jIActionSelector $currentRequestAction the action asked to be executed
+     * @return \jIActionSelector|null the action to execute
      */
-    public function getExpectedAction(\jSelectorActFast $currentRequestAction)
+    public function getExpectedAction(\jIActionSelector $currentRequestAction)
     {
        return $this->workflowState->getExpectedAction($currentRequestAction);
     }

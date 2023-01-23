@@ -20,7 +20,7 @@ class sessionauthCoordPlugin implements jICoordPlugin
 
     /**
      * @param    array  $params   plugin parameters for the current action
-     * @return null|jSelectorAct  if action should change
+     * @return null|jIActionSelector  if action should change
      */
     public function beforeAction($params)
     {

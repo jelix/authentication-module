@@ -63,7 +63,7 @@ interface IdentityProviderInterface {
      * @param \jRequest $request
      * @param AuthSession\AuthUser|null $authUser the user identified into the session. null if there is no user
      * @param boolean $authRequired  true when the current action needs an authenticated user
-     * @return \jSelectorAct|null return an action to redirect to, without error
+     * @return \jIActionSelector|null return an action to redirect to, without error
      * @throws \jHttp401UnauthorizedException
      */
     public function checkSessionValidity ($request, $authUser, $authRequired);

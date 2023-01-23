@@ -63,9 +63,9 @@ interface StepInterface
     public function getTransition();
 
     /**
-     * @param \jSelectorActFast $currentRequestAction
+     * @param \jIActionSelector $currentRequestAction
      * @return mixed
      */
-    public function getExpectedAction(\jSelectorActFast $currentRequestAction);
+    public function getExpectedAction(\jIActionSelector $currentRequestAction);
 
 }

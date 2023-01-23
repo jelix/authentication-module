@@ -21,7 +21,7 @@ class WorkflowAction
     protected $startUrl;
 
     /**
-     * @var \jSelectorAct[]
+     * @var \jIActionSelector[]
      */
     protected $possibleRequestActions = array();
 
@@ -32,7 +32,7 @@ class WorkflowAction
 
     /**
      * @param string $startUrl the URL of a controller to which the user will be redirected
-     * @param \jSelectorAct[] $possibleRequestActions list of possible actions that are executed after the startUrl
+     * @param \jIActionSelector[] $possibleRequestActions list of possible actions that are executed after the startUrl
      * @param int $priority  the priority of the action, compare to other WorkflowAction objects of a step
      */
     public function __construct($startUrl, $possibleRequestActions, $priority = 99)
@@ -61,7 +61,7 @@ class WorkflowAction
      * 
      * @return bool
      */
-    public function isValidAction(\jSelectorActFast $possibleRequestAction)
+    public function isValidAction(\jIActionSelector $possibleRequestAction)
     {
         foreach($this->possibleRequestActions as $pra) {
             if ($pra->isEqualTo($possibleRequestAction)) {
@@ -72,7 +72,7 @@ class WorkflowAction
     }
 
     /**
-     * @return \jSelectorAct|null
+     * @return \jIActionSelector|null
      */
     /*public function getAction()
     {

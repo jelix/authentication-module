@@ -126,7 +126,7 @@ class jAuthentication
     }
 
 
-    public static function checkWorkflowAndAction(&$isLogonned, jSelectorAct $action)
+    public static function checkWorkflowAndAction(&$isLogonned, jIActionSelector $action)
     {
         return self::standardWorkflow()->checkWorkflowAndAction($isLogonned, $action, self::manager());
     }
