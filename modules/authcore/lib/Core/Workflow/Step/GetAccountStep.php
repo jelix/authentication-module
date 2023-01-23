@@ -26,7 +26,7 @@ class GetAccountStep extends AbstractStep
     public function startStep($transition, WorkflowState $workflowState)
     {
         $event = new GetAccountEvent();
-        $event = $this->eventDispatcher->dispatch($event);
+        $this->eventDispatcher->dispatch($event);
 
         if ($event->hasAccountResponse()) {
             $id = $event->getAccountId();
@@ -35,6 +35,9 @@ class GetAccountStep extends AbstractStep
             }
             else {
                 $this->transition = 'account_found';
+                $workflowState->getTemporaryUser()->setAccount(
+                    $event->getAccount()
+                );
             }
         }
         else {

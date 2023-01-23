@@ -72,6 +72,7 @@ class workflowTest extends TestCase
         $wkfState = new Workflow\WorkflowState($user, 'loginpass');
         $workflow = new Workflow\Workflow($wkfState);
         $evDispatcher = new EventDispatcherForTests();
+        $evDispatcher->addWorkflowActionForStep('hasoneaction', new Workflow\WorkflowAction('url1', []));
 
         $steps = array (
            new Workflow\Step\GenericStep($evDispatcher, $wkfState, 'hasoneaction', 'transit1'),
@@ -98,5 +99,4 @@ class workflowTest extends TestCase
         $step = $workflow->getCurrentStep();
         $this->assertNull($step);
     }
-
 }

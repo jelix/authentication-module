@@ -78,7 +78,7 @@ class Workflow
     public function isCurrentStep($stepName)
     {
         $current = $this->state->getCurrentStepName();
-        if (!$current || $current != 'mystepname') {
+        if (!$current || $current != $stepName) {
             return false;
         }
         return true;

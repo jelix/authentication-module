@@ -10,9 +10,13 @@
 namespace Jelix\Authentication\Core\Workflow\Event;
 
 
+use Jelix\Authentication\Core\AuthSession\UserAccountInterface;
+
 class GetAccountEvent extends WorkflowStepEvent
 {
-
+    /**
+     * @var UserAccountInterface
+     */
     protected $account = null;
 
     public function __construct()
@@ -24,12 +28,12 @@ class GetAccountEvent extends WorkflowStepEvent
      * Should be called by listeners which found an account corresponding to the authenticated user
      *
      * @param string $accountId
-     * @param object $account
+     * @param UserAccountInterface $account
      * @return void
      */
-    public function setAccount(string $accountId, object $account)
+    public function setAccount(UserAccountInterface $account)
     {
-        $this->add(['id' => $accountId]);
+        $this->add(['id' => $account->getAccountId()]);
         $this->account = $account;
     }
 
@@ -45,11 +49,17 @@ class GetAccountEvent extends WorkflowStepEvent
         $this->account = null;
     }
 
+    /**
+     * @return bool
+     */
     public function hasAccountResponse()
     {
        return ($this->getResponseByKey('id') !== null);
     }
 
+    /**
+     * @return string|null
+     */
     public function getAccountId()
     {
         $idList = $this->getResponseByKey('id');
@@ -59,6 +69,9 @@ class GetAccountEvent extends WorkflowStepEvent
         return null;
     }
 
+    /**
+     * @return UserAccountInterface|null
+     */
     public function getAccount()
     {
         return $this->account;

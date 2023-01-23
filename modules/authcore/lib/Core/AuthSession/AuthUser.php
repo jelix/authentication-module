@@ -18,7 +18,9 @@ namespace Jelix\Authentication\Core\AuthSession;
  */
 class AuthUser
 {
-
+    /**
+     * @var string the user id
+     */
     protected $userId;
 
     protected $attributes = array();
@@ -52,10 +54,16 @@ class AuthUser
         $this->userId = $userId;
     }
 
+    /**
+     * @return string
+     */
     function getUserId() {
         return $this->userId;
     }
 
+    /**
+     * @return string
+     */
     function getName() {
         if (isset($this->attributes[self::ATTR_NAME]) && $this->attributes[self::ATTR_NAME] !== '') {
             return $this->attributes[self::ATTR_NAME];
@@ -63,6 +71,9 @@ class AuthUser
         return $this->getLogin();
     }
 
+    /**
+     * @return string
+     */
     function getEmail() {
         if (isset($this->attributes[self::ATTR_EMAIL]) && $this->attributes[self::ATTR_EMAIL] !== '') {
             return $this->attributes[self::ATTR_EMAIL];
@@ -70,6 +81,9 @@ class AuthUser
         return '';
     }
 
+    /**
+     * @return string
+     */
     function getLogin() {
         if (isset($this->attributes[self::ATTR_LOGIN]) && $this->attributes[self::ATTR_LOGIN] !== '') {
             return $this->attributes[self::ATTR_LOGIN];
@@ -93,7 +107,6 @@ class AuthUser
             $this->attributes[$name] = $value;
         }
     }
-
 
     public function setAccount(UserAccountInterface $account)
     {
