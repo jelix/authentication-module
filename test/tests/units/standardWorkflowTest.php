@@ -279,4 +279,107 @@ class standardWorkflowTest extends TestCase
         $this->assertEquals($this->workflowState::END_STATUS_SUCCESS, $this->workflowState->getEndStatus());
     }
 
+    public function testStepsWithMissingAccount()
+    {
+        $manager = new AuthenticatorManager([ new AuthManagerForTest([]) ]);
+
+        // --- setup step actions
+        $homeAction  = new \jSelectorDebugAction('classic', 'testapp', 'default:home');
+        $createAccountAction = new \jSelectorDebugAction('classic', 'testapp', 'account:create');
+        $sfAction = new \jSelectorDebugAction('classic', 'testapp', 'secondfactor:index');
+        $valAction = new \jSelectorDebugAction('classic', 'testapp', 'validation:index');
+        $this->evDispatcher->setListenerForStep(
+            'get_account',
+            function(Workflow\Event\GetAccountEvent $event){
+                $event->setUnknownAccount();
+        });
+        $this->evDispatcher->addWorkflowActionForStep(
+            'second_factor',
+            new Workflow\WorkflowAction('/url1', [
+                $sfAction
+            ])
+        );
+        $this->evDispatcher->addWorkflowActionForStep(
+            'create_account',
+            new Workflow\WorkflowAction('/url3', [
+                $createAccountAction
+            ])
+        );
+        $this->evDispatcher->addWorkflowActionForStep(
+            'access_validation',
+            new Workflow\WorkflowAction('/url2', [
+                $valAction
+            ])
+        );
+
+        // --- start action: the action that authenticated the user initialize the workflow
+        $workflow = $this->standardWorkflow->start($this->workflowState);
+        $workflow->setFinalUrl('http://localhost/home');
+
+        $givenAccount = $this->workflowState->getTemporaryUser()->getAccount();
+        $this->assertNull($givenAccount);
+
+
+        // --- then it redirects to the next url
+        $redirectUrl = $workflow->getNextAuthenticationUrl();
+
+        $this->assertEquals('/url3', $redirectUrl);
+        $this->assertFalse($workflow->isFinished());
+
+        // --- mimic what the coord plugin does at /url3
+        $isAuthenticated = false;
+        $checkResult = $this->standardWorkflow->checkWorkflowAndAction(
+            $isAuthenticated, $createAccountAction, $manager);
+        $this->assertEquals('/url3', $this->workflowState->getCurrentActionUrl());
+        $this->assertEquals($checkResult, $createAccountAction);
+
+        // --- in the controller of the first step at /url3
+        $workflow = $this->standardWorkflow->getWorkflow();
+        $currentStep = $workflow->getCurrentStep();
+        $this->assertNotNull($currentStep);
+        $this->assertEquals('create_account', $currentStep->getName());
+        $this->assertTrue($workflow->isCurrentStep('create_account'));
+        // account created, give information to the workflow
+        $account = new AccountForTest('123', 'bob', 'bob@example.com');
+        $workflow->getTemporaryUser()->setAccount($account);
+
+        // --- then it redirects to the next url
+        $redirectUrl = $workflow->getNextAuthenticationUrl();
+
+        $this->assertEquals('/url2', $redirectUrl);
+        $this->assertFalse($workflow->isFinished());
+
+        // --- mimic what the coord plugin does at /url2
+        $isAuthenticated = false;
+        $checkResult = $this->standardWorkflow->checkWorkflowAndAction($isAuthenticated, $valAction, $manager);
+        $this->assertEquals('/url2', $this->workflowState->getCurrentActionUrl());
+        $this->assertEquals($checkResult, $valAction);
+
+        // -- in the controller of the second step at /url2
+        $workflow = $this->standardWorkflow->getWorkflow();
+        $currentStep = $workflow->getCurrentStep();
+        $this->assertNotNull($currentStep);
+        $this->assertEquals('access_validation', $currentStep->getName());
+        $this->assertTrue($workflow->isCurrentStep('access_validation'));
+
+        // let's assume that the process of the action is ok, the action ends with:
+        $redirectUrl = $workflow->getNextAuthenticationUrl();
+        // the workflow should be finished
+        $this->assertEquals('http://localhost/home', $redirectUrl);
+
+        $this->assertNull($workflow->getCurrentStep());
+        $this->assertTrue($workflow->isFinished());
+        $this->assertTrue($workflow->isSuccess());
+
+        // --- mimic what the coord plugin does at /home
+        $isAuthenticated = false;
+        $checkResult = $this->standardWorkflow->checkWorkflowAndAction($isAuthenticated, $homeAction, $manager);
+        $this->assertNull($checkResult);
+
+        // end
+        $this->assertNull($this->standardWorkflow->getWorkflow());
+        $this->assertTrue($isAuthenticated);
+        $this->assertEquals($this->workflowState::END_STATUS_SUCCESS, $this->workflowState->getEndStatus());
+    }
+
 }

@@ -10,6 +10,7 @@
 namespace Jelix\Authentication\Core\Workflow\Event;
 
 
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 use Jelix\Authentication\Core\AuthSession\UserAccountInterface;
 
 class GetAccountEvent extends WorkflowStepEvent
@@ -19,9 +20,9 @@ class GetAccountEvent extends WorkflowStepEvent
      */
     protected $account = null;
 
-    public function __construct()
+    public function __construct(AuthUser $authenticatedUser)
     {
-        parent::__construct('get_account', 'start');
+        parent::__construct('get_account', 'start', $authenticatedUser);
     }
 
     /**

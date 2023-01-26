@@ -10,6 +10,7 @@
 namespace Jelix\Authentication\Core\Workflow\Event;
 
 
+use Jelix\Authentication\Core\AuthSession\AuthUser;
 use Jelix\Authentication\Core\Workflow\WorkflowAction;
 
 class WorkflowStepEvent extends \jEvent
@@ -19,23 +20,38 @@ class WorkflowStepEvent extends \jEvent
      */
     protected $actions = array();
 
-    public function __construct($stepName, $transition)
+    public function __construct($stepName, $transition, AuthUser $authenticatedUser)
     {
         parent::__construct('AuthWorkflowStep',
             array(
                 'stepName' => $stepName,
-                'transition' => $transition
+                'transition' => $transition,
+                'user' => $authenticatedUser
             ));
     }
 
+    /**
+     * @return string
+     */
     public function getStepName()
     {
         return $this->_params['stepName'];
     }
 
+    /**
+     * @return string
+     */
     public function getAppliedTransition()
     {
         return $this->_params['transition'];
+    }
+
+    /**
+     * @return AuthUser
+     */
+    public function getUserBeingAuthenticated()
+    {
+        return $this->_params['user'];
     }
 
     /**
