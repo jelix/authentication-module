@@ -26,6 +26,9 @@ abstract class AbstractStep implements StepInterface
      */
     protected $name = '';
 
+    /**
+     * @var string the transition to apply when the step is finished
+     */
     protected $transition = '';
 
     /**

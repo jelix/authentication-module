@@ -15,6 +15,6 @@ Read the [INSTALL.md](INSTALL.md) file to know how to install the modules.
   
 What these modules don't do:
 
-- they doesn't manage yet user accounts in an application
-- they doesn't manage rights 
+- they don't manage yet user accounts in an application
+- they don't manage rights 
 

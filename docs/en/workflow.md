@@ -70,7 +70,7 @@ The steps are:
 
 1. the user account step (named `get_account`): An event is emitted so a module managing accounts can
    give the account object corresponding to the user, if it has one.
-2. the create account step (named `access_validation`): it is called when there is no account, and if the account
+2. the create account step (named `create_account`): it is called when there is no account, and if the account
    creation is permitted. An event is emitted so a module managing accounts can give
    the page where to redirect the user, and which shows a form to create the account
    for example.
