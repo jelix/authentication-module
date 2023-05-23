@@ -20,13 +20,14 @@ class WorkflowStepEvent extends \jEvent
      */
     protected $actions = array();
 
-    public function __construct($stepName, $transition, AuthUser $authenticatedUser)
+    public function __construct($stepName, $transition, AuthUser $authenticatedUser, $idpId)
     {
         parent::__construct('AuthWorkflowStep',
             array(
                 'stepName' => $stepName,
                 'transition' => $transition,
-                'user' => $authenticatedUser
+                'user' => $authenticatedUser,
+                'idpId' => $idpId
             ));
     }
 
@@ -52,6 +53,14 @@ class WorkflowStepEvent extends \jEvent
     public function getUserBeingAuthenticated()
     {
         return $this->_params['user'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdpId()
+    {
+        return $this->_params['idpId'];
     }
 
     /**

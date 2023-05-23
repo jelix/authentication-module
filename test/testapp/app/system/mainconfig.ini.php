@@ -29,8 +29,8 @@ adminui.installparam[wwwfiles]=vhost
 
 authcore.enabled=on
 authloginpass.enabled=on
-
 account.enabled=on
+
 [coordplugins]
 sessionauth=on
 

@@ -20,9 +20,9 @@ class GetAccountEvent extends WorkflowStepEvent
      */
     protected $account = null;
 
-    public function __construct(AuthUser $authenticatedUser)
+    public function __construct(AuthUser $authenticatedUser, $idpId)
     {
-        parent::__construct('get_account', 'start', $authenticatedUser);
+        parent::__construct('get_account', 'start', $authenticatedUser, $idpId);
     }
 
     /**

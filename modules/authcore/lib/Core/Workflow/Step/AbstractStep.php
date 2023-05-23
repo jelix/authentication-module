@@ -60,7 +60,7 @@ abstract class AbstractStep implements StepInterface
      */
     public function startStep($transition, WorkflowState $workflowState)
     {
-        $event = new WorkflowStepEvent($this->name, $transition, $workflowState->getTemporaryUser());
+        $event = new WorkflowStepEvent($this->name, $transition, $workflowState->getTemporaryUser(), $workflowState->getIdpId());
         $this->eventDispatcher->dispatch($event);
         $this->workflowState->setActions($event->getActions());
     }
