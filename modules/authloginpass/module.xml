@@ -10,7 +10,7 @@
         <homepageURL>https://jelix.org</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.7.0" maxversion="1.7.*"/>
+        <jelix minversion="1.7.0" maxversion="1.8.*"/>
         <module name="authcore" />
     </dependencies>
     <autoload>
