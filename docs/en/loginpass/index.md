@@ -172,7 +172,7 @@ searchUserBaseDN="ou=people,dc=tests,dc=jelix"
 searchUserFilter="(&(objectClass=inetOrgPerson)(uid=%%LOGIN%%))"
 bindUserDN="uid=%?%,ou=people,dc=tests,dc=jelix"
 newUserDN="uid=%%LOGIN%%,ou=people,dc=tests,dc=jelix"
-newUserLdapAttributes="objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%USERNAME%%,sn:%%USERNAME%%"
+newUserLdapAttributes="objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%REALNAME%%,sn:%%REALNAME%%"
 searchAttributes="uid:login,displayName:username,mail:email"
 ;searchGroupKeepUserInDefaultGroups=on
 ;searchGroupProperty=

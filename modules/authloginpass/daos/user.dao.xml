@@ -20,7 +20,7 @@
            1 valid user
            -->
       <property name="email" fieldname="email" datatype="string" required="yes" maxlength="255" />
-      <property name="username" fieldname="username" datatype="string" maxlength="255" />
+      <property name="realname" fieldname="realname" datatype="string" maxlength="255" />
       <property name="create_date" fieldname="create_date" datatype="datetime"
                 insertpattern="now()" updatepattern=""/>
       <property name="attributes" fieldname="attributes" datatype="json" />

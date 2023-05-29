@@ -23,14 +23,17 @@ class MyAccountImplementation implements \Jelix\Authentication\Core\AuthSession\
 {
     protected $accountId;
 
-    protected $name;
+    protected $username;
+
+    protected $realname;
 
     protected $email;
 
-    function __construct($accountId, $username, $email)
+    function __construct($accountId, $username, $realname, $email)
     {
         $this->accountId = $accountId;
-        $this->name = $username;
+        $this->username = $username;
+        $this->realname = $realname;
         $this->email = $email;
     }
 
@@ -41,7 +44,12 @@ class MyAccountImplementation implements \Jelix\Authentication\Core\AuthSession\
 
     public function getUserName()
     {
-        return $this->name;
+        return $this->username;
+    }
+
+    public function getRealName()
+    {
+        return $this->realname;
     }
 
     public function getEmail()

@@ -30,10 +30,19 @@ class AuthUser
      */
     protected $account;
 
+    /**
+     * Name of the attribute containing the username/login (technical name) of the user
+     */
     const ATTR_LOGIN = 'login';
 
-    const ATTR_NAME = 'username';
+    /**
+     * Name of the attribute containing the real name/ display name of the user
+     */
+    const ATTR_NAME = 'realname';
 
+    /**
+     * Name of the attribute containing the e-mail of the user
+     */
     const ATTR_EMAIL = 'email';
 
     const STATUS_PWD_CHANGED = 3;
@@ -44,10 +53,14 @@ class AuthUser
     const STATUS_DELETED = -2;
 
     /**
-     * SessionUser constructor.
-     * @param string $userId
-     * @param string $userName
-     * @param array $attributes
+     * AuthUser constructor.
+     *
+     * The technical id of the user and user's attributes should be given.
+     * Attributes should contain data like email, real name, login.
+     * These information should be stored at the keys indicated into the ATTR_* constants.
+     *
+     * @param string $userId Technical id of the user from the authentication provider
+     * @param array $attributes list of attributes
      */
     function __construct($userId, array $attributes) {
         $this->attributes = $attributes;
@@ -55,6 +68,8 @@ class AuthUser
     }
 
     /**
+     * Technical id of the user from the authentication provider
+     *
      * @return string
      */
     function getUserId() {
@@ -62,6 +77,8 @@ class AuthUser
     }
 
     /**
+     * The display name / real name of the user
+     *
      * @return string
      */
     function getName() {
@@ -72,6 +89,7 @@ class AuthUser
     }
 
     /**
+     * The email of the user
      * @return string
      */
     function getEmail() {
@@ -82,6 +100,8 @@ class AuthUser
     }
 
     /**
+     * The username/login (technical name) of the user
+     *
      * @return string
      */
     function getLogin() {
@@ -91,6 +111,10 @@ class AuthUser
         return $this->userId;
     }
 
+    /**
+     * @param string $name the attribute name
+     * @return mixed|null value of the attribute
+     */
     function getAttribute($name) {
         if (isset($this->attributes[$name])) {
             return $this->attributes[$name];
@@ -98,23 +122,43 @@ class AuthUser
         return null;
     }
 
+    /**
+     * @return array all attributes
+     */
     function getAttributes() {
         return $this->attributes;
     }
 
+    /**
+     * Set a specific attribute.
+     *
+     * Any attributes except the email and the login can be set.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @return void
+     */
     function setAttribute($name, $value) {
         if (!in_array($name, array(self::ATTR_LOGIN, self::ATTR_EMAIL))) {
             $this->attributes[$name] = $value;
         }
     }
 
+    /**
+     * Set the account corresponding to the authenticated user.
+     *
+     * This method should be called during the authentication process.
+     *
+     * @param UserAccountInterface $account
+     * @return void
+     */
     public function setAccount(UserAccountInterface $account)
     {
         $this->account = $account;
     }
 
     /**
-     * @return UserAccountInterface
+     * @return UserAccountInterface|null the account corresponding to the user.
      */
     public function getAccount()
     {

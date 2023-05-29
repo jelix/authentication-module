@@ -195,7 +195,7 @@ class standardWorkflowTest extends TestCase
         $this->evDispatcher->setListenerForStep(
             'get_account',
             function(Workflow\Event\GetAccountEvent $event){
-                $account = new AccountForTest('123', 'bob', 'bob@example.com');
+                $account = new AccountForTest('123', 'bob', 'Bob Morane', 'bob@example.com');
                 $event->setAccount($account);
         });
         $this->evDispatcher->addWorkflowActionForStep(
@@ -340,7 +340,7 @@ class standardWorkflowTest extends TestCase
         $this->assertEquals('create_account', $currentStep->getName());
         $this->assertTrue($workflow->isCurrentStep('create_account'));
         // account created, give information to the workflow
-        $account = new AccountForTest('123', 'bob', 'bob@example.com');
+        $account = new AccountForTest('123', 'bob', 'Bob Morane', 'bob@example.com');
         $workflow->getTemporaryUser()->setAccount($account);
 
         // --- then it redirects to the next url

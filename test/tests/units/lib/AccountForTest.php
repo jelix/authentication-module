@@ -6,14 +6,17 @@ class AccountForTest implements \Jelix\Authentication\Core\AuthSession\UserAccou
 {
     protected $accountId;
 
-    protected $name;
+    protected $username;
+
+    protected $realname;
 
     protected $email;
 
-    function __construct($accountId, $username, $email)
+    function __construct($accountId, $username, $realname, $email)
     {
         $this->accountId = $accountId;
-        $this->name = $username;
+        $this->username = $username;
+        $this->realname = $realname;
         $this->email = $email;
     }
 
@@ -24,8 +27,14 @@ class AccountForTest implements \Jelix\Authentication\Core\AuthSession\UserAccou
 
     public function getUserName()
     {
-        return $this->name;
+        return $this->username;
     }
+
+    public function getRealName()
+    {
+        return $this->realname;
+    }
+
 
     public function getEmail()
     {

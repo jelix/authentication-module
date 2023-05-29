@@ -31,8 +31,8 @@ class authlp_ldap_auth_Test extends \Jelix\UnitTests\UnitTestCase {
         'searchUserFilter' => "(&(objectClass=inetOrgPerson)(uid=%%LOGIN%%))",
         'bindUserDN' => "uid=%?%,ou=people,dc=tests,dc=jelix",
         'newUserDN' => "uid=%%LOGIN%%,ou=people,dc=tests,dc=jelix",
-        'newUserLdapAttributes' => "objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%USERNAME%%,sn:%%USERNAME%%",
-        'searchAttributes' => "uid:login,displayName:username,mail:email",
+        'newUserLdapAttributes' => "objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%REALNAME%%,sn:%%REALNAME%%",
+        'searchAttributes' => "uid:login,displayName:realname,mail:email",
     );
 
     function testUserExists() {

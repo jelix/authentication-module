@@ -246,12 +246,12 @@ class ldapBackend extends BackendAbstract
 
         $ldapAttributes = $this->createLdapAttributes(array(
             'email' => $email,
-            'username' => $name ?: $login
+            'realname' => $name ?: $login
         ));
 
         foreach($this->_params['newUserLdapAttributes'] as $attr=>$val) {
             if ($val[0] == '%') {
-                $val = str_replace(array('%%PASSWORD%%', '%%LOGIN%%', '%%USERNAME%%'),
+                $val = str_replace(array('%%PASSWORD%%', '%%LOGIN%%', '%%REALNAME%%'),
                     array($this->hashPassword($password), $login, $name ?: $login),
                     $val
                 );
