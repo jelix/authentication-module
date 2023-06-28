@@ -24,11 +24,11 @@ class Manager
      * 
      * @return Account An Account object containing the account's infos or null if the account doesn't exist.
      */
-    public static function getAccount($name)
+    public static function getAccount($login)
     {
         $dao = \jDao::get(self::$daoName, self::$daoProfile);
 
-        $record = $dao->findByName($name);
+        $record = $dao->findByUserName($login);
         if (!$record) {
             return null;
         }
@@ -36,31 +36,35 @@ class Manager
     }
 
     /**
-     * Creates a new account
+     * Creates a new account from the authenticated user
      * 
      * @param AuthUser $user The user to create
      * @param IdentityProviderInterface $provider The IdentityProvider used to create the Account
      * 
      * @return \jDaoRecordBase The record containing the new account or null if account already exists.
      */
-    public static function createAccount($user, $provider)
+    public static function createAccountFromAuthUser($user, $provider, $status = null)
     {
-        $name = $user->getName();
+        $name = $user->getLogin();
         if (self::accountExists($name)) {
             return null;
         }
+
+        if ($status === null) {
+            $status = self::STATUS_VALID;
+        }
+
         $dao = \jDao::get(self::$daoName, self::$daoProfile);
         $newAccount = \jDao::createRecord(self::$daoName, self::$daoProfile);
         $newAccount->name = $name;
         $newAccount->email = $user->getEmail();
-        $newAccount->status = self::STATUS_VALID;
-        $newAccount->provider = $provider->getId();
+        $newAccount->status = $status;
         $dao->insert($newAccount);
         return $newAccount;
     }
 
     /**
-     * Checks wether an account exists for the given name
+     * Checks whether an account exists for the given name
      * 
      * @param string $name The name to check
      * @return bool true if account exists
@@ -85,7 +89,7 @@ class Manager
     }
 
     /**
-     * Modifies the informations of an user
+     * Modifies the information of a user
      * 
      * @param array $newInfos An associative array containing the information to modify and their new values
      * @param Account $user the user to modify, if null, the modified user will be the current one.

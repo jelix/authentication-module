@@ -15,7 +15,8 @@ use Jelix\Authentication\LoginPass\Manager;
 class AbstractCommand extends  \Jelix\Scripts\ModuleCommandAbstract
 {
 
-    protected function getPassword(InputInterface $input, OutputInterface $output) {
+    protected function getPassword(InputInterface $input, OutputInterface $output)
+    {
         if ($input->getOption('ask-pass')) {
             $helper = $this->getHelper('question');
             $question = new Question('Please enter the user\'s password: ', '');
@@ -66,7 +67,8 @@ class AbstractCommand extends  \Jelix\Scripts\ModuleCommandAbstract
      * @param Manager $manager
      * @return BackendPluginInterface
      */
-    protected function getBackend(InputInterface $input, $manager, $login, $userMustExists=true) {
+    protected function getBackend(InputInterface $input, $manager, $login, $userMustExists=true)
+    {
         $backendName = $input->getOption('backend');
         if ($backendName) {
             $backend = $manager->getBackendByName($backendName);

@@ -5,27 +5,37 @@
    </datasources>
    <record>
       <property name="account_id" fieldname="account_id" datatype="autoincrement"/>
-       
-      <property name="name" fieldname="name"
-          required="yes" datatype="string"  maxlength="50" />
-      
+
+      <property name="username" fieldname="username"
+                required="yes" datatype="string" maxlength="255" />
+
+      <property name="firstname" fieldname="firstname"
+                required="yes" datatype="string" maxlength="100" />
+
+      <property name="lastname" fieldname="lastname"
+                required="yes" datatype="string" maxlength="100" />
+
+      <property name="email" fieldname="email" datatype="string"
+                required="yes" maxlength="255" />
+
       <property name="status" fieldname="status" datatype="integer" required="yes"/>
       <!-- status for administration:
            -2 deleted
            -1 deactivate
-           0 new user, invalid account
-           1 valid user
+           0 new account, invalid account
+           1 valid account
            -->
-      <property name="email" fieldname="email" datatype="string" required="yes" maxlength="255" />
-      <property name="provider" fieldname="provider" datatype="string" required="yes" maxlength="255" />
       <property name="create_date" fieldname="create_date" datatype="datetime"
                 insertpattern="now()" updatepattern=""/>
+
+      <property name="modify_date" fieldname="modify_date" datatype="datetime"
+                insertpattern="now()" updatepattern="now()"/>
    </record>
    <factory>
-     <method name="findByName" type="selectfirst">
+     <method name="findByUserName" type="selectfirst">
          <parameter name="pattern" />
          <conditions>
-             <eq property="name" expr="$pattern" />
+             <eq property="username" expr="$pattern" />
          </conditions>
      </method>
      <method name="findByEmail" type="selectfirst">
@@ -36,7 +46,7 @@
      </method>
      <method name="findAll" type="select">
          <order>
-             <orderitem property="name" way="asc" />
+             <orderitem property="username" way="asc" />
          </order>
      </method>
    </factory>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://jelix.org/ns/forms/1.1">
 
-<output type="string" ref="name">
+<output type="string" ref="username">
     <label locale="account~account.profile.th.name"/>
 </output>
 

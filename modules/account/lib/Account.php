@@ -2,7 +2,9 @@
 
 namespace Jelix\Authentication\Account;
 
-class Account
+use Jelix\Authentication\Core\AuthSession\UserAccountInterface;
+
+class Account implements UserAccountInterface
 {
     protected $data = array();
 
@@ -30,5 +32,25 @@ class Account
         }
 
         return $this->data;
+    }
+
+    public function getAccountId()
+    {
+        return $this->data['account_id'];
+    }
+
+    public function getRealName()
+    {
+        return $this->data['firstname'].' '.$this->data['lastname'];
+    }
+
+    public function getUserName()
+    {
+        return $this->data['username'];
+    }
+
+    public function getEmail()
+    {
+        return $this->data['email'];
     }
 }
