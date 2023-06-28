@@ -20,20 +20,41 @@ class Manager
     /**
      * Retrieves a registered account from the Dao.
      * 
-     * @param string $login The account's login
+     * @param string $username The account's username
      * 
      * @return Account An Account object containing the account's infos or null if the account doesn't exist.
      */
-    public static function getAccount($login)
+    public static function getAccount($username)
     {
         $dao = \jDao::get(self::$daoName, self::$daoProfile);
 
-        $record = $dao->findByUserName($login);
+        $record = $dao->findByUserName($username);
         if (!$record) {
             return null;
         }
         return new Account($record);
     }
+
+    /**
+     * Creates an account object
+     *
+     * @return \jDaoRecordBase The record containing the account
+     */
+    public static function createAccountObject($userName, $email)
+    {
+        $newAccount = \jDao::createRecord(self::$daoName, self::$daoProfile);
+        $newAccount->username = $userName;
+        $newAccount->email = $email;
+        $newAccount->status = self::STATUS_VALID;
+        return $newAccount;
+    }
+
+    public static function saveNewAccount($newAccount)
+    {
+        $dao = \jDao::get(self::$daoName, self::$daoProfile);
+        $dao->insert($newAccount);
+    }
+
 
     /**
      * Creates a new account from the authenticated user
@@ -66,12 +87,12 @@ class Manager
     /**
      * Checks whether an account exists for the given name
      * 
-     * @param string $name The name to check
+     * @param string $username The name to check
      * @return bool true if account exists
      */
-    public static function accountExists($name)
+    public static function accountExists($username)
     {
-        if (self::getAccount($name)) {
+        if (self::getAccount($username)) {
             return true;
         }
         return false;
@@ -113,5 +134,10 @@ class Manager
 
         $dao->update($record);
         return true;
+    }
+
+    public static function getAccountList()
+    {
+        return \jDao::get(self::$daoName, self::$daoProfile)->findAll();
     }
 }
