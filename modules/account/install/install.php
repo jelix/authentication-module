@@ -6,6 +6,7 @@ class accountModuleInstaller extends \Jelix\Installer\Module\Installer
     {
         $mapper = new jDaoDbMapper();
         $mapper->createTableFromDao('account~accounts');
+        $mapper->createTableFromDao('account~account_idp');
     }
 
 }

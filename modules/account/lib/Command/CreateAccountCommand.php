@@ -21,9 +21,9 @@ class CreateAccountCommand extends \Jelix\Scripts\ModuleCommandAbstract
             ->setDescription('Create an account')
             ->setHelp('')
             ->addArgument(
-                'login',
+                'account',
                 InputArgument::REQUIRED,
-                'login of the user'
+                'account name'
             )
             ->addArgument(
                 'email',
@@ -48,17 +48,17 @@ class CreateAccountCommand extends \Jelix\Scripts\ModuleCommandAbstract
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $login = $input->getArgument('login');
+        $accountName = $input->getArgument('account');
         $firstName = $input->getArgument('firstname');
         $lastName = $input->getArgument('lastname');
         $userEmail = $input->getArgument('email');
 
-        $existingAccount = Manager::getAccount($login);
+        $existingAccount = Manager::getAccount($accountName);
         if ($existingAccount) {
-            throw new \Exception('The account '.$login.' already exists');
+            throw new \Exception('The account '.$accountName.' already exists');
         }
 
-        $newAccount = Manager::createAccountObject($login, $userEmail);
+        $newAccount = Manager::createAccountObject($accountName, $userEmail);
         $newAccount->firstname = $firstName;
         $newAccount->lastname = $lastName;
         Manager::saveNewAccount($newAccount);

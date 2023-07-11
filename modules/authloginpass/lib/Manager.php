@@ -198,6 +198,14 @@ class Manager
         return false;
     }
 
+    /**
+     * @param string $login
+     * @param string $password
+     * @param array $attributes
+     * @param string $backendName
+     * @return AuthUser|null
+     * @throws \Exception
+     */
     public function createUser($login, $password, array $attributes, $backendName = '')
     {
         if ($backendName) {
@@ -217,10 +225,10 @@ class Manager
                 'user' => $user,
                 'identProvider' => \jAuthentication::manager()->getIdpById('loginpass')
             ));
-            return true;
+            return $user;
         }
 
-        return false;
+        return null;
 
     }
 

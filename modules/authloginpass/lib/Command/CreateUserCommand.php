@@ -67,7 +67,7 @@ class CreateUserCommand extends  AbstractCommand
         $password = $this->getPassword($input, $output);
 
 
-        $manager = $this->getManager();
+        $manager = $this->getLoginPassManager();
         $backendName = $this->getBackendName($input, $manager);
         if (!$backendName) {
             $backendName = $manager->getFirstBackendName();

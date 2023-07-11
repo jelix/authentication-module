@@ -114,7 +114,7 @@ class AbstractCommand extends  \Jelix\Scripts\ModuleCommandAbstract
     /**
      * @return Manager
      */
-    protected function getManager()
+    protected function getLoginPassManager()
     {
         /** @var \loginpassIdentityProvider $idp */
         $idp = \jAuthentication::manager()->getIdpById('loginpass');

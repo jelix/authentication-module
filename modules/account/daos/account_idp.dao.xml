@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+   <datasources>
+      <primarytable name="account_idp" realname="account_idp" primarykey="idp_id,idp_user_id,account_id" />
+   </datasources>
+   <record>
+       <property name="idp_id" fieldname="idp_id" datatype="string"/>
+       <property name="idp_user_id" fieldname="idp_user_id" datatype="string"/>
+       <property name="account_id" fieldname="account_id" datatype="integer"/>
+
+       <property name="idp_user_email" fieldname="idp_user_email" datatype="string" required="yes" maxlength="255" />
+
+       <property name="enabled" fieldname="enabled" datatype="integer" required="yes" default="0"/>
+
+       <property name="first_used" fieldname="first_used" datatype="datetime"/>
+       <property name="last_used" fieldname="last_used" datatype="datetime"/>
+       <property name="usage_count" fieldname="usage_count" datatype="integer" required="yes" default="0"/>
+       <property name="idp_data" fieldname="idp_data" datatype="text"/>
+   </record>
+   <factory>
+        <method name="findByIdpAndUser" type="selectfirst">
+            <parameter name="idp_id" />
+            <parameter name="idp_user_id" />
+            <conditions>
+                <eq property="idp_id" expr="$idp_id" />
+                <eq property="idp_user_id" expr="$idp_user_id" />
+            </conditions>
+        </method>
+        <method name="findByIdpAndAccount" type="selectfirst">
+            <parameter name="idp_id" />
+            <parameter name="account_id" />
+            <conditions>
+                <eq property="idp_id" expr="$idp_id" />
+                <eq property="account_id" expr="$account_id" />
+            </conditions>
+        </method>
+        <method name="findByAccount" type="select">
+            <parameter name="account_id" />
+            <conditions>
+                <eq property="account_id" expr="$account_id" />
+            </conditions>
+        </method>
+   </factory>
+</dao>

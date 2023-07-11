@@ -9,7 +9,9 @@ use Jelix\Authentication\Core\IdentityProviderInterface;
 class Manager
 {
     protected static $daoName = 'account~accounts';
-    
+
+    protected static $daoIdp = 'account~account_idp';
+
     protected static $daoProfile = 'account';
 
     const STATUS_VALID = 1;
@@ -140,4 +142,90 @@ class Manager
     {
         return \jDao::get(self::$daoName, self::$daoProfile)->findAll();
     }
+
+    /**
+     * @param string $idpId
+     * @param string $authUserId
+     * @return null|Account
+     */
+    public static function searchAccountByIdp($idpId, $authUserId)
+    {
+        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $accIdp = $daoIdp->findByIdpAndUser($idpId, $authUserId);
+        if (!$accIdp) {
+            \jLog::log('no account-idp for '.$idpId. ' - '. $authUserId);
+            return null;
+        }
+
+        $dao = \jDao::get(self::$daoName, self::$daoProfile);
+
+        $record = $dao->get($accIdp->account_id);
+        if (!$record) {
+            \jLog::log('no account for account '.$accIdp->username);
+            return null;
+        }
+        \jLog::log('account found for '.$authUserId);
+        return new Account($record);
+    }
+
+    /**
+     * @param integer $accountId
+     * @return null|Account
+     */
+    public static function searchIdpUsedByAccount($accountId)
+    {
+        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $list = $daoIdp->findByAccount($accountId);
+        return $list;
+    }
+
+    /**
+     * @param integer $accountId
+     * @param string $idpId
+     * @return bool
+     */
+    public static function isAccountUsingIdp($accountId, $idpId)
+    {
+        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $accIdp = $daoIdp->findByIdpAndAccount($idpId, $accountId);
+        if ($accIdp) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param integer $accountId
+     * @param string $idpId
+     * @param string $authUserId
+     * @param string $authUserEmail
+     * @param object|array $idpData
+     * @return void
+     */
+    public static function attachAccountToIdp($accountId, $idpId, $authUserId, $authUserEmail, $idpData = [])
+    {
+        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $recordIdp = $daoIdp->createRecord();
+        $recordIdp->idp_id = $idpId;
+        $recordIdp->idp_user_id = $authUserId;
+        $recordIdp->account_id = $accountId;
+        $recordIdp->idp_user_email = $authUserEmail;
+        $recordIdp->enabled = true;
+        $recordIdp->idp_data = json_encode($idpData);
+        $daoIdp->insert($recordIdp);
+    }
+
+    /**
+     * @param integer $accountId
+     * @param string $idpId
+     * @param string $authUserId
+     * @return void
+     * @throws \jException
+     */
+    public static function detachAccountFromIdp($accountId, $idpId, $authUserId)
+    {
+        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $daoIdp->delete([$idpId, $authUserId, $accountId]);
+    }
+
 }

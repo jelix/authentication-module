@@ -1,7 +1,5 @@
 <events xmlns="http://jelix.org/ns/events/1.0">
-   <listener name="createAccount">
-       <event name="AuthenticationUserCreation"/>
-       <event name="AuthenticationLogin"/>
-       <event name="AuthenticationCanUseApp"/>
+   <listener name="authAccount">
+       <event name="AuthWorkflowStep"/>
    </listener>
 </events>
