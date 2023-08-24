@@ -102,7 +102,7 @@ class my2FACtrl extends \jController
         
         if (!$workflow->isCurrentStep('second_factor')) {
             // this is not the right step, redirect the user to the right step
-            return $this->redirectUrl($workflow->getCurrentStepUrl());
+            return $this->redirectToUrl($workflow->getCurrentStepUrl());
         }
 
         $account = $workflow->getTemporaryUser()->getAccount();
@@ -123,7 +123,7 @@ class my2FACtrl extends \jController
         }
         
         if (!$workflow->isCurrentStep('second_factor')) {
-            return $this->redirectUrl($workflow->getCurrentStepUrl());
+            return $this->redirectToUrl($workflow->getCurrentStepUrl());
         }
 
 
@@ -131,7 +131,7 @@ class my2FACtrl extends \jController
         // ...
         
         // we can now redirect the user to the next step of the authentication        
-        return $this->redirectUrl($workflow->getNextAuthenticationUrl());
+        return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
     }
 
     function error()
@@ -142,7 +142,7 @@ class my2FACtrl extends \jController
         }
         
         if (!$workflow->isCurrentStep('second_factor')) {
-            return $this->redirectUrl($workflow->getCurrentStepUrl());
+            return $this->redirectToUrl($workflow->getCurrentStepUrl());
         }
 
         // this action is called because of an error. We should cancel

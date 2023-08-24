@@ -81,7 +81,7 @@ class myAccessPageCtrl extends \jController
         
         if (!$workflow->isCurrentStep('access_validation')) {
             // this is not the right step, redirect the user to the right step
-            return $this->redirectUrl($workflow->getCurrentStepUrl());
+            return $this->redirectToUrl($workflow->getCurrentStepUrl());
         }
 
         $user = $workflow->getTemporaryUser();
@@ -102,7 +102,7 @@ class myAccessPageCtrl extends \jController
         }
         
         if (!$workflow->isCurrentStep('access_validation')) {
-            return $this->redirectUrl($workflow->getCurrentStepUrl());
+            return $this->redirectToUrl($workflow->getCurrentStepUrl());
         }
 
 
@@ -110,7 +110,7 @@ class myAccessPageCtrl extends \jController
         // ...
         
         // we can now redirect the user to the next step of the authentication        
-        return $this->redirectUrl($workflow->getNextAuthenticationUrl());
+        return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
     }
 
     function error()
@@ -121,7 +121,7 @@ class myAccessPageCtrl extends \jController
         }
         
         if (!$workflow->isCurrentStep('access_validation')) {
-            return $this->redirectUrl($workflow->getCurrentStepUrl());
+            return $this->redirectToUrl($workflow->getCurrentStepUrl());
         }
 
         // this action is called because of an error. We should cancel

@@ -217,7 +217,7 @@ class createaccountCtrl extends \jController
         
         if (!$workflow->isCurrentStep('create_account')) {
             // this is not the right step, redirect the user to the right step
-            return $this->redirectUrl($workflow->getCurrentStepUrl());
+            return $this->redirectToUrl($workflow->getCurrentStepUrl());
         }
 
         $resp = $this->getResponse('html');
@@ -235,7 +235,7 @@ class createaccountCtrl extends \jController
         }
         
         if (!$workflow->isCurrentStep('create_account')) {
-            return $this->redirectUrl($workflow->getCurrentStepUrl());
+            return $this->redirectToUrl($workflow->getCurrentStepUrl());
         }
 
         // here we check the form...
@@ -253,7 +253,7 @@ class createaccountCtrl extends \jController
             $workflow->getTemporaryUser()->setAccount($account);
 
             // we can now redirect the user to the next step of the authentication
-            return $this->redirectUrl($workflow->getNextAuthenticationUrl());
+            return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
         }
         
         // bad form, we return to the form
