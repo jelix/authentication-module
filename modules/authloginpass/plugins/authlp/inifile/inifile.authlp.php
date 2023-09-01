@@ -224,4 +224,17 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $ini->setValues($attributes, $section);
         $ini->save();
     }
+
+    public function getUsersList()
+    {
+        foreach($this->iniContent as $secName => $userRec) {
+            if (strpos($secName , 'login:') !== 0) {
+                continue;
+            }
+            yield new AuthUser(str_replace('login:', '', $secName), array_merge($userRec, array(
+                AuthUser::ATTR_NAME => $userRec['name'],
+                AuthUser::ATTR_EMAIL => $userRec['email'],
+            )));
+        }
+    }
 }

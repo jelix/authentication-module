@@ -64,6 +64,6 @@ class ChangePasswordCommand extends  AbstractCommand
         if (!$manager->changePassword($login, $password, $backendName)) {
             throw new \Exception('The password has not been changed');
         }
-
+        return 0;
     }
 }

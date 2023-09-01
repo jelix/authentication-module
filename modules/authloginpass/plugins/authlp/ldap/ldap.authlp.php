@@ -390,6 +390,11 @@ class ldapBackend extends BackendAbstract
         return $user;
     }
 
+    public function getUsersList()
+    {
+        throw new \Exception('not implemented');
+    }
+
     protected function synchronizeAclGroups($login, $userGroups)
     {
         if ($this->_params['searchGroupKeepUserInDefaultGroups']) {
