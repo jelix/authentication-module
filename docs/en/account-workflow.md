@@ -99,10 +99,12 @@ object. It allows you to search the corresponding account.
 If there is an account (or you have juste created one on the fly), call
 the method `setAccount($account)` on the event.
 
-Else call `setUnknownAccount()`.
+Else call `setUnknownAccount()` if an account can be automatically created.
+Else throw an exception, and the user will return to the authentication form.
 
 ```php
 use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;
+use Jelix\Authentication\Core\Workflow\Step\StepException;
 
 class myGetAccountListener extends jEventListener
 {
@@ -117,7 +119,14 @@ class myGetAccountListener extends jEventListener
                 $event->setAccount($account);
             }
             else {
-                $event->setUnknownAccount();
+                $isAccountCreationAllowed = ...;
+                if ($isAccountCreationAllowed) {
+                    // it will go to the account creation step
+                    $event->setUnknownAccount();
+                }
+                else {
+                    throw new StepException('No account found');
+                }
             }
         }
     }
@@ -185,6 +194,10 @@ class myAuthAccountListener extends jEventListener
     }
 }
 ```
+
+In the case where the account cannot be created
+
+
 
 Implementing a controller to create an account
 -----------------------------------------------

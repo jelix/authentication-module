@@ -49,6 +49,9 @@ class signCtrl extends jController
         /** @var $lpManager \Jelix\Authentication\LoginPass\Manager */
         $lpManager = $idp->getManager();
 
+        $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
+        $failUrl = jUrl::get('authcore~sign:in', $params);
+
         if (
             $this->request->isPostMethod() &&
             $user = $lpManager->verifyPassword($this->param('login'), $this->param('password'))
@@ -63,11 +66,11 @@ class signCtrl extends jController
 
             $workflow = jAuthentication::startAuthenticationWorkflow($user, $idp);
             $workflow->setFinalUrl($urlBack);
+            $workflow->setFailUrl($failUrl);
             return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
         }
 
-        $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
 
-        return $this->redirectToUrl(jUrl::get('authcore~sign:in', $params));
+        return $this->redirectToUrl($failUrl);
     }
 }

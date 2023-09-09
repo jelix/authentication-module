@@ -15,16 +15,22 @@ class AuthFailStep extends AbstractStep
 {
     protected $name = 'auth_fail';
 
+    protected $nextUrl = '';
+
     /**
      * @return void
      */
     public function startStep($transition, WorkflowState $workflowState)
     {
-        $workflowState->setEndStatus($workflowState::END_STATUS_FAIL);
+        $message = $workflowState->getErrorMessage();
+        $workflowState->setEndStatus($workflowState::END_STATUS_FAIL, $message);
+        $this->nextUrl = $workflowState->getFailUrl();
+
+        \jMessage::add($message, 'error');
     }
 
     public function getNextActionUrl()
     {
-        return '';
+        return $this->nextUrl;
     }
 }

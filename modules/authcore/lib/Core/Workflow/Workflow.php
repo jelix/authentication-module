@@ -10,6 +10,7 @@
 namespace Jelix\Authentication\Core\Workflow;
 
 use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\Workflow\Step\StepException;
 
 /**
  * Manage the authentication workflow
@@ -117,7 +118,15 @@ class Workflow
             $this->state->setCurrentStepName($this->transitions[$transitionName]['to']);
             $step = $this->getCurrentStep();
             if ($step) {
-                $step->startStep($transitionName, $this->state);
+                try {
+                    $step->startStep($transitionName, $this->state);
+                }
+                catch(StepException $e) {
+                    // we force to terminate.
+                    $this->state->setCurrentStepName('');
+                    $this->state->setEndStatus($this->state::END_STATUS_FAIL, $e->getMessage());
+                    return false;
+                }
             }
             return true;
         }
@@ -143,13 +152,13 @@ class Workflow
      * No more steps will be executed, and the workflow will end.
      * There will not be authenticated user at the current session
      */
-    public function cancel()
+    public function cancel($reason)
     {
         if (!$this->apply('fail')) {
             // no fail transition, or current step do not apply fail, we
             // force to terminate.
             $this->state->setCurrentStepName('');
-            $this->state->setEndStatus($this->state::END_STATUS_FAIL);
+            $this->state->setEndStatus($this->state::END_STATUS_FAIL, $reason);
         }
     }
 
@@ -167,6 +176,11 @@ class Workflow
     public function setFinalUrl(string $url)
     {
         $this->state->setFinalUrl($url);
+    }
+
+    public function setFailUrl(string $url)
+    {
+        $this->state->setFailUrl($url);
     }
 
     /**
@@ -201,6 +215,16 @@ class Workflow
             $this->apply($transition);
             $step = $this->getCurrentStep();
         }
+
+        // no more steps. let's return the final URL or the fail URL
+        // depending on the status of the workflow.
+        if ($this->state->getEndStatus() === $this->state::END_STATUS_FAIL) {
+            $failUrl = $this->state->getFailUrl();
+            if ($failUrl) {
+                return $failUrl;
+            }
+        }
+
         return $this->state->getFinalUrl();
     }
 }

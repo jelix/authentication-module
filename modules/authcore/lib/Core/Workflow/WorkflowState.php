@@ -31,6 +31,15 @@ class WorkflowState
      */
     protected $finalUrl;
 
+    /**
+     * @var string
+     */
+    protected $failUrl;
+
+    /**
+     * @var string
+     */
+    protected $errorMessage = '';
 
     protected $currentStepName = '';
 
@@ -83,6 +92,16 @@ class WorkflowState
     public function getFinalUrl()
     {
         return $this->finalUrl;
+    }
+
+    public function setFailUrl(string $url)
+    {
+        $this->failUrl = $url;
+    }
+
+    public function getFailUrl()
+    {
+        return $this->failUrl;
     }
 
     public function setCurrentStepName(string $currentStepName)
@@ -169,14 +188,22 @@ class WorkflowState
      * @param int $endStatus one of END_STATUS_* const
      * @return void
      */
-    public function setEndStatus($endStatus)
+    public function setEndStatus($endStatus, $errorMessage = '')
     {
         $this->endStatus = $endStatus;
+        if ($endStatus == self::END_STATUS_FAIL) {
+            $this->errorMessage = $errorMessage;
+        }
     }
 
     public function getEndStatus()
     {
         return $this->endStatus;
+    }
+
+    public function getErrorMessage()
+    {
+        return $this->errorMessage;
     }
 
 }

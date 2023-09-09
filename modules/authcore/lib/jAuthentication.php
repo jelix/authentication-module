@@ -16,7 +16,7 @@ use Jelix\Authentication\Core\Workflow;
 /**
  * Proxy class to access to authentication features in a Jelix framework context
  *
- * modules should call this API, and not underlying classes of authcore
+ * modules should call this API, instead of underlying classes of authcore
  */
 class jAuthentication
 {

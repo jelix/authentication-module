@@ -34,7 +34,9 @@ interface StepInterface
      *
      * @param string $transition the transition name
      * @param WorkflowState $workflowState
-     * @return mixed
+     * @return void
+     * @throw Step\StepException This exception indicates that the workflow
+     *        should be canceled, and the user will not be authenticated.
      */
     public function startStep($transition, WorkflowState $workflowState);
 
@@ -50,7 +52,7 @@ interface StepInterface
 
     /**
      * Give the url of the current web page to execute the step,
-     * when the steps has pages.
+     * when the steps have pages.
      *
      * @return string|null the url or null if there is no page to display
      *                     for the step.

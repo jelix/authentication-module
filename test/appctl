@@ -18,6 +18,10 @@ case $COMMAND in
         docker exec -t -i ${CONTAINER_PREFIX}_php appctl.sh clean_tmp;;
     reset)
         docker exec -t -i ${CONTAINER_PREFIX}_php appctl.sh reset;;
+    reset-setup)
+        docker exec -t -i ${CONTAINER_PREFIX}_php appctl.sh reset
+        docker exec -t -i ${CONTAINER_PREFIX}_php appctl.sh init-data
+        ;;
     install)
         docker exec -t -i ${CONTAINER_PREFIX}_php appctl.sh install;;
     rights)

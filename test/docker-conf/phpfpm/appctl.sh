@@ -153,6 +153,13 @@ function launch() {
     cleanTmp
 }
 
+
+function initData()
+{
+  php $APPDIR/console.php account:create admin admin-test@jelix.org Laurent J.
+  php $APPDIR/console.php account:login:create admin --backend=inifile --set-pass=jelix
+}
+
 case $COMMAND in
     clean_tmp)
         cleanTmp;;
@@ -161,6 +168,9 @@ case $COMMAND in
     reset)
           cleanApp
           launchInstaller
+          ;;
+    init-data)
+          initData
           ;;
     launch)
         launch;;

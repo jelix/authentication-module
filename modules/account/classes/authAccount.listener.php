@@ -2,6 +2,7 @@
 
 use Jelix\Authentication\Account;
 use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;
+use Jelix\Authentication\Core\Workflow\Step\StepException;
 
 class authAccountListener extends jEventListener
 {
@@ -27,7 +28,17 @@ class authAccountListener extends jEventListener
             $event->setAccount($account);
         }
         else {
-            $event->setUnknownAccount();
+            $isAccountCreationAllowed = false;
+            if (isset(\jApp::config()->accounts['autoCreateAccountOnLogin']) &&
+                \jApp::config()->accounts['autoCreateAccountOnLogin']) {
+                $isAccountCreationAllowed = true;
+            }
+            if ($isAccountCreationAllowed) {
+                $event->setUnknownAccount();
+            }
+            else {
+                throw new StepException('No account for the login '.$user->getLogin());
+            }
         }
     }
 
