@@ -33,12 +33,14 @@ class CreateAccountCommand extends \Jelix\Scripts\ModuleCommandAbstract
             ->addArgument(
                 'firstname',
                 InputArgument::OPTIONAL,
-                'firstname of the user'
+                'firstname of the user',
+                ''
             )
             ->addArgument(
                 'lastname',
                 InputArgument::OPTIONAL,
-                'lastname of the user'
+                'lastname of the user',
+                ''
             )
         ;
 

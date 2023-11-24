@@ -156,7 +156,7 @@ function launch() {
 
 function initData()
 {
-  php $APPDIR/console.php account:create admin admin-test@jelix.org Laurent J.
+  php $APPDIR/console.php account:create admin admin-test@jelix.org Bob SuperAdmin
   php $APPDIR/console.php account:login:create admin --backend=inifile --set-pass=jelix
 }
 

@@ -1,4 +1,5 @@
 
+* [Installation](installation.md)
 * [configuration of the core](authcore.md)
 * [configuration of the authloginpass module](loginpass/index.md)
 * [what is the authentication workflow](workflow.md)

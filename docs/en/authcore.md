@@ -51,11 +51,11 @@ give into the `idp` option are the name of plugins to activate. `idp` is an arra
 The package provides a "login/password" identity provider, with the module
 `authloginpass`. Name of the plugin is `loginpass`. 
 
-JelixAuthentication keeps informations about the authenticated user, into
+JelixAuthentication keeps information about the authenticated user, into
 the session handler. Two session handlers are provided:
 
-- `php`: it stores authentication informations into the PHP session
-- `var`: it stores authentication informations into an object. This is useful
+- `php`: it stores authentication information into the PHP session
+- `var`: it stores authentication information into an object. This is useful
   for stateless authentication. For exemple, to implement a webAPI where
   credentials should be given at each http request. Or to use authentication
   in a script running in a shell.
