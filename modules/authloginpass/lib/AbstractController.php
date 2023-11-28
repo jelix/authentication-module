@@ -53,7 +53,7 @@ class AbstractController extends \jController
         return ($himself || \jAcl2::check('auth.users.view'));
     }
 
-    protected function _getLoginPassResponse()
+    protected function _getLoginPassResponse($windowTitle, $pageTitle='')
     {
         $response = 'html';
         if ($this->responseId == ''  && isset(\jApp::config()->loginpass_idp)) {
@@ -61,12 +61,20 @@ class AbstractController extends \jController
             $response = (isset($conf['loginResponse']) ? $conf['loginResponse'] : 'html');
         }
 
-        return $this->getResponse($response);
+        $rep = $this->getResponse($response);
+        $rep->title = $windowTitle;
+        if ($pageTitle == '') {
+            $pageTitle = $windowTitle;
+        }
+        if ($response == 'htmlauth') {
+            $rep->body->assign('page_title', $pageTitle);
+        }
+        return $rep;
     }
 
     protected function noaccess($errorId = '')
     {
-        $rep = $this->_getLoginPassResponse();
+        $rep = $this->_getLoginPassResponse('Forbidden');
         $rep->setHttpStatus(403, 'Forbidden');
         return $this->showError($rep, $errorId);
     }

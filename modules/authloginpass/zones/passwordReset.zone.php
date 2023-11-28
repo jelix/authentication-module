@@ -2,7 +2,7 @@
 /**
 * @package      jcommunity
 * @subpackage
-* @author       Laurent Jouanneau <laurent@xulfr.org>
+* @author       Laurent Jouanneau <laurent@jelix.org>
 * @contributor
 * @copyright    2007-2018 Laurent Jouanneau
 * @link         http://jelix.org

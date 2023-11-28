@@ -5,5 +5,5 @@
 
     {formfull $form,'authloginpass~password_reset:send', array()}
 
-    <p><a href="{jurl 'authloginpass~sign:in'}">{@authloginpass~auth.cancel.and.back.to.login@}</a></p>
+    <p><a href="{jurl 'authcore~sign:in'}">{@authloginpass~auth.cancel.and.back.to.login@}</a></p>
 </div>

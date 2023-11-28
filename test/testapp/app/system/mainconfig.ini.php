@@ -201,6 +201,7 @@ backends[]=ldap
 backends[]=daotablesqlite
 backends[]=inifile
 after_login="adminui~default:index"
+loginResponse=htmllogin
 
 [loginpass:common]
 passwordHashAlgo=1

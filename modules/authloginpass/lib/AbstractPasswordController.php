@@ -9,6 +9,7 @@
 
 namespace Jelix\Authentication\LoginPass;
 
+use Jelix\JCommunity\FormPassword;
 use jForms;
 use jLocale;
 use jTpl;
@@ -20,6 +21,8 @@ abstract class AbstractPasswordController extends AbstractController
     // );
 
     protected $configMethodCheck = 'isResetPasswordEnabled';
+
+    protected $pagePasswordTitle = 'password.page.title';
 
     protected $formPasswordTitle = 'password.form.change.title';
 
@@ -39,8 +42,7 @@ abstract class AbstractPasswordController extends AbstractController
             return $repError;
         }
 
-        $rep = $this->_getLoginPassResponse();
-        $rep->title = jLocale::get($this->formPasswordTitle);
+        $rep = $this->_getLoginPassResponse(jLocale::get($this->formPasswordTitle), jLocale::get($this->pagePasswordTitle));
 
         $passReset = new \Jelix\Authentication\LoginPass\PasswordReset($this->forRegistration);
         $tpl = new jTpl();
@@ -62,6 +64,8 @@ abstract class AbstractPasswordController extends AbstractController
             $form->setData('pchg_login', $login);
             $form->setData('pchg_key', $key);
         }
+
+        $tpl->assign('passwordWidget', FormPassword::getWidget($form, 'pchg_password'));
         $tpl->assign('error_status', '');
         $tpl->assign('form', $form);
 
@@ -93,6 +97,10 @@ abstract class AbstractPasswordController extends AbstractController
             return $rep;
         }
 
+        if (FormPassword::canUseSecretEditor() && !FormPassword::checkPassword($form->getData('pchg_password'))) {
+            $form->setErrorOn('pchg_password', jLocale::get('jelix~jforms.password.not.strong.enough'));
+        }
+
         if (!$form->check()) {
             return $rep;
         }
@@ -119,8 +127,7 @@ abstract class AbstractPasswordController extends AbstractController
      */
     public function changed()
     {
-        $rep = $this->_getLoginPassResponse();
-        $rep->title = jLocale::get($this->formPasswordTitle);
+        $rep = $this->_getLoginPassResponse(jLocale::get($this->formPasswordTitle), jLocale::get($this->pagePasswordTitle));
         $tpl = new jTpl();
         $tpl->assign('title', $rep->title);
         $rep->body->assign('MAIN', $tpl->fetch('password_reset_ok'));

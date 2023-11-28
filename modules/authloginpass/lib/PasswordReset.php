@@ -1,7 +1,7 @@
 <?php
 /**
  * @author       Laurent Jouanneau <laurent@jelix.org>
- * @copyright    2018-2019 Laurent Jouanneau
+ * @copyright    2018-2023 Laurent Jouanneau
  *
  * @link         http://jelix.org
  * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
@@ -22,11 +22,24 @@ class PasswordReset {
 
     protected $tplLocaleId = '';
 
+    /**
+     * @var Manager
+     */
     protected $manager;
 
+    /**
+     * @var object jelix configuration
+     */
     protected $config;
 
-    function __construct($forRegistration = false, $byAdmin = false, $manager = null, $config = null) {
+    /**
+     * @param bool $forRegistration
+     * @param bool $byAdmin
+     * @param Manager $manager
+     * @param object $config
+     */
+    function __construct($forRegistration = false, $byAdmin = false, $manager = null, $config = null)
+    {
         $this->forRegistration = $forRegistration;
         $this->byAdmin = $byAdmin;
         if (!$manager) {
@@ -49,16 +62,28 @@ class PasswordReset {
         }
     }
 
-
-    function sendEmail($login, $email)
+    /**
+     * @param AuthUser|null $user
+     * @return string
+     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws \jException
+     * @throws \jExceptionSelector
+     */
+    function sendEmail($user)
     {
-        $user = $this->manager->getUser($login);
-        if (!$user || $user->getEmail() == '' || $user->getEmail() != $email) {
-            \jLog::log('A password reset is attempted for unknown user "'.$login.'" and/or unknown email  "'.$email.'"', 'warning');
+        if (!$user) {
+            \jLog::log('A password reset is attempted for unknown user', 'warning');
             return self::RESET_BAD_LOGIN_EMAIL;
         }
 
-        if (!$this->manager->canChangePassword($user->getLogin())) {
+        $login = $user->getLogin();
+        $email = $user->getEmail();
+        if ($email == '') {
+            \jLog::log('A password reset is attempted for the user "'.$login.'" having no mail', 'warning');
+            return self::RESET_BAD_LOGIN_EMAIL;
+        }
+
+        if (!$this->manager->canChangePassword($login)) {
             return self::RESET_BAD_STATUS;
         }
 
@@ -78,30 +103,29 @@ class PasswordReset {
         $user->setAttribute('keyactivate', ($this->byAdmin?'A:':'U:').$key);
         $user->setAttribute('status', $status);
 
-        list($domain, $websiteUri) = $this->getWebInfos();
+        $config = new Config();
+        list($domain, $websiteUri) = $config->getDomainAndServerURI();
 
-        $mail = $this->getMail($user->getEmail(), $domain);
+        $replyTo = '';
+        if ($this->byAdmin) {
+            $replyTo = \jAuthentication::getCurrentUser()->getEmail();
+        }
 
         $tpl = new \jTpl();
         $tpl->assign('user', $user->getLogin());
-        $tpl->assign('domain_name', $domain);
-        $basePath = \jApp::urlBasePath();
-        $tpl->assign('basePath', ($basePath == '/'?'':$basePath));
-        $tpl->assign('website_uri', $websiteUri);
         $tpl->assign('confirmation_link', \jUrl::getFull(
             'authloginpass~password_reset:resetform@classic',
             array('login' => $user->getLogin(), 'key' => $key)
         ));
-        $config = new Config();
         $tpl->assign('validationKeyTTL', $config->getValidationKeyTTLAsString());
 
-        $body = $tpl->fetchFromString(\jLocale::get($this->tplLocaleId), 'html');
-        $mail->msgHTML($body, '', array($mail, 'html2textKeepLinkSafe'));
-        try {
-            $mail->Send();
-        }
-        catch(\phpmailerException $e) {
-            \jLog::logEx($e, 'error');
+        if (!$config->sendHtmlEmail(
+            $email,
+            \jLocale::get($this->subjectLocaleId, $domain),
+            $tpl,
+            \jLocale::get($this->tplLocaleId),
+            $replyTo)
+        ) {
             return self::RESET_MAIL_SERVER_ERROR;
         }
 
@@ -173,41 +197,8 @@ class PasswordReset {
         return $user;
     }
 
-    /**
-     * Configures the jMailer object to send the mail
-     * 
-     * @param string $email The email address
-     * @param string $domain The domain name
-     * @return \jMailer The mailer object
-     */
-    protected function getMail($email, $domain)
+    function changePassword($user, $newPassword)
     {
-        $mail = new \jMailer();
-        $mail->From = $this->config->mailer['webmasterEmail'];
-        $mail->FromName = $this->config->mailer['webmasterName'];
-        $mail->Sender = $this->config->mailer['webmasterEmail'];
-        $mail->Subject = \jLocale::get($this->subjectLocaleId, $domain);
-        $mail->AddAddress($email);
-        $mail->isHtml(true);
-        return $mail;
-    }
-
-    protected function getWebInfos()
-    {
-        if (method_exists('jServer', 'getDomainName')) {
-            $domain = \jServer::getDomainName();
-            $websiteUri =  \jServer::getServerURI();
-        }
-        else {
-            // old version of jelix < 1.7.5 && < 1.6.30
-            $domain = \jApp::coord()->request->getDomainName();
-            $websiteUri = \jApp::coord()->request->getServerURI();
-        }
-
-        return array($domain, $websiteUri);
-    }
-
-    function changePassword($user, $newPassword) {
         $user->setAttribute('status', AuthUser::STATUS_VALID);
         $user->setAttribute('keyactivate', '');
         $user->setAttribute('password', $newPassword);

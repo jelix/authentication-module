@@ -16,8 +16,8 @@ class LoginFormZone extends jZone
 
     protected function _prepareTpl()
     {
-        $this->_tpl->assign('login', $this->param('login'));
-        $this->_tpl->assign('failed', $this->param('failed'));
+        $this->_tpl->assign('login', $this->param('login', ''));
+        $this->_tpl->assign('failed', $this->param('failed', 0));
 
         $this->_tpl->assign('isAuthenticated', jAuthentication::isCurrentUserAuthenticated());
         $this->_tpl->assign('user', jAuthentication::getCurrentUser());

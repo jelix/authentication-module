@@ -1,7 +1,7 @@
 <?php
 /**
 * @author       Laurent Jouanneau <laurent@jelix.org>
-* @copyright    2015 Laurent Jouanneau
+* @copyright    2015-2023 Laurent Jouanneau
 *
 * @link         http://jelix.org
 * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
@@ -27,6 +27,12 @@ class Config
 
     protected $publicProperties = array('login', 'nickname', 'create_date');
 
+    protected $notifyAccountChange = false;
+
+    protected $notificationReceiverName = '';
+
+    protected $notificationReceiverEmail = '';
+
     protected $config;
 
     /**
@@ -35,7 +41,7 @@ class Config
     protected $validationKeyTTL = 1440; // 24h
 
     /**
-     * Indicate if jcommunity should take care of this following rights:
+     * Indicate if authloginpass should take care of this following rights:
      * - auth.user.modify
      * - auth.user.change.password
      * @var bool
@@ -60,6 +66,9 @@ class Config
             'accountDestroyEnabled' => 'accountDestroyEnabled',
             'useJAuthDbAdminRights' => 'useJAuthDbAdminRights',
             'validationKeyTTL' => 'validationKeyTTL',
+            'notifyAccountChange' => 'notifyAccountChange',
+            'notificationReceiverName' => 'notificationReceiverName',
+            'notificationReceiverEmail' => 'notificationReceiverEmail',
                 ) as $prop => $param) {
             if (array_key_exists($param, $config)) {
                 $this->$prop = $config[$param];
@@ -139,6 +148,12 @@ class Config
         return true;
     }
 
+    public function mustAccountChangeBeNotified()
+    {
+        list($email, $name) = $this->getNotificationReceiver();
+        return $this->notifyAccountChange && ($email != '');
+    }
+
     public function isAccountDestroyEnabled() {
         return $this->accountDestroyEnabled && $this->isAccountChangeEnabled();
     }
@@ -194,4 +209,75 @@ class Config
         }
         return $this->publicProperties;
     }
+
+    public function getDomainAndServerURI()
+    {
+        $domain = \jServer::getDomainName();
+        $websiteUri =  \jServer::getServerURI();
+        return [$domain, $websiteUri];
+    }
+
+    /**
+     * Give email and name of the user who receives notifications
+     *
+     * @return array  ['the email', 'name']
+     */
+    public function getNotificationReceiver()
+    {
+        if ($this->notificationReceiverEmail == '') {
+            $config = $this->config->mailer;
+            $email = $config['webmasterEmail'];
+            $name = $config['webmasterName'];
+        }
+        else {
+            $email = $this->notificationReceiverEmail;
+            $name = $this->notificationReceiverName;
+        }
+        return [$email, $name];
+    }
+
+    /**
+     * Helper to send emails
+     *
+     * @param string $toEmail
+     * @param string $subject
+     * @param \jTpl $tpl
+     * @param string $templateContent
+     * @param string $replyTo
+     * @return bool
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
+    public function sendHtmlEmail($toEmail, $subject, $tpl, $templateContent, $replyTo='')
+    {
+        list($domain, $websiteUri) = $this->getDomainAndServerURI();
+
+        $mail = new \jMailer();
+        $mail->Subject = $subject;
+        $mail->AddAddress($toEmail);
+        $mail->isHtml(true);
+
+        if ($replyTo) {
+            $mail->addReplyTo($replyTo);
+        }
+        $tpl->assign('domain_name', $domain);
+        $basePath = \jApp::urlBasePath();
+        $tpl->assign('basePath', ($basePath == '/'?'':$basePath));
+        $tpl->assign('website_uri', $websiteUri.($basePath == '/'?'':$basePath));
+
+        $body = $tpl->fetchFromString($templateContent, 'html');
+        $mail->msgHTML($body, '', array($mail, 'html2textKeepLinkSafe'));
+        try {
+            $mail->Send();
+        }
+        catch(\PHPMailer\PHPMailer\Exception $e) {
+            \jLog::logEx($e, 'error');
+            return false;
+        }
+        catch(\Exception $e) {
+            \jLog::logEx($e, 'error');
+            return false;
+        }
+        return true;
+    }
+
 }

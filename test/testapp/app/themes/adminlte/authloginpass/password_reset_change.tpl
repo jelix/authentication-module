@@ -6,12 +6,12 @@
 
     {@authloginpass~password.form.change.text.html@}
 
-    {formfull $form,'authloginpass~password_reset:save', array(), 'html', array(
+    {formfull $form,'authloginpass~password_reset:save', array(), 'adminlte', array(
         'plugins' => array(
         'pchg_password' => $passwordWidget
     ))}
 
 {/if}
-
-    <p><a href="{jurl 'authcore~sign:in'}">{@authloginpass~auth.cancel.and.back.to.login@}</a></p>
+    <div class="form-actions">
+    <a href="{jurl 'authcore~sign:in'}">{@authloginpass~auth.cancel.and.back.to.login@}</a></div>
 </div>

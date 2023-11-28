@@ -7,23 +7,20 @@
 
     <form action="{formurl 'authloginpass~sign:checkCredentials'}" method="post" id="loginForm">
         <div class="form-group has-feedback">
-            <input name="login" id="login" class="form-control"  value="{$login|eschtml}" placeholder="{@authloginpass~auth.form.login@}">
+            <label for="login">{@authloginpass~auth.form.login@}</label>
+            <input name="login" id="login" class="form-control"  value="{$login|eschtml}" placeholder="">
             <span class="glyphicon form-control-feedback"></span>
         </div>
         <div class="form-group has-feedback">
-            <input type="password"  name="password" id="password" class="form-control" placeholder="{@authloginpass~auth.form.password@}">
+            <label for="password">{@authloginpass~auth.form.password@}</label>
+            <input type="password"  name="password" id="password" class="form-control" placeholder="">
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
         </div>
-        <div class="row">
-            <div class="col-xs-8">
-                <a href="{jurl 'authloginpass~password_reset:index'}">{@authloginpass~auth.form.password.forget@}</a>
-                {formurlparam 'authloginpass~sign:checkCredentials'}
-            </div>
-            <!-- /.col -->
-            <div class="col-xs-4">
+        <div class="form-actions">
+            {formurlparam 'authloginpass~sign:checkCredentials'}
                 <button type="submit" class="btn btn-primary btn-block btn-flat">{@authloginpass~auth.form.buttons.login@}</button>
-            </div>
-            <!-- /.col -->
+
+                <p><a href="{jurl 'authloginpass~password_reset:index'}">{@authloginpass~auth.form.password.forget@}</a></p>
         </div>
    </form>
 {else}

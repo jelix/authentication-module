@@ -3,5 +3,5 @@
 
     {@authloginpass~auth.waiting.text.html@}
 
-    <p><a href="{jurl 'authloginpass~sign:in'}">{@authloginpass~auth.back.to.login@}</a></p>
+    <p><a href="{jurl 'authcore~sign:in'}">{@authloginpass~auth.back.to.login@}</a></p>
 </div>

@@ -1,13 +1,15 @@
 <?php
 /**
-* @author       Laurent Jouanneau <laurent@xulfr.org>
+* @author       Laurent Jouanneau <laurent@jelix.org>
 * @contributor
 *
-* @copyright    2007-2019 Laurent Jouanneau
+* @copyright    2007-2023 Laurent Jouanneau
 *
 * @link         http://jelix.org
 * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
 */
+
+use Jelix\Authentication\LoginPass\Manager;
 
 /**
  * controller for the password reset process, when a user has forgotten his
@@ -26,8 +28,7 @@ class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswor
             return $repError;
         }
 
-        $rep = $this->_getLoginPassResponse();
-        $rep->title = jLocale::get('authloginpass~password.form.title');
+        $rep = $this->_getLoginPassResponse(jLocale::get('password.form.title'), jLocale::get('password.page.title'));
         $rep->body->assignZone('MAIN', 'passwordReset');
 
         return $rep;
@@ -57,8 +58,22 @@ class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswor
         $login = $form->getData('pass_login');
         $email = $form->getData('pass_email');
 
-        $passReset = new \Jelix\Authentication\LoginPass\PasswordReset();
-        $result = $passReset->sendEmail($login, $email);
+        /** @var Manager $manager */
+        $manager = jAuthentication::manager()->getIdpById('loginpass')->getManager();
+        $user = $manager->getUser($login);
+        if (!$user || $user->getEmail() == '' || $user->getEmail() != $email) {
+            \jLog::log('A password reset is attempted for unknown user "'.$login.'" and/or unknown email  "'.$email.'"', 'warning');
+            // bad given email, ignore the error, so no change to discover
+            // if a login is associated to an email or not
+            jForms::destroy('password_reset');
+            $rep->action = 'password_reset:sent';
+
+            return $rep;
+        }
+
+
+        $passReset = new \Jelix\Authentication\LoginPass\PasswordReset(false, false, $manager);
+        $result = $passReset->sendEmail($user);
         if ($result != $passReset::RESET_OK && $result != $passReset::RESET_BAD_LOGIN_EMAIL) {
             $form->setErrorOn('pass_login', jLocale::get('authloginpass~password.form.change.error.'.$result));
             return $rep;
@@ -83,8 +98,7 @@ class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswor
             return $repError;
         }
 
-        $rep = $this->_getLoginPassResponse();
-        $rep->title = jLocale::get('authloginpass~password.form.title');
+        $rep = $this->_getLoginPassResponse(jLocale::get('password.form.title'), jLocale::get('password.page.title'));
         $tpl = new jTpl();
         $rep->body->assign('MAIN', $tpl->fetch('password_reset_waiting'));
 

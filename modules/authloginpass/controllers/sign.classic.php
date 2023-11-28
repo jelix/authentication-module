@@ -2,12 +2,11 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019-2022 Laurent Jouanneau
+ * @copyright 2019-2023 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
 
-use \Jelix\Authentication\Core\Session;
 
 class signCtrl extends jController
 {
