@@ -48,9 +48,11 @@ class AbstractController extends \jController
         return null;
     }
 
-    protected function canViewProfiles($login) {
+    protected function canViewProfiles($login)
+    {
         $himself = ($login != ''  && jAuthentication::isCurrentUserAuthenticated() && jAuthentication::getCurrentUser()->getLogin() == $login);
-        return ($himself || \jAcl2::check('auth.users.view'));
+        $accountEnabled = \jApp::isModuleEnabled('account');
+        return ($himself || \jAcl2::check('auth.users.view')) && $accountEnabled;
     }
 
     protected function _getLoginPassResponse($windowTitle, $pageTitle='')
@@ -98,14 +100,14 @@ class AbstractController extends \jController
 
     protected function notavailable($errorId = 'not_available')
     {
-        $rep = $this->_getLoginPassResponse();
+        $rep = $this->_getLoginPassResponse('Not available');
         $rep->setHttpStatus(404, 'Not found');
         return $this->showError($rep, $errorId);
     }
 
     protected function badParameters()
     {
-        $rep = $this->_getLoginPassResponse();
+        $rep = $this->_getLoginPassResponse('Bad request');
         $rep->setHttpStatus(400, 'Bad request');
         return $this->showError($rep, 'Invalid parameters');
     }

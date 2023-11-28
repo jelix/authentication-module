@@ -17,11 +17,11 @@ jelix.installparam[wwwfiles]=vhost
 
 test.enabled=on
 
-jacl2.enabled=off
+jacl2.enabled=on
 jacl2.installparam[eps]="[index,admin]"
 
-jacl2db.enabled=off
-jacl2db.installparam[defaultuser]=on
+jacl2db.enabled=on
+jacl2db.installparam[defaultuser]=off
 jacl2db.installparam[defaultgroups]=on
 
 adminui.enabled=on
@@ -108,11 +108,15 @@ adminlte.js[]=adminlte-assets/plugins/fastclick/fastclick.js
 adminlte.js[]=adminlte-assets/dist/js/adminlte.min.js
 adminlte.js[]=adminui-assets/adminui.js
 
+[acl2]
+driver=db
+authAdapterClass="\Jelix\Authentication\Core\Acl2Adapter"
+
 [adminui]
 appVersion=0.0.1
 htmlLogo="Jelix<b>Auth</b>"
 htmlLogoMini="J<b>Auth</b>"
-htmlCopyright="<strong>Copyright &copy; 2019-2022 Laurent Jouanneau</strong>."
+htmlCopyright="<strong>Copyright &copy; 2019-2023 Laurent Jouanneau</strong>."
 dashboardTemplate=
 
 appTitle=Auth test app
