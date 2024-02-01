@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019-2023 Laurent Jouanneau
+ * @copyright 2019-2024 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
@@ -22,17 +22,7 @@ class signCtrl extends jController
      */
     public function in()
     {
-        $rep = $this->getResponse('htmllogin');
-        $rep->title = jLocale::get('authcore~auth.titlePage.login');
-
-        $zp = array(
-            'login' => $this->param('login'),
-            'failed' => $this->param('failed')
-        );
-
-        $rep->body->assignZone('MAIN', 'authloginpass~loginform', $zp);
-
-        return $rep;
+        return $this->redirect('authcore~sign:in');
     }
 
     /**
@@ -68,7 +58,6 @@ class signCtrl extends jController
             $workflow->setFailUrl($failUrl);
             return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
         }
-
 
         return $this->redirectToUrl($failUrl);
     }

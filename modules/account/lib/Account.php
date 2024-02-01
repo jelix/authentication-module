@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * @author alagroy
+ * @copyright 2021-2024 Laurent Jouanneau and other contributors
+ * @license    MIT
+ */
 namespace Jelix\Authentication\Account;
 
 use Jelix\Authentication\Core\AuthSession\UserAccountInterface;

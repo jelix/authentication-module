@@ -1,7 +1,7 @@
 <?php
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2024 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
@@ -81,7 +81,15 @@ class AuthUser
      *
      * @return string
      */
-    function getName() {
+    function getName()
+    {
+        if ($this->account) {
+            $displayName = $this->account->getRealName();
+            if ($displayName) {
+                return $displayName;
+            }
+        }
+
         if (isset($this->attributes[self::ATTR_NAME]) && $this->attributes[self::ATTR_NAME] !== '') {
             return $this->attributes[self::ATTR_NAME];
         }

@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * @author alagroy
+ * @copyright 2021-2024 Laurent Jouanneau and other contributors
+ * @license    MIT
+ */
 namespace Jelix\Authentication\Account;
 
 use jAuthentication;
@@ -100,15 +104,16 @@ class Manager
         return false;
     }
 
+    /**
+     * @return Account|null
+     */
     public static function getCurrentUserAccount()
     {
         $user = jAuthentication::getCurrentUser();
-        
         if (!$user) {
             return null;
         }
-
-        return self::getAccount($user->getName());
+        return self::getAccount($user->getLogin());
     }
 
     /**
@@ -117,25 +122,22 @@ class Manager
      * @param array $newInfos An associative array containing the information to modify and their new values
      * @param Account $user the user to modify, if null, the modified user will be the current one.
      * 
-     * @return bool False if an error occurred
+ * @return Account|false False if an error occurred, else a new Account object wih the updated information
      */
-    public static function modifyInfos($newInfos, $user = null)
+    public static function modifyInfos($newInfos, $accountId)
     {
-        if ($user == null) {
-            $user = self::getCurrentUserAccount();
-            if (!$user) {
-                return false;
-            }
+        $dao = \jDao::get(self::$daoName, self::$daoProfile);
+        $record = $dao->get($accountId);
+        if (!$record) {
+            return false;
         }
 
-        $dao = \jDao::get(self::$daoName, self::$daoProfile);
-        $record = $dao->get($user->getData('account_id'));
         foreach ($newInfos as $prop => $value) {
             $record->$prop = $value;
         }
 
         $dao->update($record);
-        return true;
+        return new Account($record);
     }
 
     public static function getAccountList()

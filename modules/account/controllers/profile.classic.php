@@ -1,11 +1,7 @@
 <?php
 /**
-* @package   test
-* @subpackage account
-* @author    test
-* @copyright 2019 Laurent Jouanneau and other contributors
-* @link      
-* @license    All rights reserved
+* @copyright 2019-2024 Laurent Jouanneau and other contributors
+* @license    MIT
 */
 
 use Jelix\Authentication\Account\Manager;
@@ -69,8 +65,14 @@ class profileCtrl extends jController {
     {
         $rep = $this->getResponse('redirect');
 
-        $formId = Manager::getCurrentUserAccount()->getData('account_id');
-        $form = jForms::get('account~profile_modify', $formId);
+        $account = Manager::getCurrentUserAccount();
+        if (!$account) {
+            $rep->action = 'account~profile:index';
+
+            return $rep;
+        }
+        $accountId = $account->getAccountId();
+        $form = jForms::get('account~profile_modify', $accountId);
         
         if (!$form) {
             jMessage::add(jLocale::get('account.profile.modify.form.error'), 'error');
@@ -94,9 +96,13 @@ class profileCtrl extends jController {
             return true ;
         }, ARRAY_FILTER_USE_KEY);
 
-        Manager::modifyInfos($newInfos);
+        // update account information into the session
+        $updatedAccount = Manager::modifyInfos($newInfos,$accountId);
 
-        jForms::destroy('account~profile_modify', $formId);
+        $user = jAuthentication::getCurrentUser();
+        $user->setAccount($updatedAccount);
+
+        jForms::destroy('account~profile_modify', $accountId);
         $rep->action = 'account~profile:index';
 
         return $rep;

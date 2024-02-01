@@ -18,7 +18,7 @@ class defaultCtrl extends jController {
     function index() {
         $rep = $this->getResponse('html');
         $tpl = new jTpl();
-        $tpl->assign('login', jAuthentication::getCurrentUser()->getLogin());
+        $tpl->assign('login', jAuthentication::getCurrentUser()->getName());
         $rep->body->assign('MAIN', $tpl->fetch('homepage'));
         return $rep;
     }
