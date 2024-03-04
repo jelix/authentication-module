@@ -17,11 +17,11 @@ jelix.installparam[wwwfiles]=vhost
 
 test.enabled=on
 
-jacl2.enabled=off
+jacl2.enabled=on
 jacl2.installparam[eps]="[index,admin]"
 
-jacl2db.enabled=off
-jacl2db.installparam[defaultuser]=on
+jacl2db.enabled=on
+jacl2db.installparam[defaultuser]=off
 jacl2db.installparam[defaultgroups]=on
 
 adminui.enabled=on
@@ -32,7 +32,7 @@ authloginpass.enabled=on
 
 [coordplugins]
 sessionauth = on
-
+jacl2=1
 
 [responses]
 html="\Jelix\AdminUI\Responses\AdminUIResponse"
@@ -225,3 +225,6 @@ featureDeleteUser=on
 featureChangePassword=on
 
 
+[acl2]
+driver=db
+authAdapterClass="\Jelix\Authentication\Core\Acl2Adapter"
