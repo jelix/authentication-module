@@ -111,7 +111,7 @@ adminlte.js[]=adminui-assets/adminui.js
 appVersion=0.0.1
 htmlLogo="Jelix<b>Auth</b>"
 htmlLogoMini="J<b>Auth</b>"
-htmlCopyright="<strong>Copyright &copy; 2019-2022 Laurent Jouanneau</strong>."
+htmlCopyright="<strong>Copyright &copy; 2019-2024 Laurent Jouanneau</strong>."
 dashboardTemplate=
 
 appTitle=Auth test app
