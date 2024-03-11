@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="accountadmin@jelix.org" name="accountadmin" createdate="2024-03-11">
+        <version date="2024-03-11">0.1pre</version>
+        <label lang="en_US">accountadmin</label>
+        <description lang="en_US" />
+        <license URL="">All rights reserved</license>
+        <copyright>2019 Laurent Jouanneau and other contributors</copyright>
+        <creator name="Raphaël MARTIN" email=""/>
+        <!--<contributor name="hisname" email="hisemail@yoursite.undefined"/>-->
+        <homepageURL></homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.8.8-pre" maxversion="1.8.*"/>
+        <module name="account" />
+    </dependencies>
+    <autoload>
+        <!--<psr4 namespace="\My\Namespace\accountadmin" dir="./"/>-->
+    </autoload>
+</module>

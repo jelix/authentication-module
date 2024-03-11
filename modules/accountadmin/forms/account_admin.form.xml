@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+<output ref="account_id">
+    <label locale="accountadmin~account_admin.profile.th.account_id"/>
+</output>
+<input type="string" ref="username">
+    <label locale="account~account.profile.th.username"/>
+</input>
+
+    <input type="string" ref="firstname">
+        <label locale="account~account.profile.th.firstname"/>
+    </input>
+
+    <input type="string" ref="lastname">
+        <label locale="account~account.profile.th.lastname"/>
+    </input>
+
+    <input type="email" ref="email">
+        <label locale="account~account.profile.th.email"/>
+    </input>
+
+    <input type="integer" ref="status">
+        <label locale="account~account.profile.th.status"/>
+    </input>
+    <radiobuttons  ref="status">
+        <label locale="account~account.profile.th.status"/>
+        <item value="-2" locale='account~account.profile.status.text.-2' />
+        <item value="-1" locale='account~account.profile.status.text.-1' />
+        <item value="0" locale='account~account.profile.status.text.0' />
+        <item value="1" locale='account~account.profile.status.text.1' />
+    </radiobuttons >
+<output ref="create_date">
+    <label locale="account~account.profile.th.createdate"/>
+</output>
+
+<output ref="modify_date">
+    <label locale="accountadmin~account_admin.profile.th.modify_date"/>
+</output>
+<submit ref="submit">
+    <label locale="account~account.profile.button.modify"/>
+</submit>
+
+</form>
