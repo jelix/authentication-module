@@ -31,6 +31,7 @@ authcore.enabled=on
 authloginpass.enabled=on
 account.enabled=on
 
+accountadmin.enabled=on
 [coordplugins]
 sessionauth=on
 
