@@ -11,11 +11,27 @@ class defaultCtrl extends jControllerDaoCrud {
 
     protected $form = 'accountadmin~account_admin';
 
-    /**
-    *
-    */
     public function _afterUpdate($form, $id, $resp) {
         // fire event ?
+        \jEvent::notify('AccountUserUpdate', array(
+            'account_id' => $id
+        ));
+        return $resp;
+    }
+
+    public function _afterCreate($form, $id, $resp) {
+        // fire event ?
+        \jEvent::notify('AccountUserCreate', array(
+            'account_id' => $id
+        ));
+        return $resp;
+    }
+
+    public function _delete($id, $resp) {
+        // fire event ?
+        \jEvent::notify('AccountUserDelete', array(
+            'account_id' => $id
+        ));
         return $resp;
     }
 
