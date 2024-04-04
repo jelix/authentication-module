@@ -11,9 +11,9 @@
         }
     ],
     "config": {
-      "allow-plugins": {
-        "jelix/composer-module-setup": true
-      }
+        "allow-plugins": {
+            "jelix/composer-module-setup": true
+        }
     },
     "require": {
         "php": ">=7.4",

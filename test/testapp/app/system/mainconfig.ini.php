@@ -33,7 +33,7 @@ account.enabled=on
 
 [coordplugins]
 sessionauth=on
-
+jacl2=1
 
 [responses]
 html="\Jelix\AdminUI\Responses\AdminUIResponse"
@@ -116,7 +116,7 @@ authAdapterClass="\Jelix\Authentication\Core\Acl2Adapter"
 appVersion=0.0.1
 htmlLogo="Jelix<b>Auth</b>"
 htmlLogoMini="J<b>Auth</b>"
-htmlCopyright="<strong>Copyright &copy; 2019-2023 Laurent Jouanneau</strong>."
+htmlCopyright="<strong>Copyright &copy; 2019-2024 Laurent Jouanneau</strong>."
 dashboardTemplate=
 
 appTitle=Auth test app
@@ -229,3 +229,8 @@ profile=openldap
 featureCreateUser=on
 featureDeleteUser=on
 featureChangePassword=on
+
+
+[acl2]
+driver=db
+authAdapterClass="\Jelix\Authentication\Core\Acl2Adapter"
