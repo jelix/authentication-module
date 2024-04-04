@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="authloginpass@modules.jelix.org" name="authloginpass" createdate="2019-09-27">
-        <version date="2024-04-04">0.3.0</version>
+        <version date="2024-04-04">0.4.0-pre</version>
         <label lang="en_US">JelixAuth LoginPass</label>
         <description lang="en_US">Identity provider based on Login/password, for JelixAuth</description>
         <license>MIT</license>
