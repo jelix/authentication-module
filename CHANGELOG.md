@@ -1,4 +1,49 @@
 
+
+Next version
+------------
+
+There is a new **account module** which add feature for user accounts into an application.
+Its feature:
+- page for the user to show and modify its profile (name, email, and any other informations
+  if the application provides its own form and dao)
+- commands to 
+  - list accounts, 
+  - attach/detach an account to an identity managed by an authentication provider
+  - list attached identities to an account
+  - create an account, or create an account with a loginpass identity
+ 
+
+This new version implements also a **workflow for the authentication process**. 
+The authentication process has several steps that modules can bring, allowing a high customization.
+Major Steps are :
+- primary authentication by an authentication provider (with a login form, or remote authentication etc..)
+- retrieve of the application account corresponding to the authenticated user
+- or creation of the account, if the automatic account creation is enabled
+- second factor step, if a module provides a second factor for authentication
+- access validation step : modules can provide additionnal steps, like   
+  acknowledgment of terms of service, or a form to force to change the password, etc.
+- final step: the user session is complete and the user can use the application.
+ 
+
+**Other new features**:
+
+- commands for the loginpass provider
+  - to create/delete a login
+  - to change a password
+  - to list activated backends
+  - to list logins
+- support of password reset into the authloginpass module
+
+
+**API BREAKAGE:**
+
+In several places, "username" has been renamed to "realname" to avoid confusion with "login".
+- in `AuthUser::ATTR_NAME`
+- in dao `authloginpass~user`
+- in ldap attributes
+
+
 0.3.0
 -----
 
