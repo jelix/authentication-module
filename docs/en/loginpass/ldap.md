@@ -192,3 +192,18 @@ contains the group name. Ex: `searchGroupProperty="cn"`.
 You may also indicate the base DN for the search, into `searchGroupBaseDN`. Example:
 `searchGroupBaseDN="ou=Groups,dc=Acme,dc=pt"`.
 
+Other configuration properties
+-------------------------------
+
+**`searchUserByEmailFilter`**
+
+This is a filter to search a user by his email. Example: 
+
+`searchUserByEmailFilter="(&(objectClass=inetOrgPerson)(mail=%%EMAIL%%))"`
+
+You can use a list:
+
+```
+searchUserByEmailFilter[]="(&(objectClass=inetOrgPerson)(mail=%%EMAIL%%))"
+searchUserByEmailFilter[]="(&(objectClass=posixAccount)(mail=%%EMAIL%%))"
+```

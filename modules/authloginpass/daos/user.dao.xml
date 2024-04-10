@@ -33,6 +33,13 @@
          </conditions>
      </method>
 
+     <method name="getByEmail" type="selectfirst">
+         <parameter name="email" />
+         <conditions>
+             <eq property="email" expr="$email" />
+         </conditions>
+     </method>
+
      <method name="getByLoginForAuthentication" type="selectfirst">
          <parameter name="login" />
          <conditions>

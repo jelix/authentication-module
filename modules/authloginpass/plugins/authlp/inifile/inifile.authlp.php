@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019 Laurent Jouanneau
+ * @copyright  2019-2024 Laurent Jouanneau
  * @license   MIT
  */
 
@@ -200,6 +200,24 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         return true;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function userWithEmailExists($email)
+    {
+        foreach($this->iniContent as $secName => $userRec) {
+            if (strpos($secName , 'login:') !== 0) {
+                continue;
+            }
+            if (isset($userRec['email']) && $userRec['email'] == $email) {
+                $login = str_replace('login:', '', $secName);
+                return $login;
+            }
+        }
+        return false;
+    }
+
+
     public function getUser($login)
     {
         if (!$this->userExists($login)) {
@@ -207,7 +225,6 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         }
         $section = 'login:'.$login;
         $userRec = $this->iniContent[$section];
-        $propTab = array();
         return new AuthUser($login, array_merge($userRec, array(
             AuthUser::ATTR_NAME => $userRec['name'],
             AuthUser::ATTR_EMAIL => $userRec['email'],

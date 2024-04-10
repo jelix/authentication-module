@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019 Laurent Jouanneau
+ * @copyright  2019-2024 Laurent Jouanneau
  * @license   MIT
  */
 
@@ -76,6 +76,7 @@ class ldapBackend extends BackendAbstract
             'adminPassword'      =>  null,
             'protocolVersion'   =>  3,
             'searchUserBaseDN' => '',
+            'searchUserByEmailFilter' => array(),
             'searchGroupFilter' => '',
             'searchGroupKeepUserInDefaultGroups' => true,
             'searchGroupProperty' => '',
@@ -134,6 +135,14 @@ class ldapBackend extends BackendAbstract
         }
         if (!is_array($this->_params['searchUserFilter'])) {
             $this->_params['searchUserFilter'] = array($this->_params['searchUserFilter']);
+        }
+
+        if ($this->_params['searchUserByEmailFilter'] == '') {
+            throw new jException('authloginpass~ldap.error.searchUserByEmailFilter.missing');
+        }
+
+        if (!is_array($this->_params['searchUserByEmailFilter'])) {
+            $this->_params['searchUserByEmailFilter'] = array($this->_params['searchUserByEmailFilter']);
         }
 
         if (!isset($this->_params['bindUserDN']) || $this->_params['bindUserDN'] == '') {
@@ -211,6 +220,24 @@ class ldapBackend extends BackendAbstract
         $this->latestExistingUser = $this->searchLdapUserAttributes($connectAdmin, $login);
         ldap_close($connectAdmin);
         return ($this->latestExistingUser !== false);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function userWithEmailExists($email)
+    {
+        $connectAdmin = $this->_bindLdapAdminUser();
+        if (!$connectAdmin) {
+            return false;
+        }
+        // see if the user exists into the ldap directory
+        $this->latestExistingUser = $this->searchLdapUserAttributes($connectAdmin, $email, true);
+        ldap_close($connectAdmin);
+        if ($this->latestExistingUser) {
+            return $this->latestExistingUser->getLogin();
+        }
+        return false;
     }
 
     public function getUser($login)
@@ -487,13 +514,22 @@ class ldapBackend extends BackendAbstract
     /**
      * @return ldapBackendUserLdapAttributes|false   ldap & user attributes or false if not found
      */
-    protected function searchLdapUserAttributes($connect, $login)
+    protected function searchLdapUserAttributes($connect, $login, $loginIsEmail = false)
     {
         $searchAttributes = array_keys($this->_params['searchAttributes']);
         $filters = array();
-        foreach ($this->_params['searchUserFilter'] as $searchUserFilter) {
+
+        $filterStr = 'searchUserFilter';
+        $filterTokens = array('%%LOGIN%%', '%%USERNAME%%'); // USERNAME deprecated
+
+        if ($loginIsEmail) {
+            $filterStr = 'searchUserByEmailFilter';
+            $filterTokens = '%%EMAIL%%';
+        }
+
+        foreach ($this->_params[$filterStr] as $searchUserFilter) {
             $filter = str_replace(
-                array('%%LOGIN%%', '%%USERNAME%%'), // USERNAME deprecated
+                $filterTokens,
                 $login,
                 $searchUserFilter
             );
@@ -795,7 +831,6 @@ class ldapBackend extends BackendAbstract
     {
         jLog::log($this->getLdapError($connect, $contextMessage), 'auth');
     }
-
 }
 
 

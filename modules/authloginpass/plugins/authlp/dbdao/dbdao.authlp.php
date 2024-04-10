@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019-2022 Laurent Jouanneau
+ * @copyright  2019-2024 Laurent Jouanneau
  * @license   MIT
  */
 
@@ -180,6 +180,18 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
     /**
      * @inheritdoc
      */
+    public function userWithEmailExists($email)
+    {
+        $this->latestExistingUser = $this->daoFactory->getByEmail($email);
+        if ($this->latestExistingUser) {
+            return $this->latestExistingUser->login;
+        }
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getUser($login)
     {
         if ($this->latestExistingUser && $this->latestExistingUser->login == $login) {
@@ -242,4 +254,5 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             );
         }
     }
+
 }

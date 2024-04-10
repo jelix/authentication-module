@@ -43,6 +43,16 @@ In several places, "username" has been renamed to "realname" to avoid confusion 
 - in dao `authloginpass~user`
 - in ldap attributes
 
+Changes into BackendPluginInterface:
+- new method `public function userWithEmailExists($email)`
+
+Changes into the dao for the dbdao backend of loginpass:
+- new method `getByEmail($email)`
+
+
+**CONFIGURATION CHANGES:**
+
+- new configuration properties for the ldap backend: `searchUserByEmailFilter`
 
 0.3.0
 -----

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019 Laurent Jouanneau
+ * @copyright  2019-2024 Laurent Jouanneau
  * @license   MIT
  */
 namespace Jelix\Authentication\LoginPass;
@@ -99,6 +99,12 @@ interface BackendPluginInterface
      * @return boolean true if a user with this login exists
      */
     public function userExists($login);
+
+    /**
+     * @param string $email
+     * @return string|false the login if a user exists with the given email, or  false if not found
+     */
+    public function userWithEmailExists($email);
 
     /**
      * Gets an user by its login
