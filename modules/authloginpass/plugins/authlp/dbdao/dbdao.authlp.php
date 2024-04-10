@@ -21,6 +21,17 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
      */
     protected $daoFactory;
 
+
+    /**
+     * It's a cache for the latest user retrieved by userExists.
+     *
+     * It avoids to do the same query when calling userExists() and then
+     * another method that needs the retrieved record.
+     *
+     * @var \jDaoRecordBase|null the user record retrieved during userExists
+     */
+    protected $latestExistingUser = null;
+
     /**
      * @inheritdoc
      */
@@ -51,6 +62,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
      */
     public function createUser($login, $password, $email, $name = '')
     {
+        $this->latestExistingUser = null;
         $record = $this->daoFactory->createRecord();
         $record->login = $login;
         $record->password = $this->hashPassword($password);
@@ -69,10 +81,17 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
      */
     public function deleteUser($login)
     {
-        $user = $this->daoFactory->getByLogin($login);
-        if (!$user) {
-            return true;
+        if (!$this->latestExistingUser || $this->latestExistingUser->login != $login) {
+            $user = $this->daoFactory->getByLogin($login);
+            if (!$user) {
+                return true;
+            }
         }
+        else {
+            $user = $this->latestExistingUser;
+            $this->latestExistingUser = null;
+        }
+
         if (!$this->daoFactory->deleteByLogin($login)) {
             return false;
         }
@@ -87,6 +106,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
      */
     public function changePassword($login, $newpassword)
     {
+        $this->latestExistingUser = null;
         $dao = jDao::get($this->_params['dao'], $this->_params['profile']);
         return ($dao->updatePassword($login, $this->hashPassword($newpassword)) > 0);
     }
@@ -96,6 +116,8 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
      */
     public function verifyAuthentication($login, $password)
     {
+        $this->latestExistingUser = null;
+
         if (trim($password) == '') {
             return false;
         }
@@ -145,13 +167,14 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         return $user;
     }
 
+
     /**
      * @inheritdoc
      */
     public function userExists($login)
     {
-        $userRec = $this->daoFactory->getByLogin($login);
-        return !!$userRec;
+        $this->latestExistingUser = $this->daoFactory->getByLogin($login);
+        return !!$this->latestExistingUser;
     }
 
     /**
@@ -159,10 +182,14 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
      */
     public function getUser($login)
     {
-        if (!$this->userExists($login)) {
-            return null;
+        if ($this->latestExistingUser && $this->latestExistingUser->login == $login) {
+            $userRec = $this->latestExistingUser;
         }
-        $userRec = $this->daoFactory->getByLogin($login);
+        else {
+            $userRec = $this->daoFactory->getByLogin($login);
+        }
+        $this->latestExistingUser = null;
+
         return new AuthUser($userRec->user_id, array_merge(json_decode($userRec->attributes),
             array(
                 AuthUser::ATTR_LOGIN => $userRec->login,
@@ -177,10 +204,17 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
      */
     public function updateUser($login, $attributes)
     {
-        if (!$this->userExists($login)) {
-            return ;
+        if ($this->latestExistingUser && $this->latestExistingUser->login == $login) {
+            $userRec = $this->latestExistingUser;
         }
-        $userRec = $this->daoFactory->getByLogin($login);
+        else {
+            $userRec = $this->daoFactory->getByLogin($login);
+        }
+        $this->latestExistingUser = null;
+        if (!$userRec) {
+            return;
+        }
+
         foreach($attributes as $key => $value) {
             if (property_exists($userRec, $key)) {
                 $userRec->$key = $value;
@@ -196,6 +230,8 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
      */
     public function getUsersList()
     {
+        $this->latestExistingUser = null;
+
         foreach($this->daoFactory->findAll() as $userRec) {
             yield new AuthUser($userRec->user_id, array_merge(json_decode($userRec->attributes),
                     array(

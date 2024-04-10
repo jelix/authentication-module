@@ -35,6 +35,17 @@ class ldapBackend extends BackendAbstract
 
     protected $uriConnect = '';
 
+
+    /**
+     * It's a cache for the latest user retrieved by userExists.
+     *
+     * It avoids to do the same query when calling userExists() and then
+     * another method that needs the retrieved record.
+     *
+     * @var ldapBackendUserLdapAttributes|null the user record retrieved during userExists
+     */
+    protected $latestExistingUser = null;
+
     /**
      * @param array $params configuration parameters
      * @param array|null profile data. if not given, it will use the profile
@@ -197,15 +208,17 @@ class ldapBackend extends BackendAbstract
             return false;
         }
         // see if the user exists into the ldap directory
-        $result = $this->searchLdapUserAttributes($connectAdmin, $login);
+        $this->latestExistingUser = $this->searchLdapUserAttributes($connectAdmin, $login);
         ldap_close($connectAdmin);
-        return ($result !== false);
+        return ($this->latestExistingUser !== false);
     }
 
-    public function getUser($login) {
-        if (!$this->userExists($login)) {
-            return null;
+    public function getUser($login)
+    {
+        if ($this->latestExistingUser && $this->latestExistingUser->getLogin() == $login) {
+            return new AuthUser($login, $this->latestExistingUser->userAttributes);
         }
+
         $connectAdmin = $this->_bindLdapAdminUser();
         if (!$connectAdmin) {
             return null;
@@ -213,19 +226,34 @@ class ldapBackend extends BackendAbstract
         // see if the user exists into the ldap directory
         $result = $this->searchLdapUserAttributes($connectAdmin, $login);
         ldap_close($connectAdmin);
+
+        if (!$result) {
+            return null;
+        }
+
         return new AuthUser($login, $result->userAttributes);
     }
 
     public function updateUser($login, $attributes)
     {
-        if (!$this->userExists($login)) {
-            return ;
+        $ldapAttributes = null;
+        if ($this->latestExistingUser && $this->latestExistingUser->getLogin() == $login) {
+            $ldapAttributes = $this->latestExistingUser;
         }
+        $this->latestExistingUser = null;
+
         $connectAdmin = $this->_bindLdapAdminUser();
         if (!$connectAdmin) {
             return ;
         }
-        $ldapAttributes = $this->searchLdapUserAttributes($connectAdmin, $login);
+
+        if (!$ldapAttributes) {
+            $ldapAttributes = $this->searchLdapUserAttributes($connectAdmin, $login);
+            if (!$ldapAttributes) {
+                return null;
+            }
+        }
+
         ldap_mod_replace($connectAdmin, $ldapAttributes->dn, $attributes);
         ldap_close($connectAdmin);
     }
@@ -235,6 +263,8 @@ class ldapBackend extends BackendAbstract
      */
     public function createUser($login, $password, $email, $name = '')
     {
+        $this->latestExistingUser = null;
+
         if (!$this->_params['featureCreateUser']) {
             return false;
         }
@@ -282,16 +312,22 @@ class ldapBackend extends BackendAbstract
             return false;
         }
 
-        // see if the user exists into the ldap directory
-        $attributes = $this->searchLdapUserAttributes($connectAdmin, $login);
-        if ($attributes === false) {
+        if ($this->latestExistingUser && $this->latestExistingUser->getLogin() == $login) {
+            $ldapAttributes = $this->latestExistingUser;
+        }
+        else {
+            $ldapAttributes  = $this->searchLdapUserAttributes($connectAdmin, $login);
+        }
+        $this->latestExistingUser = null;
+
+        if (!$ldapAttributes) {
             ldap_close($connectAdmin);
             return true;
         }
 
-        $user = new AuthUser($login, $attributes->userAttributes);
+        $user = new AuthUser($login, $ldapAttributes->userAttributes);
 
-        $result = ldap_delete($connectAdmin, $attributes->dn);
+        $result = ldap_delete($connectAdmin, $ldapAttributes->dn);
         ldap_close($connectAdmin);
 
         if (!$result) {
@@ -314,9 +350,15 @@ class ldapBackend extends BackendAbstract
             return false;
         }
 
-        // see if the user exists into the ldap directory
-        $attributes = $this->searchLdapUserAttributes($connectAdmin, $login);
-        if ($attributes === false) {
+        if ($this->latestExistingUser && $this->latestExistingUser->getLogin() == $login) {
+            $ldapAttributes = $this->latestExistingUser;
+        }
+        else {
+            $ldapAttributes  = $this->searchLdapUserAttributes($connectAdmin, $login);
+        }
+        $this->latestExistingUser = null;
+
+        if (!$ldapAttributes) {
             ldap_close($connectAdmin);
             return true;
         }
@@ -325,7 +367,7 @@ class ldapBackend extends BackendAbstract
             "userPassword" => $this->hashPassword($newpassword)
         );
 
-        if (ldap_modify($connectAdmin, $attributes->dn, $entry) === false) {
+        if (ldap_modify($connectAdmin, $ldapAttributes->dn, $entry) === false) {
             jLog::log('authloginpass ldap: error when trying to change password of user "'.$login.'": '.ldap_errno($connectAdmin).':'.ldap_error($connectAdmin), 'auth');
             ldap_close($connectAdmin);
             return false;
@@ -350,12 +392,18 @@ class ldapBackend extends BackendAbstract
             return false;
         }
 
-        // see if the user exists into the ldap directory
-        $attributes = $this->searchLdapUserAttributes($connectAdmin, $login);
-        if ($attributes === false) {
+        if ($this->latestExistingUser && $this->latestExistingUser->getLogin() == $login) {
+            $ldapAttributes = $this->latestExistingUser;
+        }
+        else {
+            $ldapAttributes  = $this->searchLdapUserAttributes($connectAdmin, $login);
+        }
+        $this->latestExistingUser = null;
+
+        if (!$ldapAttributes) {
             jLog::log('authloginpass ldap: user '.$login.' not found into the ldap', 'auth');
             ldap_close($connectAdmin);
-            return false;
+            return true;
         }
 
         $connect = $this->_getLinkId();
@@ -364,8 +412,9 @@ class ldapBackend extends BackendAbstract
             ldap_close($connectAdmin);
             return false;
         }
+
         // authenticate user. let's try with all configured DN
-        $userDn = $this->bindUser($connect, $attributes->ldapAttributes, $login, $password);
+        $userDn = $this->bindUser($connect, $ldapAttributes->ldapAttributes, $login, $password);
         ldap_close($connect);
 
         if ($userDn === false) {
@@ -378,7 +427,7 @@ class ldapBackend extends BackendAbstract
         }
 
         // retrieve the user group (if relevant)
-        $userGroups = $this->searchUserGroups($connectAdmin, $userDn, $attributes->ldapAttributes, $login);
+        $userGroups = $this->searchUserGroups($connectAdmin, $userDn, $ldapAttributes->ldapAttributes, $login);
         ldap_close($connectAdmin);
         if ($userGroups !== false) {
             // the user is at least in a ldap group, so we synchronize ldap groups
@@ -386,12 +435,13 @@ class ldapBackend extends BackendAbstract
             $this->synchronizeAclGroups($login, $userGroups);
         }
 
-        $user = new AuthUser($login, $attributes->userAttributes);
+        $user = new AuthUser($login, $ldapAttributes->userAttributes);
         return $user;
     }
 
     public function getUsersList()
     {
+        $this->latestExistingUser = null;
         throw new \Exception('not implemented');
     }
 
@@ -757,4 +807,19 @@ class ldapBackendUserLdapAttributes {
 
     public $userAttributes = array();
 
+    public function getLogin()
+    {
+        if (isset($this->userAttributes[AuthUser::ATTR_LOGIN])) {
+            return $this->userAttributes[AuthUser::ATTR_LOGIN];
+        }
+        return null;
+    }
+
+    public function getEmail()
+    {
+        if (isset($this->userAttributes[AuthUser::ATTR_EMAIL])) {
+            return $this->userAttributes[AuthUser::ATTR_EMAIL];
+        }
+        return null;
+    }
 }

@@ -49,6 +49,7 @@ class Config
     protected $useJAuthDbAdminRights = false;
 
     /**
+     * @param object $appConfig  configuration as given by \jApp::config().
      */
     public function __construct($appConfig = null)
     {
@@ -75,6 +76,9 @@ class Config
             }
         }
 
+        if ($this->responseType == '') {
+            $this->responseType = 'html';
+        }
 
         if (array_key_exists('publicProperties', $config)) {
             if (!is_array($config['publicProperties'])) {

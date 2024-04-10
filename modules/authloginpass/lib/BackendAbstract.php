@@ -72,9 +72,9 @@ abstract class BackendAbstract implements BackendPluginInterface
         return null;
     }
 
-    public function hasFeature($feat) {
+    public function hasFeature($feature) {
         $features = $this->getFeatures();
-        return ($features|$feat) > 0;
+        return ($features|$feature) > 0;
     }
 
 
