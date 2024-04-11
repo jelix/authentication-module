@@ -122,20 +122,6 @@ class Config
         return $this->resetPasswordEnabled;
     }
 
-    public function isResetAdminPasswordEnabled()
-    {
-        return $this->resetAdminPasswordEnabled;
-    }
-
-    public function isResetAdminPasswordEnabledForAdmin()
-    {
-        if ($this->useJAuthDbAdminRights) {
-            return $this->resetAdminPasswordEnabled &&
-                \jAcl2::check('auth.users.change.password');
-        }
-        return $this->resetAdminPasswordEnabled;
-    }
-
     public function isPasswordChangeEnabled()
     {
         if ($this->useJAuthDbAdminRights) {

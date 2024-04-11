@@ -16,11 +16,9 @@ class PasswordReset {
 
     protected $forRegistration = false;
 
-    protected $byAdmin = false;
+    protected $subjectLocaleId = 'authloginpass~mail.password.resetcode.subject';
 
-    protected $subjectLocaleId = '';
-
-    protected $tplLocaleId = '';
+    protected $tplLocaleId = 'authloginpass~mail.password.resetcode.body.html';
 
     /**
      * @var Manager
@@ -28,37 +26,27 @@ class PasswordReset {
     protected $manager;
 
     /**
-     * @var object jelix configuration
+     * @var Config
      */
     protected $config;
 
     /**
      * @param bool $forRegistration
-     * @param bool $byAdmin
      * @param Manager $manager
-     * @param object $config
+     * @param Config $config
      */
-    function __construct($forRegistration = false, $byAdmin = false, $manager = null, $config = null)
+    function __construct($forRegistration = false, $manager = null, $config = null)
     {
         $this->forRegistration = $forRegistration;
-        $this->byAdmin = $byAdmin;
         if (!$manager) {
             $this->manager = jAuthentication::manager()->getIdpById('loginpass')->getManager();
         } else {
             $this->manager = $manager;
         }
-        if (!$config) {
-            $this->config = \jApp::config();
-        } else {
+        if ($config) {
             $this->config = $config;
-        }
-        if ($byAdmin) {
-            $this->subjectLocaleId = 'authloginpass~mail.password.admin.reset.subject';
-            $this->tplLocaleId = 'authloginpass~mail.password.admin.reset.body.html';
-        }
-        else {
-            $this->subjectLocaleId = 'authloginpass~mail.password.reset.subject';
-            $this->tplLocaleId = 'authloginpass~mail.password.reset.body.html';
+        } else {
+            $this->config =  new Config(\jApp::config());
         }
     }
 
@@ -106,10 +94,6 @@ class PasswordReset {
         $config = new Config();
         list($domain, $websiteUri) = $config->getDomainAndServerURI();
 
-        $replyTo = '';
-        if ($this->byAdmin) {
-            $replyTo = \jAuthentication::getCurrentUser()->getEmail();
-        }
 
         $tpl = new \jTpl();
         $tpl->assign('user', $user->getLogin());
@@ -123,8 +107,7 @@ class PasswordReset {
             $email,
             \jLocale::get($this->subjectLocaleId, $domain),
             $tpl,
-            \jLocale::get($this->tplLocaleId),
-            $replyTo)
+            \jLocale::get($this->tplLocaleId))
         ) {
             return self::RESET_MAIL_SERVER_ERROR;
         }

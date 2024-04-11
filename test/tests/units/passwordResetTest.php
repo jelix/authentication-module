@@ -60,7 +60,7 @@ class PasswordResetTest extends TestCase
             $manager->canChangePassword = true;
             $config = (object)array();
             $config->mailer = array('webmasterEmail' => 'test.test@test.com');
-            $passReset = new PasswordReset(false, false, $manager, $config);
+            $passReset = new PasswordReset(false, $manager, $config);
             $this->assertEquals(PasswordReset::RESET_BAD_KEY, $passReset->checkKey('', ''));
             $this->assertEquals(PasswordReset::RESET_BAD_KEY, $passReset->checkKey('test', ''));
             $this->assertEquals(PasswordReset::RESET_BAD_KEY, $passReset->checkKey('', 'test'));
