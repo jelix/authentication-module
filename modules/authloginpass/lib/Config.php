@@ -1,11 +1,11 @@
 <?php
 /**
-* @author       Laurent Jouanneau <laurent@jelix.org>
-* @copyright    2015-2023 Laurent Jouanneau
-*
-* @link         http://jelix.org
-* @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
-*/
+ * @author    Laurent Jouanneau <laurent@jelix.org>
+ * @copyright 2015-2024 Laurent Jouanneau
+ *
+ * @link      https://jelix.org
+ * @license   MIT
+ */
 
 namespace Jelix\Authentication\LoginPass;
 
@@ -33,12 +33,14 @@ class Config
 
     protected $notificationReceiverEmail = '';
 
+    protected $appName = '';
+
     protected $config;
 
     /**
      * @var integer  TTL in minutes
      */
-    protected $validationKeyTTL = 1440; // 24h
+    protected $validationKeyTTL = 20;
 
     /**
      * Indicate if authloginpass should take care of this following rights:
@@ -58,6 +60,17 @@ class Config
         } else {
             $this->config = \jApp::config();
         }
+
+        if (isset($this->config->adminui['appTitle'])) {
+            $this->appName = $this->config->adminui['appTitle'];
+        }
+        elseif (isset($this->config->appName)) {
+            $this->appName = $this->config->appName;
+        }
+        else {
+            $this->appName = \jServer::getDomainName();
+        }
+
         $config = (isset($this->config->loginpass_idp) ? $this->config->loginpass_idp : array());
 
         foreach(array(
@@ -151,6 +164,11 @@ class Config
     public function verifyNickname()
     {
         return $this->verifyNickname;
+    }
+
+    public function getApplicationName()
+    {
+        return $this->appName;
     }
 
     /**

@@ -1,15 +1,17 @@
 <?php
 /**
-* @author       Laurent Jouanneau <laurent@jelix.org>
-* @contributor
+* @author    Laurent Jouanneau <laurent@jelix.org>
+* @copyright 2007-2024 Laurent Jouanneau
 *
-* @copyright    2007-2023 Laurent Jouanneau
-*
-* @link         http://jelix.org
-* @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
+* @link      https://jelix.org
+* @licence   MIT
 */
 
+use Jelix\Authentication\LoginPass\FormPassword;
 use Jelix\Authentication\LoginPass\Manager;
+use Jelix\Authentication\LoginPass\PasswordReset;
+use Jelix\Authentication\LoginPass\PasswordResetException;
+use Jelix\Authentication\RequestConfirmation\RequestException;
 
 /**
  * controller for the password reset process, when a user has forgotten his
@@ -29,13 +31,26 @@ class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswor
         }
 
         $rep = $this->_getLoginPassResponse(jLocale::get('password.form.title'), jLocale::get('password.page.title'));
-        $rep->body->assignZone('MAIN', 'passwordReset');
+
+        $form = jForms::get('password_reset');
+        if ($form == null) {
+            $form = jForms::create('password_reset');
+            $email = $this->param('email');
+            if ($email) {
+                $form->setData('pass_email', $email);
+            }
+        }
+
+        $tpl = new jTpl();
+        $tpl->assign('form', $form);
+
+        $rep->body->assign('MAIN', $tpl->fetch('password_reset_form'));
 
         return $rep;
     }
 
     /**
-     * send an email to reset the password.
+     * Send an email to reset the password.
      */
     public function send()
     {
@@ -47,65 +62,201 @@ class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswor
         $rep = $this->getResponse('redirect');
         $rep->action = 'password_reset:index';
 
+        jForms::destroy('password_reset_code');
+        jForms::destroy('password_reset_change');
         $form = jForms::fill('password_reset');
         if (!$form) {
             return $this->badParameters();
         }
+
         if (!$form->check()) {
-            return $rep;
+            return $this->redirect('password_reset:index');
         }
 
-        $login = $form->getData('pass_login');
         $email = $form->getData('pass_email');
 
-        /** @var Manager $manager */
-        $manager = jAuthentication::manager()->getIdpById('loginpass')->getManager();
-        $user = $manager->getUser($login);
-        if (!$user || $user->getEmail() == '' || $user->getEmail() != $email) {
-            \jLog::log('A password reset is attempted for unknown user "'.$login.'" and/or unknown email  "'.$email.'"', 'warning');
-            // bad given email, ignore the error, so no change to discover
+        $user = $this->passwordReset->findUser($email);
+        if (!$user) {
+            \jLog::log('A password reset is attempted for unknown user. No user having the email  "'.$email.'"', 'warning');
+            // bad given email, ignore the error, so no chance to discover
             // if a login is associated to an email or not
             jForms::destroy('password_reset');
-            $rep->action = 'password_reset:sent';
+            $reqId = $this->passwordReset->sendFakeEmail();
 
-            return $rep;
+            return $this->redirect('password_reset:code', array('request_id'=> $reqId));
         }
 
-
-        $passReset = new \Jelix\Authentication\LoginPass\PasswordReset(false, false, $manager);
-        $result = $passReset->sendEmail($user);
-        if ($result != $passReset::RESET_OK && $result != $passReset::RESET_BAD_LOGIN_EMAIL) {
-            $form->setErrorOn('pass_login', jLocale::get('authloginpass~password.form.change.error.'.$result));
-            return $rep;
+        // now send the email
+        try {
+            $reqId = $this->passwordReset->sendEmail($user);
+        }
+        catch (PasswordResetException $e) {
+            /*$errCode = $e->getCode();
+            if ($errCode != PasswordResetException::CODE_BAD_LOGIN_EMAIL) {
+                $form->setErrorOn('pass_email', $e->getMessage());
+                return $this->redirect('password_reset:index');
+            }*/
+            $reqId = $this->passwordReset->sendFakeEmail();
+        }
+        catch (\Exception $e)
+        {
+            \jLog::logEx($e, 'error');
+            $form->setErrorOn('pass_email', \jLocale::get('authloginpass~password.form.change.error.unknown'));
+            return $this->redirect('password_reset:index');
         }
 
         jForms::destroy('password_reset');
-        $rep->action = 'password_reset:sent';
+        return $this->redirect('password_reset:code', array('request_id'=> $reqId));
 
-        return $rep;
     }
 
     /**
-     * Display the message that confirms the email sending
+     * Display the form to enter the code received by email
      *
      * @return jResponse|jResponseHtml|jResponseJson|jResponseRedirect|void
      * @throws Exception
      * @throws jExceptionSelector
      */
-    public function sent() {
+    public function code()
+    {
         $repError = $this->_check();
         if ($repError) {
             return $repError;
         }
 
         $rep = $this->_getLoginPassResponse(jLocale::get('password.form.title'), jLocale::get('password.page.title'));
+
+        $requestId = $this->param('request_id');
+        $confRequests = new \Jelix\Authentication\RequestConfirmation\Requests();
+        $req = $confRequests->getRequest($requestId);
+
+        $form = jForms::get('password_reset_code');
+        if (!$form) {
+            $form = jForms::create('password_reset_code');
+        }
+
         $tpl = new jTpl();
-        $rep->body->assign('MAIN', $tpl->fetch('password_reset_waiting'));
+        $tpl->assign('requestId', $requestId);
+        $tpl->assign('form', $form);
+        $tpl->assign('error_status', '');
+        $tpl->assign('email', ($req?$req->getEmail():''));
+
+        $rep->body->assign('MAIN', $tpl->fetch('password_reset_code'));
+        return $rep;
+    }
+
+    /**
+     * verify the code received by email
+     */
+    public function checkcode()
+    {
+        $repError = $this->_check();
+        if ($repError) {
+            return $repError;
+        }
+        $requestId = $this->param('request_id');
+        $form = jForms::fill('password_reset_code');
+        if (!$form || !$form->check()) {
+            return $this->redirect('password_reset:code', array('request_id'=> $requestId));
+        }
+
+        try {
+            $userRequest = $this->passwordReset->checkKey($requestId, $form->getData('pcode_code'));
+        }
+        catch (PasswordResetException | RequestException $e) {
+            $form->setErrorOn('pcode_code', $e->getMessage());
+            return $this->redirect('password_reset:code', array('request_id'=> $requestId));
+        }
+
+        jForms::destroy('password_reset_code');
+        return $this->redirect('password_reset:resetpassword', array('request_id'=> $requestId));
+    }
+
+
+    /**
+     * form to confirm and change the password
+     */
+    public function resetpassword()
+    {
+        $repError = $this->_check();
+        if ($repError) {
+            return $repError;
+        }
+
+        $rep = $this->_getLoginPassResponse(jLocale::get($this->formPasswordTitle), jLocale::get($this->pagePasswordTitle));
+        $tpl = new jTpl();
+
+        $requestId = $this->param('request_id');
+        $userRequest = $this->passwordReset->isConfirmationCodeChecked($requestId);
+        if (!$userRequest) {
+            $tpl->assign('error_status', jLocale::get('authcore~auth.request.confirmation.error.alreadydone'));
+            $rep->body->assign('MAIN', $tpl->fetch($this->formPasswordTpl));
+            return $rep;
+        }
+
+        $form = jForms::get('password_reset_change');
+        if ($form == null) {
+            $form = jForms::create('password_reset_change');
+        }
+
+        $tpl->assign('passwordWidget', FormPassword::getWidget($form, 'pchg_password'));
+        $tpl->assign('error_status', '');
+        $tpl->assign('form', $form);
+        $tpl->assign('requestId', $requestId);
+
+        $rep->body->assign('MAIN', $tpl->fetch($this->formPasswordTpl));
 
         return $rep;
     }
 
+    /**
+     * Save a new password after a reset request
+     */
+    public function save()
+    {
+        $repError = $this->_check();
+        if ($repError) {
+            return $repError;
+        }
 
-    // see other actions into AbstractPasswordController
+        $requestId = $this->param('request_id');
+        $userRequest = $this->passwordReset->isConfirmationCodeChecked($requestId);
+        if (!$userRequest || !$this->request->isPostMethod()) {
+            return $this->redirect('password_reset:resetpassword', array('request_id'=> $requestId));
+        }
+
+        $form = jForms::fill('password_reset_change');
+        if ($form == null) {
+            return $this->redirect('password_reset:resetpassword', array('request_id'=> $requestId));
+        }
+
+        if (!FormPassword::checkPassword($form->getData('pchg_password'))) {
+            $form->setErrorOn('pchg_password', jLocale::get('jelix~jforms.password.not.strong.enough'));
+        }
+
+        if (!$form->check()) {
+            return $this->redirect('password_reset:resetpassword', array('request_id'=> $requestId));
+        }
+
+        $passwd = $form->getData('pchg_password');
+        jForms::destroy('password_reset_change');
+
+        $this->passwordReset->changePassword($userRequest, $passwd);
+
+        return $this->redirect('password_reset:changed');
+    }
+
+    /**
+     * Page which confirm that the password has changed.
+     */
+    public function changed()
+    {
+        $rep = $this->_getLoginPassResponse(jLocale::get($this->formPasswordTitle), jLocale::get($this->pagePasswordTitle));
+        $tpl = new jTpl();
+        $tpl->assign('title', $rep->title);
+        $rep->body->assign('MAIN', $tpl->fetch('password_reset_ok'));
+
+        return $rep;
+    }
 
 }
