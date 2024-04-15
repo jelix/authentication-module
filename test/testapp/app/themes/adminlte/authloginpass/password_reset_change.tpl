@@ -6,7 +6,7 @@
 
     {@authloginpass~password.form.change.text.html@}
 
-    {formfull $form,'authloginpass~password_reset:save', array(), 'adminlte', array(
+    {formfull $form,'authloginpass~password_reset:save', array('request_id'=>$requestId), 'adminlte', array(
         'plugins' => array(
         'pchg_password' => $passwordWidget
     ))}

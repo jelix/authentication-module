@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+   <datasources>
+      <primarytable name="req" realname="auth_user_requests" primarykey="req_id" />
+   </datasources>
+   <record>
+      <property name="req_id" fieldname="req_id" datatype="string"/>
+
+      <property name="req_type" fieldname="req_type" required="yes" datatype="string" maxlength="20" />
+      <property name="req_create_date" fieldname="req_create_date" required="yes" datatype="datetime"
+                insertpattern="now()" updatepattern=""/>
+      <property name="req_confirmation_date" fieldname="req_confirmation_date" datatype="datetime"/>
+      <property name="req_expiration_date" fieldname="req_expiration_date" required="yes" datatype="datetime"/>
+      <property name="req_modify_date" fieldname="req_modify_date" datatype="datetime"
+                insertpattern="now()" updatepattern="now()"/>
+      <property name="req_code" fieldname="req_code" required="yes" datatype="string" maxlength="100" />
+      <property name="req_status" fieldname="req_status" required="yes" datatype="string" maxlength="20" />
+      <property name="req_login" fieldname="req_login" required="yes" datatype="string" maxlength="255" />
+      <property name="req_email" fieldname="req_email" required="yes" datatype="string" maxlength="255" />
+      <property name="req_content" fieldname="req_content" datatype="json" />
+
+   </record>
+   <factory>
+     <method name="getByLogin" type="select">
+         <parameter name="login" />
+         <conditions>
+             <eq property="req_login" expr="$login" />
+         </conditions>
+     </method>
+
+     <method name="getByEmail" type="select">
+         <parameter name="req_email" />
+         <conditions>
+             <eq property="req_email" expr="$email" />
+         </conditions>
+     </method>
+
+     <method name="findAll" type="select">
+         <order>
+             <orderitem property="req_create_date" way="asc" />
+         </order>
+     </method>
+   </factory>
+</dao>

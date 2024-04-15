@@ -1,11 +1,11 @@
 <?php
 /**
-* @author       Laurent Jouanneau <laurent@jelix.org>
-* @copyright    2015-2019 Laurent Jouanneau
-*
-* @link         http://jelix.org
-* @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
-*/
+ * @author    Laurent Jouanneau <laurent@jelix.org>
+ * @copyright 2015-2024 Laurent Jouanneau
+ *
+ * @link      https://jelix.org
+ * @license   MIT
+ */
 
 namespace Jelix\Authentication\LoginPass;
 use jAuthentication;
@@ -16,8 +16,9 @@ class AbstractController extends \jController
 
     protected $checkIsConnected = true;
 
-    protected $responseId = '';
-
+    /**
+     * @var Config
+     */
     protected $config;
 
     public function __construct($request)
@@ -57,18 +58,14 @@ class AbstractController extends \jController
 
     protected function _getLoginPassResponse($windowTitle, $pageTitle='')
     {
-        $response = 'html';
-        if ($this->responseId == ''  && isset(\jApp::config()->loginpass_idp)) {
-            $conf = \jApp::config()->loginpass_idp;
-            $response = (isset($conf['loginResponse']) ? $conf['loginResponse'] : 'html');
-        }
-
+        $response = $this->config->getResponseType();
         $rep = $this->getResponse($response);
         $rep->title = $windowTitle;
-        if ($pageTitle == '') {
-            $pageTitle = $windowTitle;
-        }
+
         if ($response == 'htmlauth') {
+            if ($pageTitle == '') {
+                $pageTitle = $windowTitle;
+            }
             $rep->body->assign('page_title', $pageTitle);
         }
         return $rep;

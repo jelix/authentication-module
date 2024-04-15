@@ -17,7 +17,9 @@
             <td><input type="password" name="password" id="password" size="9" /></td>
        </tr>
        </table>
+          {if $passwordResetEnabled}
        <a href="{jurl 'authloginpass~password_reset:index'}">{@authloginpass~auth.form.password.forget@}</a>
+          {/if}
        {formurlparam 'authloginpass~sign:checkCredentials'}
        <input type="submit" value="{@authloginpass~auth.form.buttons.login@}"/>
        </fieldset>

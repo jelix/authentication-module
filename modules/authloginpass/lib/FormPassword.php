@@ -1,12 +1,14 @@
 <?php
 /**
  * @author       Laurent Jouanneau <laurent@jelix.org>
- * @copyright    2023 Laurent Jouanneau
+ * @copyright    2023-2024 Laurent Jouanneau
  *
  * @link         https://jelix.org
- * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
+ * @licence      MIT
  */
 namespace Jelix\Authentication\LoginPass;
+
+use Jelix\Authentication\Core\Utils\Password;
 
 class FormPassword
 {
@@ -23,27 +25,15 @@ class FormPassword
 
     static function getWidget($form, $passwdCtrlName)
     {
-        $useSecretEditor = self::canUseSecretEditor() ;
-        if ($useSecretEditor) {
-            $confirm = $form->getControl($passwdCtrlName.'_confirm');
-            if ($confirm) {
-                $confirm->deactivate(true);
-            }
-            return 'passwordeditor_html';
+        $confirm = $form->getControl($passwdCtrlName.'_confirm');
+        if ($confirm) {
+            $confirm->deactivate(true);
         }
-        else {
-            return 'secret_html';
-        }
+        return 'passwordeditor_html';
     }
-
-    static function canUseSecretEditor()
-    {
-        return (class_exists('\jFramework') && version_compare(\jFramework::version(), "1.8.2", ">="));
-    }
-
 
     static function checkPassword($password)
     {
-        return (\jAuthPassword::checkPasswordStrength($password) > \jAuthPassword::STRENGTH_WEAK);
+        return (Password::checkPasswordStrength($password) > Password::STRENGTH_WEAK);
     }
 }

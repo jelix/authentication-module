@@ -147,7 +147,7 @@ class my2FACtrl extends \jController
 
         // this action is called because of an error. We should cancel
         // the authentication process and display a message.
-        $workflow->cancel();
+        $workflow->cancel('The reason');
         
         $rep = $this->getResponse('html');
         //... show the error...

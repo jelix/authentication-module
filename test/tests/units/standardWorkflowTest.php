@@ -163,7 +163,7 @@ class standardWorkflowTest extends TestCase
 
         // let's assume that the process of the action is failing.
         // it should cancel the whole authentication process.
-        $workflow->cancel();
+        $workflow->cancel('The reason');
 
         $redirectUrl = $workflow->getNextAuthenticationUrl();
         // the workflow should be finished

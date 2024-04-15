@@ -19,5 +19,8 @@ class LoginFormZone extends jZone
 
         $this->_tpl->assign('isAuthenticated', jAuthentication::isCurrentUserAuthenticated());
         $this->_tpl->assign('user', jAuthentication::getCurrentUser());
+
+        $passReset = new \Jelix\Authentication\LoginPass\PasswordReset();
+        $this->_tpl->assign('passwordResetEnabled', $passReset->isPasswordResetEnabled());
     }
 }

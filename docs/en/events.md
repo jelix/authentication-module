@@ -88,5 +88,17 @@ class of the event is `Jelix\Authentication\Core\Workflow\Event\WorkflowStepEven
 For the step `get_account`, the class is `Jelix\Authentication\Core\Workflow\Event\GetAccountEvent`.
 
 
+`AuthLPCanResetPassword`
+------------------------
+
+This event is sent when a request is made to reset the password
+of an identifiant managed by the authloginpass module.
+
+Any module can indicate if the given user is allowed to
+reset the password. For example, for an account module,
+the module can say no if there is no registrated account.
+
+See the `Jelix\Authentication\LoginPass\AuthLPCanResetPasswordEvent` class.
+
 
 

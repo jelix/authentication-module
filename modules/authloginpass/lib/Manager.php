@@ -1,9 +1,9 @@
 <?php
 /**
- * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
- * @link     https://jelix.org
- * @licence MIT
+ * @author    Laurent Jouanneau
+ * @copyright 2019-2024 Laurent Jouanneau
+ * @link      https://jelix.org
+ * @licence   MIT
  */
 
 namespace Jelix\Authentication\LoginPass;
@@ -90,6 +90,7 @@ class Manager
     }
 
     /**
+     * List of activated backends
      * @return BackendPluginInterface[]
      */
     public function getBackends() {
@@ -116,6 +117,20 @@ class Manager
         foreach($this->backends as $backend) {
             if ($backend->userExists($login)) {
                 return $backend;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param string $email
+     * @return AuthUser
+     */
+    public function searchUserHavingEmail($email) {
+        foreach($this->backends as $backend) {
+            $login = $backend->userWithEmailExists($email);
+            if ($login) {
+                return $backend->getUser($login);
             }
         }
         return null;

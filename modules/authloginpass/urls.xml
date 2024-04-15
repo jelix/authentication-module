@@ -4,8 +4,9 @@
     <url pathinfo="/signin/check" action="sign:checkCredentials" />
     <url pathinfo="/signin/reset" action="password_reset:index" />
     <url pathinfo="/signin/reset/send" action="password_reset:send" />
-    <url pathinfo="/signin/reset/sent" action="password_reset:sent" />
-    <url pathinfo="/signin/reset/form" action="password_reset:resetform" />
-    <url pathinfo="/signin/reset/save" action="password_reset:save" />
+    <url pathinfo="/signin/reset/code/:request_id" action="password_reset:code" />
+    <url pathinfo="/signin/reset/code/:request_id/check" action="password_reset:checkcode" />
+    <url pathinfo="/signin/reset/code/:request_id/password" action="password_reset:resetpassword" />
+    <url pathinfo="/signin/reset/code/:request_id/save" action="password_reset:save" />
     <url pathinfo="/signin/reset/changed" action="password_reset:changed" />
 </suburls>

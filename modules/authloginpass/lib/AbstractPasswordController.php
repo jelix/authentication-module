@@ -1,26 +1,19 @@
 <?php
 /**
- * @author       Laurent Jouanneau <laurent@jelix.org>
- * @copyright    2019 Laurent Jouanneau
+ * @author    Laurent Jouanneau <laurent@jelix.org>
+ * @copyright 2019-2024 Laurent Jouanneau
  *
- * @link         http://jelix.org
- * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
+ * @link      https://jelix.org
+ * @license   MIT
  */
 
 namespace Jelix\Authentication\LoginPass;
-
-use Jelix\JCommunity\FormPassword;
-use jForms;
-use jLocale;
-use jTpl;
 
 abstract class AbstractPasswordController extends AbstractController
 {
     // public $pluginParams = array(
     //     '*' => array('auth.required' => false),
     // );
-
-    protected $configMethodCheck = 'isResetPasswordEnabled';
 
     protected $pagePasswordTitle = 'password.page.title';
 
@@ -33,105 +26,33 @@ abstract class AbstractPasswordController extends AbstractController
     protected $forRegistration = false;
 
     /**
-     * form to confirm and change the password
+     * @var PasswordReset
      */
-    public function resetform()
+    protected $passwordReset;
+
+    public function __construct($request)
     {
-        $repError = $this->_check();
-        if ($repError) {
-            return $repError;
-        }
+        parent::__construct($request);
+        $this->passwordReset = new PasswordReset(
+            $this->forRegistration,
+            null,
+            $this->config,
+            \jApp::services()->eventDispatcher()
 
-        $rep = $this->_getLoginPassResponse(jLocale::get($this->formPasswordTitle), jLocale::get($this->pagePasswordTitle));
-
-        $passReset = new \Jelix\Authentication\LoginPass\PasswordReset($this->forRegistration);
-        $tpl = new jTpl();
-
-        $form = jForms::get('password_reset_change');
-        if ($form == null) {
-            $login = $this->param('login');
-            $key = $this->param('key');
-
-            $user = $passReset->checkKey($login, $key);
-            if (is_string($user)) {
-                $status = $user;
-                $tpl->assign('error_status', $status);
-                $rep->body->assign('MAIN', $tpl->fetch($this->formPasswordTpl));
-                return $rep;
-            }
-
-            $form = jForms::create('password_reset_change');
-            $form->setData('pchg_login', $login);
-            $form->setData('pchg_key', $key);
-        }
-
-        $tpl->assign('passwordWidget', FormPassword::getWidget($form, 'pchg_password'));
-        $tpl->assign('error_status', '');
-        $tpl->assign('form', $form);
-
-        $rep->body->assign('MAIN', $tpl->fetch($this->formPasswordTpl));
-
-        return $rep;
+        );
     }
 
-    /**
-     * Save a new password after a reset request
-     */
-    public function save()
+    protected function _check()
     {
-        $repError = $this->_check();
-        if ($repError) {
-            return $repError;
+        if (\jAuthentication::isCurrentUserAuthenticated()) {
+            return $this->noaccess('no_access_auth');
         }
 
-        $rep = $this->getResponse('redirect');
-
-        $rep->action = $this->actionController.':resetform';
-
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-            return $rep;
+        if ($this->passwordReset->isPasswordResetEnabled()) {
+            return null;
         }
-
-        $form = jForms::fill('password_reset_change');
-        if ($form == null) {
-            return $rep;
-        }
-
-        if (FormPassword::canUseSecretEditor() && !FormPassword::checkPassword($form->getData('pchg_password'))) {
-            $form->setErrorOn('pchg_password', jLocale::get('jelix~jforms.password.not.strong.enough'));
-        }
-
-        if (!$form->check()) {
-            return $rep;
-        }
-
-        $passReset = new \Jelix\Authentication\LoginPass\PasswordReset($this->forRegistration);
-        $login = $form->getData('pchg_login');
-        $key = $form->getData('pchg_key');
-        $passwd = $form->getData('pchg_password');
-        jForms::destroy('password_reset_change');
-
-        $user = $passReset->checkKey($login, $key);
-        if (is_string($user)) {
-            $rep->params = array('login'=>$login, 'key'=>$key);
-            return $rep;
-        }
-        $passReset->changePassword($user, $passwd);
-
-        $rep->action = $this->actionController.':changed';
-        return $rep;
+        return $this->notavailable();
     }
 
-    /**
-     * Page which confirm that the password has changed.
-     */
-    public function changed()
-    {
-        $rep = $this->_getLoginPassResponse(jLocale::get($this->formPasswordTitle), jLocale::get($this->pagePasswordTitle));
-        $tpl = new jTpl();
-        $tpl->assign('title', $rep->title);
-        $rep->body->assign('MAIN', $tpl->fetch('password_reset_ok'));
 
-        return $rep;
-    }
 }

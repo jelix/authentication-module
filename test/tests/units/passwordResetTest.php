@@ -1,5 +1,6 @@
 <?php
 
+use Jelix\Authentication\LoginPass\PasswordResetException;
 use PHPUnit\Framework\TestCase;
 use Jelix\Authentication\LoginPass\PasswordReset;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
@@ -7,25 +8,67 @@ use Jelix\JelixModule\Command\MailerTest;
 
 class PasswordResetTest extends TestCase
 {
-    public function testSendEmailErrorLoginEmailStatus()
+    public function testSendEmailNoUser()
     {
-        $userTab = array(
-            null,
-            new AuthUser('test', array()),
-            new AuthUser('test', array('email' => 'nottest.test@test.com')
-        ));
         $manager = new ManagerForTests();
-        $passReset = new PasswordReset(false, false, $manager);
-        foreach ($userTab as $user) {
-            $manager->user = $user;
-            $this->assertEquals(PasswordReset::RESET_BAD_LOGIN_EMAIL, $passReset->sendEmail('test', 'test.test@test.com'));
-        }
+        $passReset = new PasswordReset(false, $manager);
+
+        $this->expectException(PasswordResetException::class);
+        $this->expectExceptionCode(PasswordResetException::CODE_BAD_LOGIN_EMAIL);
+
+        $manager->user = null;
+        $passReset->sendEmail(null);
+    }
+
+    public function testSendEmailNoEmail()
+    {
+        $manager = new ManagerForTests();
+        $passReset = new PasswordReset(false, $manager);
+
+        $this->expectException(PasswordResetException::class);
+        $this->expectExceptionCode(PasswordResetException::CODE_BAD_LOGIN_EMAIL);
+
+        $manager->user = new AuthUser('test', array());
+        $passReset->sendEmail($manager->user);
+    }
+
+    public function testSendEmailNoStatus()
+    {
+        $manager = new ManagerForTests();
+        $passReset = new PasswordReset(false, $manager);
+
+        $this->expectException(PasswordResetException::class);
+        $this->expectExceptionCode(PasswordResetException::CODE_BAD_STATUS);
+
+        $manager->user = new AuthUser('test', array('email' => 'nottest.test@test.com'));
+        $passReset->sendEmail($manager->user);
+    }
+
+    public function testSendEmailNoPasswordChangeAllowed()
+    {
+        $manager = new ManagerForTests();
+        $passReset = new PasswordReset(false, $manager);
+
+        $this->expectException(PasswordResetException::class);
+        $this->expectExceptionCode(PasswordResetException::CODE_BAD_STATUS);
+
         $manager->user = new AuthUser('test', array('email' => 'test.test@test.com'));
         $manager->canChangePassword = false;
-        $this->assertEquals(PasswordReset::RESET_BAD_STATUS, $passReset->sendEmail('test', 'test.test@test.com'));
+        $passReset->sendEmail($manager->user);
+
+    }
+
+    public function testSendEmailBadUserStatus()
+    {
+        $manager = new ManagerForTests();
+        $passReset = new PasswordReset(false, $manager);
+
+        $this->expectException(PasswordResetException::class);
+        $this->expectExceptionCode(PasswordResetException::CODE_BAD_STATUS);
+
         $manager->user = new AuthUser('test', array('email' => 'test.test@test.com', 'status' => AuthUser::STATUS_DEACTIVATED));
         $manager->canChangePassword = true;
-        $this->assertEquals(PasswordReset::RESET_BAD_STATUS, $passReset->sendEmail('test', 'test.test@test.com'));
+        $passReset->sendEmail($manager->user);
     }
 
     /**
@@ -53,40 +96,86 @@ class PasswordResetTest extends TestCase
     //     $this->assertEquals(PasswordReset::RESET_OK, $passReset->sendEmail('test', 'test.test@test.com'));
     // }
 
-        public function testCheckKey()
-        {
-            $manager = new ManagerForTests();
-            $manager->user = null;
-            $manager->canChangePassword = true;
-            $config = (object)array();
-            $config->mailer = array('webmasterEmail' => 'test.test@test.com');
-            $passReset = new PasswordReset(false, false, $manager, $config);
-            $this->assertEquals(PasswordReset::RESET_BAD_KEY, $passReset->checkKey('', ''));
-            $this->assertEquals(PasswordReset::RESET_BAD_KEY, $passReset->checkKey('test', ''));
-            $this->assertEquals(PasswordReset::RESET_BAD_KEY, $passReset->checkKey('', 'test'));
-            $this->assertEquals(PasswordReset::RESET_BAD_KEY, $passReset->checkKey('test', 'test'));
-            $manager->user = new AuthUser('test', array('login' => 'test', 'keyactivate' => '', 'request_date' => ''));
-            $this->assertEquals(PasswordReset::RESET_BAD_KEY, $passReset->checkKey('test', 'test'));
-            $manager->user = new AuthUser('test', array('login' => 'test', 'keyactivate' => 'abcdefg', 'request_date' => 'date'));
-            $manager->user->setAttribute('status', AuthUser::STATUS_DEACTIVATED);
-            $this->assertEquals(PasswordReset::RESET_BAD_STATUS, $passReset->checkKey('test', 'abcdefg'));
-            $manager->user->setAttribute('status', AuthUser::STATUS_VALID);
-            $this->assertEquals(PasswordReset::RESET_ALREADY_DONE, $passReset->checkKey('test', 'abcdefg'));
-            $date = DateTime::createFromFormat('U', '12');
-            $manager->user->setAttribute('request_date', $date->format('Y-m-d H:i:s'));
-            $manager->user->setAttribute('status', AuthUser::STATUS_PWD_CHANGED);
-            $this->assertEquals(PasswordReset::RESET_EXPIRED_KEY, $passReset->checkKey('test', 'abcdefg'));
-            $date = new DateTime();
-            $manager->user->setAttribute('request_date', $date->format('Y-m-d H:i:s'));
-            $this->assertEquals($manager->user, $passReset->checkKey('test', 'abcdefg'));
+    public function getBadCheckData()
+    {
+        return array(
+            array(
+                null, // user
+
+
+            )
+        );
+    }
+
+    public function testSendMail()
+    {
+        $manager = new ManagerForTests();
+        $manager->user = null;
+        $manager->_canChangePassword = true;
+
+        $config = $this->createMock(\Jelix\Authentication\LoginPass\Config::class);
+        $config->method('sendHtmlEmail')->willReturn(true);
+        $config->method('isPasswordChangeEnabled')->willReturn(true);
+        $config->method('isAccountChangeEnabled')->willReturn(true);
+        $config->method('getPublicUserProperties')->willReturn(array('login'));
+        $config->method('getDomainAndServerURI')->willReturn(array('example.com', 'https://example.com'));
+        $config->method('getValidationKeyTTL')->willReturn(new \DateInterval('PT20M'));
+
+        $passReset = new PasswordReset(false, $manager, $config);
+
+        try {
+            $passReset->sendEmail(null);
+            $this->fail('no fail on missing user');
         }
+        catch(PasswordResetException $e)
+        {
+            $this->assertEquals(PasswordResetException::CODE_BAD_LOGIN_EMAIL, $e->getCode());
+        }
+
+        try { // email is missing
+            $manager->user = new AuthUser('test', array('login' => 'test'));
+            $passReset->sendEmail($manager->user);
+            $this->fail('no fail on missing email');
+        }
+        catch(PasswordResetException $e)
+        {
+            $this->assertEquals(PasswordResetException::CODE_BAD_LOGIN_EMAIL, $e->getCode());
+        }
+
+        $manager->user = new AuthUser('test', array('login' => 'test', 'email'=>'test@example.com'));
+
+        try { // cannot change password
+            $manager->_canChangePassword = false;
+            $passReset->sendEmail($manager->user);
+            $this->fail('no fail whereas password cannot change');
+        }
+        catch(PasswordResetException $e)
+        {
+            $this->assertEquals(PasswordResetException::CODE_BAD_STATUS, $e->getCode());
+        }
+        $manager->_canChangePassword = true;
+
+        try { // status deactivated
+            $manager->user->setAttribute('status', AuthUser::STATUS_DEACTIVATED);
+            $passReset->sendEmail($manager->user);
+            $this->fail('no fail whereas user status = deactivated');
+        }
+        catch(PasswordResetException $e)
+        {
+            $this->assertEquals(PasswordResetException::CODE_BAD_STATUS, $e->getCode());
+        }
+        $manager->user->setAttribute('status', AuthUser::STATUS_NEW);
+
+        $requestId = $passReset->sendEmail($manager->user);
+        $this->assertNotEmpty($requestId);
+    }
 }
 
 class ManagerForTests
 {
     public $user;
 
-    public $canChangePassword;
+    public $_canChangePassword;
 
     public function getUser($login)
     {
@@ -95,7 +184,7 @@ class ManagerForTests
 
     public function canChangePassword()
     {
-        return $this->canChangePassword;
+        return $this->_canChangePassword;
     }
 }
 

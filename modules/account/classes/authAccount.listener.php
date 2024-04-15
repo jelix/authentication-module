@@ -3,6 +3,7 @@
 use Jelix\Authentication\Account;
 use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;
 use Jelix\Authentication\Core\Workflow\Step\StepException;
+use Jelix\Authentication\LoginPass\AuthLPCanResetPasswordEvent;
 
 class authAccountListener extends jEventListener
 {
@@ -42,4 +43,26 @@ class authAccountListener extends jEventListener
         }
     }
 
+    /**
+     * @param AuthLPCanResetPasswordEvent $event
+     * @return void
+     */
+    function onAuthLPCanResetPassword($event)
+    {
+        if (!($event instanceof AuthLPCanResetPasswordEvent)) {
+            return;
+        }
+
+        $userId = $event->getUser()->getUserId();
+
+        // if a user has no account, we don't allow him to recover his account
+        // and so, to reset his password.
+        $account = Account\Manager::searchAccountByIdp($event->getIdpId(), $userId);
+        if ($account) {
+            $event->allow();
+        }
+        else {
+            $event->deny();
+        }
+    }
 }
