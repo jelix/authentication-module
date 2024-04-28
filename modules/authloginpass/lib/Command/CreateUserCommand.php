@@ -80,5 +80,6 @@ class CreateUserCommand extends  AbstractCommand
         ) {
             throw new \Exception('The user has not been created');
         }
+        return 0;
     }
 }
