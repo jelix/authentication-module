@@ -1,4 +1,11 @@
 
+0.3.1
+-----
+
+- loginpass commands: fix returned values.
+- fix loginpass dao: jdao doesn't support yet json type
+- fix loginpass:user:create: check if user already exist
+
 0.3.0
 -----
 
