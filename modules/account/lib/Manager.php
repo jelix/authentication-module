@@ -151,13 +151,22 @@ class Manager
      * @param string $authUserId
      * @return null|Account
      */
-    public static function searchAccountByIdp($idpId, $authUserId)
+    public static function searchAccountByIdp($idpId, $authUserId, $markUsage = false)
     {
         $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
         $accIdp = $daoIdp->findByIdpAndUser($idpId, $authUserId);
         if (!$accIdp) {
             \jLog::log('no account-idp for '.$idpId. ' - '. $authUserId);
             return null;
+        }
+
+        if ($markUsage) {
+            if ($accIdp->first_used == '') {
+                $accIdp->first_used = date('Y-m-d H:i:s');
+            }
+            $accIdp->last_used = date('Y-m-d H:i:s');
+            $accIdp->usage_count++;
+            $daoIdp->update($accIdp);
         }
 
         $dao = \jDao::get(self::$daoName, self::$daoProfile);
@@ -205,7 +214,7 @@ class Manager
      * @param object|array $idpData
      * @return void
      */
-    public static function attachAccountToIdp($accountId, $idpId, $authUserId, $authUserEmail, $idpData = [])
+    public static function attachAccountToIdp($accountId, $idpId, $authUserId, $authUserEmail, $idpData = [], $firstUse = false)
     {
         $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
         $recordIdp = $daoIdp->createRecord();
@@ -215,6 +224,10 @@ class Manager
         $recordIdp->idp_user_email = $authUserEmail;
         $recordIdp->enabled = true;
         $recordIdp->idp_data = json_encode($idpData);
+        if ($firstUse) {
+            $recordIdp->first_used = $recordIdp->last_used = date('Y-m-d H:i:s');
+            $recordIdp->usage_count = 1;
+        }
         $daoIdp->insert($recordIdp);
     }
 

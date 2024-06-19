@@ -24,7 +24,7 @@ class authAccountListener extends jEventListener
         $user = $event->getUserBeingAuthenticated();
         $idpId = $event->getIdpId();
 
-        $account = Account\Manager::searchAccountByIdp($idpId, $user->getUserId());
+        $account = Account\Manager::searchAccountByIdp($idpId, $user->getUserId(), true);
         if ($account) {
             $event->setAccount($account);
         }
