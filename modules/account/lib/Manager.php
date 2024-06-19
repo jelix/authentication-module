@@ -66,14 +66,13 @@ class Manager
      * Creates a new account from the authenticated user
      * 
      * @param AuthUser $user The user to create
-     * @param IdentityProviderInterface $provider The IdentityProvider used to create the Account
-     * 
-     * @return \jDaoRecordBase The record containing the new account or null if account already exists.
+     *
+     * @return Account The new account or null if account already exists.
      */
-    public static function createAccountFromAuthUser($user, $provider, $status = null)
+    public static function createAccountFromAuthUser($user, $status = null)
     {
-        $name = $user->getLogin();
-        if (self::accountExists($name)) {
+        $login = $user->getLogin();
+        if (self::accountExists($login)) {
             return null;
         }
 
@@ -83,11 +82,13 @@ class Manager
 
         $dao = \jDao::get(self::$daoName, self::$daoProfile);
         $newAccount = \jDao::createRecord(self::$daoName, self::$daoProfile);
-        $newAccount->name = $name;
+        $newAccount->username = $login;
+        $newAccount->firstname = '';
+        $newAccount->lastname = $user->getName();
         $newAccount->email = $user->getEmail();
         $newAccount->status = $status;
         $dao->insert($newAccount);
-        return $newAccount;
+        return new Account($newAccount);
     }
 
     /**
