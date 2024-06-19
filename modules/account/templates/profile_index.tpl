@@ -6,11 +6,16 @@
     {formcontrols $form}
        <tr>
            <th>{ctrl_label}</th>
-           <td>{ctrl_value}</td>
+           <td>{ifctrl 'create_date'}
+               {ctrl_value_assign 'createdate'}{$createdate|jdatetime:'db_datetime':'lang_datetime'}
+               {else}
+                {ctrl_value}
+               {/ifctrl}
+           </td>
        </tr>
     {/formcontrols}
     </table>
-    <a href="{jurl 'account~profile:modify'}" style="color: black;">
-        <input type="submit" value="{@account~account.profile.button.modify@}" />
+    <a href="{jurl 'account~profile:modify'}" class="btn btn-primary">
+        {@account~account.profile.button.modify@}
     </a>
 {/ifusernotauthenticated}

@@ -22,7 +22,7 @@
 </output>
 
 <submit ref="submit">
-    <label locale="account~account.profile.button.modify"/>
+    <label locale="jelix~ui.buttons.save"/>
 </submit>
 
 </form>
