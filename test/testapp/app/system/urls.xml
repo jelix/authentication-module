@@ -6,5 +6,7 @@
         <url pathinfo="/auth" module="authcore" include="urls.xml"/>
         <url pathinfo="/authlogin/" module="authloginpass" include="urls.xml"/>
         <url pathinfo="/test/yes/signin" module="test" action="alwaysyes:signin"/>
+        <url pathinfo="/accounts/" module="accountadmin" include="urls.xml"/>
+
     </classicentrypoint>
 </urls>
