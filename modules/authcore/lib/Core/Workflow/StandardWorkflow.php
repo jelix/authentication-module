@@ -56,6 +56,7 @@ class StandardWorkflow
         $steps = array (
             new Step\GetAccountStep($evDispatcher, $workflowState),
             new Step\CreateAccountStep($evDispatcher, $workflowState),
+            new Step\CheckAccountStep($evDispatcher, $workflowState),
             new Step\SecondFactorAuthStep($evDispatcher, $workflowState),
             new Step\AccessValidationStep($evDispatcher, $workflowState),
             new Step\AuthDoneStep($evDispatcher, $workflowState),
@@ -65,7 +66,7 @@ class StandardWorkflow
         $transitions = array(
             'account_found' => array(
                 'from' => 'get_account',
-                'to' => 'second_factor'
+                'to' => 'check_account'
             ),
             'account_not_found' => array(
                 'from' => 'get_account',
@@ -79,6 +80,10 @@ class StandardWorkflow
                 'from' => 'create_account',
                 'to' => 'access_validation'
             ),
+            'account_checked' => array(
+                'from' => 'check_account',
+                'to' => 'second_factor'
+            ),
             'second_factor_success' => array(
                 'from' => 'second_factor',
                 'to' => 'access_validation'
@@ -88,7 +93,7 @@ class StandardWorkflow
                 'to' => 'auth_done'
             ),
             'fail' => array(
-                'from' => ['get_account', 'create_account', 'second_factor', 'access_validation', ],
+                'from' => ['get_account', 'create_account', 'check_account', 'second_factor', 'access_validation', ],
                 'to' => 'auth_fail'
             )
         );

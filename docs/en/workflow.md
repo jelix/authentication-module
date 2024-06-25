@@ -18,7 +18,7 @@ Workflow of the authentication
    It will start a workflow: the user may be forced to go throw several pages,
    in order to complete the authentication. So, after this call, the idp must
    redirect to the url given by `$workflow->getNextAuthenticationUrl()`.
-6. The user is then redirected to several pages, defined into the workflow.
+6. When the user is redirected to several pages:
    - At each page, the plugin `sessionauthCoordPlugin` checks the page is a page of
      the workflow. If this is not the case, it redirects the user to the current page
      of the workflow.
@@ -74,10 +74,13 @@ The steps are:
    creation is permitted. An event is emitted so a module managing accounts can give
    the page where to redirect the user, and which shows a form to create the account
    for example.
-3. second factor step (named `second_factor`): An event is emitted to allow some module to give pages
+3. check account step (named `check_account`): An event is emitted to allow some modules
+   to check the account, for example, if the account is allowed to access to the application etc.
+   Or to load some additional things in session
+4. second factor step (named `second_factor`): An event is emitted to allow some modules to give pages
    where the user should go, in order to authenticate against other authentication process,
    like authentication with an encrypted hardware key, an SMS code etc.
-4. access validation step (named `access_validation`): An event is emitted to allow some module to give pages
+5. access validation step (named `access_validation`): An event is emitted to allow some modules to give pages
    where the user should go, in order to finish the process to access to the application.
    It may be a page to get acknowledgment of terms of service for example, or a form to
    force to change the password etc.

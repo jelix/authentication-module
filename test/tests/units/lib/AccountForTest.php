@@ -12,6 +12,8 @@ class AccountForTest implements \Jelix\Authentication\Core\AuthSession\UserAccou
 
     protected $email;
 
+    public $data = null;
+
     function __construct($accountId, $username, $realname, $email)
     {
         $this->accountId = $accountId;

@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2022-2023 Laurent Jouanneau
+ * @copyright 2022-2024 Laurent Jouanneau
  * @link     https://jelix.org
  * @license  MIT
  */
@@ -20,6 +20,12 @@ class WorkflowStepEvent extends \jEvent
      */
     protected $actions = array();
 
+    /**
+     * @param string $stepName
+     * @param string $transition the name of the transition that is applied to start the step
+     * @param AuthUser $authenticatedUser
+     * @param string $idpId
+     */
     public function __construct($stepName, $transition, AuthUser $authenticatedUser, $idpId)
     {
         parent::__construct('AuthWorkflowStep',

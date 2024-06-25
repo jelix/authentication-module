@@ -198,6 +198,12 @@ class standardWorkflowTest extends TestCase
                 $account = new AccountForTest('123', 'bob', 'Bob Morane', 'bob@example.com');
                 $event->setAccount($account);
         });
+        $this->evDispatcher->setListenerForStep(
+            'check_account',
+            function(Workflow\Event\CheckAccountEvent $event){
+                $event->getAccount()->data = 'check_account called';
+            });
+
         $this->evDispatcher->addWorkflowActionForStep(
             'second_factor',
             new Workflow\WorkflowAction('/url1', [
@@ -220,12 +226,16 @@ class standardWorkflowTest extends TestCase
         $this->assertEquals('123', $givenAccount->getAccountId());
         $this->assertEquals('bob', $givenAccount->getUserName());
         $this->assertEquals('bob@example.com', $givenAccount->getEmail());
+        $this->assertNull($givenAccount->data);
 
         // --- then it redirects to the next url
         $redirectUrl = $workflow->getNextAuthenticationUrl();
 
         $this->assertEquals('/url1', $redirectUrl);
         $this->assertFalse($workflow->isFinished());
+
+        // -- we check that the check_account step was called
+        $this->assertEquals('check_account called', $givenAccount->data);
 
         // --- mimic what the coord plugin does at /url1
         $isAuthenticated = false;
