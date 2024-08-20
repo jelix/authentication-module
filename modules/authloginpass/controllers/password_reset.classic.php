@@ -20,6 +20,10 @@ use Jelix\Authentication\RequestConfirmation\RequestException;
 class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswordController
 {
 
+    public $pluginParams = array(
+        '*' => array('auth.required' => false),
+    );
+
     /**
      * form to request a password reset.
      */
