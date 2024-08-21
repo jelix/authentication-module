@@ -160,6 +160,8 @@ function initData()
   php $APPDIR/console.php account:login:create admin --backend=inifile --set-pass=jelix
   php $APPDIR/console.php account:create john john@jelix.org John Doe
   php $APPDIR/console.php account:idp:set john loginpass john
+  php $APPDIR/console.php account:create laurent laurent@jelix.org  Laurent
+  php $APPDIR/console.php account:login:create laurent --backend=daotablesqlite --set-pass=jelix
 }
 
 case $COMMAND in

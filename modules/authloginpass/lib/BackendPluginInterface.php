@@ -13,7 +13,12 @@ interface BackendPluginInterface
     /** @var int the backend does not implement specific features */
     const FEATURE_NONE = 0;
 
-    /** @var int password of a user can be changed */
+    /**
+     * If the plugin has this feature, it should provide a "status" attribute
+     * that have one of AuthUser::STATUS_* values
+     *
+     * @var int password of a user can be changed
+     */
     const FEATURE_CHANGE_PASSWORD = 1;
 
     /** @var int the backend can create user */

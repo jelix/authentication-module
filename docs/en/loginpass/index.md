@@ -134,7 +134,7 @@ You can use any dao, but it should have at least all fields you found into the
 `user` dao of the `authloginpass` module.
 
 With `sessionAttributes`, you can indicate the properties to load into the
-user object in session. It is a liste of properties separated by a comma.
+user object in session. It is a list of properties separated by a comma.
 
 
 ```ini

@@ -33,7 +33,7 @@ class adminuiListener extends jEventListener
         if (jAuthentication::isCurrentUserAuthenticated()) {
             $user = jAuthentication::getCurrentUser();
             $accountMenu->setAuthenticated(
-                $user->getUserId(),
+                $user->getLogin(),
                 $user->getName(),
                 jAuthentication::getSignoutPageUrl(),
                 jUrl::get('account~profile:index'));

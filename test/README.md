@@ -26,6 +26,7 @@ Available commands:
 * `install`: to launch the Jelix installer
 * `ldapreset`: to restore default users in the ldap
 * `ldapusers` : to show users defined in the ldap
+* `unit-tests` : to launch unit-tests
 
 
 You can view the application at `http://localhost:8028` or at `http://jelixauth.local:8028`

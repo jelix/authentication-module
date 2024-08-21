@@ -26,13 +26,13 @@ class authlp_dbdao_Test extends \Jelix\UnitTests\UnitTestCase
                 password varchar(120) NOT NULL, 
                 status integer NOT NULL, 
                 email varchar(255) NOT NULL, 
-                username varchar(255) DEFAULT NULL, 
+                realname varchar(255) DEFAULT NULL, 
                 create_date datetime DEFAULT NULL, 
                 attributes varchar DEFAULT NULL,
                 role varchar(255) DEFAULT NULL, 
                 birthday_date datetime DEFAULT NULL
             )");
-            $db->exec("INSERT INTO auth_users (login, password, status, email, username, create_date, attributes, role, birthday_date)
+            $db->exec("INSERT INTO auth_users (login, password, status, email, realname, create_date, attributes, role, birthday_date)
                 VALUES 
                 ('john', '".password_hash('passjohn', PASSWORD_DEFAULT)."', 1, 'john@jelix.org', 'John Doe', date('Y-m-d'), '{}', '', ''),
                 ('jane', '".password_hash('passjane', PASSWORD_DEFAULT)."', 1, 'jane@jelix.org', 'Jane Doe', date('Y-m-d'), '{}', 'ADMIN', '1990-01-01')
