@@ -36,7 +36,7 @@ class AuthUser
     const ATTR_LOGIN = 'login';
 
     /**
-     * Name of the attribute containing the real name/ display name of the user
+     * Name of the attribute containing the real name/ displayed name of the user
      */
     const ATTR_NAME = 'realname';
 

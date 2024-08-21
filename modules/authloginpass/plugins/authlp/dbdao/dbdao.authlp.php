@@ -68,7 +68,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $record->password = $this->hashPassword($password);
         $record->status = 1;
         $record->email = $email;
-        $record->username = $name ?: $login;
+        $record->realname = $name ?: $login;
         $record->attributes = json_encode(array());
 
         $this->daoFactory->insert($record);
@@ -96,7 +96,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             return false;
         }
         return new AuthUser($login, array(
-            AuthUser::ATTR_NAME => $user->username,
+            AuthUser::ATTR_NAME => $user->realname,
             AuthUser::ATTR_EMAIL => $user->email
         ));
     }
@@ -139,7 +139,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         }
 
         $attributes = array(
-            AuthUser::ATTR_NAME =>$userRec->username,
+            AuthUser::ATTR_NAME =>$userRec->realname,
             AuthUser::ATTR_EMAIL =>$userRec->email,
         );
 
@@ -147,7 +147,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $sessionAttributes = $this->getConfigurationParameter('sessionAttributes');
         if ($sessionAttributes == 'ALL') {
             $userProperties = get_object_vars($userRec);
-            unset($userProperties['username']);
+            unset($userProperties['realname']);
             unset($userProperties['email']);
             $attributes = array_merge($userProperties, $attributes);
         }
@@ -206,7 +206,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             array(
                 AuthUser::ATTR_LOGIN => $userRec->login,
                 AuthUser::ATTR_EMAIL => $userRec->email,
-                AuthUser::ATTR_NAME => $userRec->username)
+                AuthUser::ATTR_NAME => $userRec->realname)
             )
         );
     }
@@ -249,7 +249,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
                     array(
                         AuthUser::ATTR_LOGIN => $userRec->login,
                         AuthUser::ATTR_EMAIL => $userRec->email,
-                        AuthUser::ATTR_NAME => $userRec->username)
+                        AuthUser::ATTR_NAME => $userRec->realname)
                 )
             );
         }
