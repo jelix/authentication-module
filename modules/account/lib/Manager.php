@@ -61,7 +61,6 @@ class Manager
         $dao->insert($newAccount);
     }
 
-
     /**
      * Creates a new account from the authenticated user
      * 
@@ -80,14 +79,21 @@ class Manager
             $status = self::STATUS_VALID;
         }
 
-        $dao = \jDao::get(self::$daoName, self::$daoProfile);
-        $newAccount = \jDao::createRecord(self::$daoName, self::$daoProfile);
-        $newAccount->username = $login;
-        $newAccount->firstname = '';
-        $newAccount->lastname = $user->getName();
-        $newAccount->email = $user->getEmail();
+        $newAccount = self::createAccountObject($login, $user->getEmail());
+
+        $username  = $user->getName();
+        $names = explode(' ', $username, 2);
+        if (count($names) > 1) {
+            $newAccount->firstname = $names[0];
+            $newAccount->lastname = $names[1];
+        }
+        else {
+            $newAccount->firstname = '';
+            $newAccount->lastname = $username;
+        }
+
         $newAccount->status = $status;
-        $dao->insert($newAccount);
+        self::saveNewAccount($newAccount);
         return new Account($newAccount);
     }
 
