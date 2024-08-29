@@ -56,7 +56,14 @@ class signCtrl extends jController
             $workflow = jAuthentication::startAuthenticationWorkflow($user, $idp);
             $workflow->setFinalUrl($urlBack);
             $workflow->setFailUrl($failUrl);
-            return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
+            $nextUrl = $workflow->getNextAuthenticationUrl();
+            if (!$workflow->isSuccess()) {
+                $_SESSION['LOGINPASS_ERROR'] = $workflow->getErrorMessage();
+            }
+            else {
+                unset($_SESSION['LOGINPASS_ERROR']);
+            }
+            return $this->redirectToUrl($nextUrl);
         }
 
         return $this->redirectToUrl($failUrl);

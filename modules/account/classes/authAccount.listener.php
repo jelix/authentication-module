@@ -38,7 +38,7 @@ class authAccountListener extends jEventListener
                 $event->setUnknownAccount();
             }
             else {
-                throw new StepException('No account for the login '.$user->getLogin());
+                throw new StepException(jLocale::get('account~account.error.no.account', $user->getLogin()));
             }
         }
     }

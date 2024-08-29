@@ -14,8 +14,23 @@ class LoginFormZone extends jZone
 
     protected function _prepareTpl()
     {
+
+        if ($this->param('failed')) {
+            $this->_tpl->assign('failed', true);
+            if (isset($_SESSION['LOGINPASS_ERROR']) && $_SESSION['LOGINPASS_ERROR'] != '') {
+                $this->_tpl->assign('errorMessage', $_SESSION['LOGINPASS_ERROR']);
+                unset($_SESSION['LOGINPASS_ERROR']);
+            }
+            else {
+                $this->_tpl->assign('errorMessage', jLocale::get('authloginpass~auth.message.failedToLogin'));
+            }
+        }
+        else {
+            $this->_tpl->assign('failed', false);
+        }
+
+
         $this->_tpl->assign('login', $this->param('login') ?: '');
-        $this->_tpl->assign('failed', $this->param('failed') ?: 0);
 
         $this->_tpl->assign('isAuthenticated', jAuthentication::isCurrentUserAuthenticated());
         $this->_tpl->assign('user', jAuthentication::getCurrentUser());

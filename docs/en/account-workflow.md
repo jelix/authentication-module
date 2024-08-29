@@ -100,7 +100,9 @@ If there is an account (or you have juste created one on the fly), call
 the method `setAccount($account)` on the event.
 
 Else call `setUnknownAccount()` if an account can be automatically created.
-Else throw an exception, and the user will return to the authentication form.
+Else throw an exception with `StepException`, and the user will return to the authentication form.
+The error message indicated to `StepException` may be displayed (this is the case
+with the authentication form of the authloginpass module). 
 
 ```php
 use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;

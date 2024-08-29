@@ -173,6 +173,11 @@ class Workflow
         return ($this->state->getEndStatus() === $this->state::END_STATUS_SUCCESS);
     }
 
+    public function getErrorMessage()
+    {
+        return $this->state->getErrorMessage();
+    }
+
     public function setFinalUrl(string $url)
     {
         $this->state->setFinalUrl($url);

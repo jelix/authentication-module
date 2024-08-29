@@ -1,6 +1,6 @@
 <div id="authloginpass_login_zone">
 {if $failed}
-<p>{@authloginpass~auth.message.failedToLogin@}</p>
+<p>{$errorMessage}</p>
 {/if}
 
 {if ! $isAuthenticated}
