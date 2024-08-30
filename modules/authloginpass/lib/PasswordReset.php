@@ -213,7 +213,7 @@ class PasswordReset {
         if ($backend) {
             $userRequest->saveAsConfirmed();
 
-            $this->manager->changePassword($login, $newPassword, $backend->getLabel());
+            $this->manager->changePassword($login, $newPassword, $backend->getRegisterKey());
         }
     }
 
