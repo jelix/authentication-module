@@ -29,9 +29,10 @@ adminui.installparam[wwwfiles]=vhost
 
 authcore.enabled=on
 authloginpass.enabled=on
+account.enabled=on
 
 [coordplugins]
-sessionauth = on
+sessionauth=on
 jacl2=1
 
 [responses]
@@ -106,6 +107,10 @@ adminlte.js[]=adminlte-assets/plugins/jquery-mousewheel/jquery.mousewheel.js
 adminlte.js[]=adminlte-assets/plugins/fastclick/fastclick.js
 adminlte.js[]=adminlte-assets/dist/js/adminlte.min.js
 adminlte.js[]=adminui-assets/adminui.js
+
+[acl2]
+driver=db
+authAdapterClass="\Jelix\Authentication\Core\Acl2Adapter"
 
 [adminui]
 appVersion=0.0.1
@@ -188,7 +193,9 @@ body.smalltext = off
 [authentication]
 idp[]=loginpass
 idp[]=alwaysyes
-sessionHandler = php
+sessionHandler=php
+
+signInAlreadyAuthAction="adminui~default:index"
 
 [sessionauth]
 authRequired=off
@@ -200,6 +207,7 @@ backends[]=ldap
 backends[]=daotablesqlite
 backends[]=inifile
 after_login="adminui~default:index"
+loginResponse=htmllogin
 
 [loginpass:common]
 passwordHashAlgo=1
@@ -211,7 +219,7 @@ deprecatedPasswordSalt=
 [loginpass:inifile]
 backendType=inifile
 inifile="var:db/users.ini.php"
-backendLabel=Native users
+backendLabel="Native users"
 
 [loginpass:daotablesqlite]
 backendType=dbdao
@@ -226,6 +234,4 @@ featureChangePassword=on
 aclAdapterClass="\Jelix\Authentication\LoginPass\LdapAcl2Adapter"
 
 
-[acl2]
-driver=db
-authAdapterClass="\Jelix\Authentication\Core\Acl2Adapter"
+

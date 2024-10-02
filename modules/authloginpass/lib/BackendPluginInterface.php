@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019 Laurent Jouanneau
+ * @copyright  2019-2024 Laurent Jouanneau
  * @license   MIT
  */
 namespace Jelix\Authentication\LoginPass;
@@ -13,7 +13,12 @@ interface BackendPluginInterface
     /** @var int the backend does not implement specific features */
     const FEATURE_NONE = 0;
 
-    /** @var int password of a user can be changed */
+    /**
+     * If the plugin has this feature, it should provide a "status" attribute
+     * that have one of AuthUser::STATUS_* values
+     *
+     * @var int password of a user can be changed
+     */
     const FEATURE_CHANGE_PASSWORD = 1;
 
     /** @var int the backend can create user */
@@ -99,4 +104,28 @@ interface BackendPluginInterface
      * @return boolean true if a user with this login exists
      */
     public function userExists($login);
+
+    /**
+     * @param string $email
+     * @return string|false the login if a user exists with the given email, or  false if not found
+     */
+    public function userWithEmailExists($email);
+
+    /**
+     * Gets an user by its login
+     * 
+     * @param string $login The user to get
+     * @return AuthUser The user corresponding to $login, null if none.
+     */
+    public function getUser($login);
+
+    /**
+     * Updates user informations
+     * 
+     * @param string $login The user's login
+     * @param array $attributes The attributes to modify
+     * 
+     * @return void
+     */
+    public function updateUser($login, $attributes);
 }

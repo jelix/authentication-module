@@ -33,17 +33,15 @@ class adminuiListener extends jEventListener
         if (jAuthentication::isCurrentUserAuthenticated()) {
             $user = jAuthentication::getCurrentUser();
             $accountMenu->setAuthenticated(
-                $user->getUserId(),
+                $user->getLogin(),
                 $user->getName(),
                 jAuthentication::getSignoutPageUrl(),
-                '#profile');
+                jUrl::get('account~profile:index'));
         }
         else {
             // FIXME : ajouter url de la page en cours, en paramètre, pour url de retour,  si pas requete post
             $accountMenu->setNotAuthenticated(jAuthentication::getSigninPageUrl());
         }
-        //$accountMenu->setAuthenticated('laurentj', 'Laurent Jouanneau', '#signout', '#profile', \jApp::urlBasePath().'adminlte-assets/dist/img/user2-160x160.jpg');
-        //$accountMenu->addLink(new Link('#prefs', 'Your preferences'));
 
         $navigation = new SubMenu('nav', 'Navigation', 10);
         $navigation->addJelixLinkItem('index test', 'test~default:index', array(), 'circle-o');

@@ -27,7 +27,7 @@ searchUserBaseDN="dc=XY,dc=fr"
 searchUserFilter="(&(objectClass=posixAccount)(uid=%%LOGIN%%))"
 bindUserDN="uid=%?%,ou=users,dc=XY,dc=fr"
 newUserDN="uid=%%LOGIN%%,ou=people,dc=tests,dc=jelix"
-newUserLdapAttributes="objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%USERNAME%%,sn:%%USERNAME%%"
+newUserLdapAttributes="objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%REALNAME%%,sn:%%REALNAME%%"
 searchAttributes="uid:login,givenName:firstname,sn:lastname,mail:email"
 searchGroupFilter="(&(objectClass=posixGroup)(cn=XYZ*)(memberUid=%%LOGIN%%))"
 searchGroupProperty="cn"
@@ -192,3 +192,18 @@ contains the group name. Ex: `searchGroupProperty="cn"`.
 You may also indicate the base DN for the search, into `searchGroupBaseDN`. Example:
 `searchGroupBaseDN="ou=Groups,dc=Acme,dc=pt"`.
 
+Other configuration properties
+-------------------------------
+
+**`searchUserByEmailFilter`**
+
+This is a filter to search a user by his email. Example: 
+
+`searchUserByEmailFilter="(&(objectClass=inetOrgPerson)(mail=%%EMAIL%%))"`
+
+You can use a list:
+
+```
+searchUserByEmailFilter[]="(&(objectClass=inetOrgPerson)(mail=%%EMAIL%%))"
+searchUserByEmailFilter[]="(&(objectClass=posixAccount)(mail=%%EMAIL%%))"
+```

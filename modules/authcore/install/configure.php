@@ -28,6 +28,10 @@ class authcoreModuleConfigurator extends \Jelix\Installer\Module\Configurator
             $ini->setValue('sessionHandler', "php", 'authentication');
         }
 
+        if ($ini->getValue('signInAlreadyAuthAction', 'authentication') === null) {
+            $ini->setValue('signInAlreadyAuthAction', "", 'authentication');
+        }
+
         if ($ini->getValue('sessionauth', 'coordplugins') === null) {
             $ini->setValue('sessionauth', true, 'coordplugins');
         }

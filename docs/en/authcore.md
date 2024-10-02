@@ -17,6 +17,16 @@ idp[]=
 ; name of the session handler used to store session data for authentication
 sessionHandler=php
 
+; action to sign in
+signInAction="authcore~sign:in"
+
+; action to sign out
+signOutAction="authcore~sign:out"
+
+; action to redirect to when displaying the login page whereas the user is
+; already authenticated. Typical action: the action of the home page
+signInAlreadyAuthAction=
+
 [sessionauth]
 ; action to redirect to when authentication is needed and the user is not authenticated
 missingAuthAction=
@@ -51,11 +61,11 @@ give into the `idp` option are the name of plugins to activate. `idp` is an arra
 The package provides a "login/password" identity provider, with the module
 `authloginpass`. Name of the plugin is `loginpass`. 
 
-JelixAuthentication keeps informations about the authenticated user, into
+JelixAuthentication keeps information about the authenticated user, into
 the session handler. Two session handlers are provided:
 
-- `php`: it stores authentication informations into the PHP session
-- `var`: it stores authentication informations into an object. This is useful
+- `php`: it stores authentication information into the PHP session
+- `var`: it stores authentication information into an object. This is useful
   for stateless authentication. For exemple, to implement a webAPI where
   credentials should be given at each http request. Or to use authentication
   in a script running in a shell.

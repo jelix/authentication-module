@@ -14,7 +14,7 @@ Listen it to verify that the user can access to the application.
 Parameters:
 
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
-- `identProviderId`: the id of the authentication provider
+- `identProvider`: the authentication provider object
 
 Response to give:
 
@@ -28,7 +28,7 @@ Event triggered when a user has been authenticated.
 Parameters:
 
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
-- `identProviderId`: the id of the authentication provider
+- `identProvider`: the authentication provider object
 
 `AuthenticationFail`
 --------------------
@@ -62,7 +62,7 @@ application.
 Parameters:
 
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
-- `identProviderId`: `"loginpass"`
+- `identProvider`: the `loginpass` authentication provider object
 
 `AuthenticationUserDeletion`
 ----------------------------
@@ -76,10 +76,29 @@ application.
 Parameters:
 
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
-- `identProviderId`: `"loginpass"`
+- `identProvider`: the `loginpass` authentication provider object
+
+`AuthWorkflowStep`
+------------------
+
+When the user starts the authentication, this event is emitted at each step of the
+authentication. The step name is indicated into a `stepName` parameter, and the 
+class of the event is `Jelix\Authentication\Core\Workflow\Event\WorkflowStepEvent`.
+
+For the step `get_account`, the class is `Jelix\Authentication\Core\Workflow\Event\GetAccountEvent`.
 
 
+`AuthLPCanResetPassword`
+------------------------
 
+This event is sent when a request is made to reset the password
+of an identifiant managed by the authloginpass module.
+
+Any module can indicate if the given user is allowed to
+reset the password. For example, for an account module,
+the module can say no if there is no registrated account.
+
+See the `Jelix\Authentication\LoginPass\AuthLPCanResetPasswordEvent` class.
 
 
 

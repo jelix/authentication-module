@@ -7,7 +7,7 @@
       <property name="user_id" fieldname="user_id" datatype="autoincrement"/>
        
       <property name="login" fieldname="login"
-          required="yes" datatype="string"  maxlength="50" />
+          required="yes" datatype="string"  maxlength="255" />
 
       <property name="password" fieldname="password" datatype="string" required="yes"
                 maxlength="120" selectpattern="%s" updatepattern="" insertpattern="%s" />
@@ -20,7 +20,7 @@
            1 valid user
            -->
       <property name="email" fieldname="email" datatype="string" required="yes" maxlength="255" />
-      <property name="username" fieldname="username" datatype="string" maxlength="255" />
+      <property name="realname" fieldname="realname" datatype="string" maxlength="255" />
       <property name="create_date" fieldname="create_date" datatype="datetime"
                 insertpattern="now()" updatepattern=""/>
       <property name="attributes" fieldname="attributes" datatype="text" />
@@ -30,6 +30,13 @@
          <parameter name="login" />
          <conditions>
              <eq property="login" expr="$login" />
+         </conditions>
+     </method>
+
+     <method name="getByEmail" type="selectfirst">
+         <parameter name="email" />
+         <conditions>
+             <eq property="email" expr="$email" />
          </conditions>
      </method>
 

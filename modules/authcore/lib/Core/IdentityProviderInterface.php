@@ -50,11 +50,11 @@ interface IdentityProviderInterface {
     public function getHtmlLoginForm(\jRequest $request);
 
     /**
-     * verify if the session is valid
+     * Verify if the session is valid.
      *
      * The identity provider should indicate by the returned value,
      * if the target action can be executed (the method must return null), or
-     * if an other action should be executed (the method must return a jSelectorAct object),
+     * if another action should be executed (the method must return a jSelectorAct object),
      * in case of a lack of authentication.
      *
      * The identity provider can also throw a jHttp401UnauthorizedException exception
@@ -63,7 +63,7 @@ interface IdentityProviderInterface {
      * @param \jRequest $request
      * @param AuthSession\AuthUser|null $authUser the user identified into the session. null if there is no user
      * @param boolean $authRequired  true when the current action needs an authenticated user
-     * @return \jSelectorAct|null return an action to redirect to, without error
+     * @return \jIActionSelector|null return an action to redirect to, without error
      * @throws \jHttp401UnauthorizedException
      */
     public function checkSessionValidity ($request, $authUser, $authRequired);

@@ -31,7 +31,7 @@ class CreateUserCommand extends  AbstractCommand
                 'the email of the user'
             )
             ->addArgument(
-                'name',
+                'displayedname',
                 InputArgument::OPTIONAL,
                 'firstname/lastname of the user'
             )
@@ -62,12 +62,12 @@ class CreateUserCommand extends  AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $login = $input->getArgument('login');
-        $userName = $input->getArgument('name');
+        $displayedName = $input->getArgument('displayedname');
         $userEmail = $input->getArgument('email');
         $password = $this->getPassword($input, $output);
 
 
-        $manager = $this->getManager();
+        $manager = $this->getLoginPassManager();
         $backendName = $this->getBackendName($input, $manager);
         if (!$backendName) {
             $backendName = $manager->getFirstBackendName();
@@ -79,7 +79,7 @@ class CreateUserCommand extends  AbstractCommand
         }
 
         if (!$manager->createUser($login, $password, array(
-            AuthUser::ATTR_NAME => $userName,
+            AuthUser::ATTR_NAME => $displayedName,
             AuthUser::ATTR_EMAIL => $userEmail
             ), $backendName)
         ) {

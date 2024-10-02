@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019 Laurent Jouanneau
+ * @copyright  2019-2024 Laurent Jouanneau
  * @license   MIT
  */
 
@@ -71,7 +71,8 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         $properties = array(
             'password' => $this->hashPassword($password),
             'email' => $email,
-            'name' => $name
+            'name' => $name,
+            'status' => 1
         );
 
         $ini = new \Jelix\IniFile\IniModifier($this->iniFile);
@@ -96,18 +97,13 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             return true;
         }
 
-        $name = $ini->getValue('name', $section);
-        $email = $ini->getValue('email', $section);
-
         $ini->removeSection($section);
         $ini->save();
 
+        $properties = $this->iniContent[$section];
         unset($this->iniContent[$section]);
 
-        return new AuthUser($login, array(
-            AuthUser::ATTR_NAME =>$name,
-            AuthUser::ATTR_EMAIL =>$email,
-        ));
+        return $this->getAuthObject($login, $properties);
     }
 
     /**
@@ -159,7 +155,12 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             $ini->setValue('password', $result, $section);
             $ini->save();
         }
+        return $this->getAuthObject($login, $userProperties);
+    }
 
+
+    protected function getAuthObject($login, $userProperties)
+    {
         $attributes = array(
             AuthUser::ATTR_NAME =>$userProperties['name'],
             AuthUser::ATTR_EMAIL =>$userProperties['email'],
@@ -167,14 +168,18 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
 
         $sessionAttributes = $this->getConfigurationParameter('sessionAttributes');
         if ($sessionAttributes == 'ALL') {
-            unset($userProperties['name']);
-            unset($userProperties['email']);
+            unset($userProperties[AuthUser::ATTR_NAME]);
+            unset($userProperties[AuthUser::ATTR_EMAIL]);
+            unset($userProperties[AuthUser::ATTR_LOGIN]);
+            unset($userProperties['password']);
             $attributes = array_merge($userProperties, $attributes);
         }
         else if ($sessionAttributes != '') {
             $sessionAttributes = preg_split('/\s*,\s*/', $sessionAttributes);
+            // always retrieve the status property, we may need it
+            $sessionAttributes[] = 'status';
             foreach($sessionAttributes as $prop) {
-                if ($prop == AuthUser::ATTR_NAME || $prop == AuthUser::ATTR_EMAIL) {
+                if ($prop == AuthUser::ATTR_NAME || $prop == AuthUser::ATTR_EMAIL || $prop == AuthUser::ATTR_LOGIN) {
                     continue;
                 }
                 if (isset($userProperties[$prop])) {
@@ -198,5 +203,55 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             return false;
         }
         return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function userWithEmailExists($email)
+    {
+        foreach($this->iniContent as $secName => $userRec) {
+            if (strpos($secName , 'login:') !== 0) {
+                continue;
+            }
+            if (isset($userRec['email']) && $userRec['email'] == $email) {
+                $login = str_replace('login:', '', $secName);
+                return $login;
+            }
+        }
+        return false;
+    }
+
+
+    public function getUser($login)
+    {
+        if (!$this->userExists($login)) {
+            return null;
+        }
+        $section = 'login:'.$login;
+        return $this->getAuthObject($login, $this->iniContent[$section]);
+    }
+
+    public function updateUser($login, $attributes)
+    {
+        if (!$this->userExists($login)) {
+            return ;
+        }
+        $section = 'login:'.$login;
+        $ini = new \Jelix\IniFile\IniModifier($this->iniFile);
+        $ini->setValues($attributes, $section);
+        $ini->save();
+    }
+
+    public function getUsersList()
+    {
+        foreach($this->iniContent as $secName => $userRec) {
+            if (strpos($secName , 'login:') !== 0) {
+                continue;
+            }
+            $login = str_replace('login:', '', $secName);
+            $user = $this->getAuthObject($login, $userRec);
+            yield $user;
+        }
     }
 }

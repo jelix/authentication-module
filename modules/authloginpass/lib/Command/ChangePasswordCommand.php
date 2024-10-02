@@ -53,7 +53,7 @@ class ChangePasswordCommand extends  AbstractCommand
         $login = $input->getArgument('login');
         $password = $this->getPassword($input, $output);
 
-        $manager = $this->getManager();
+        $manager = $this->getLoginPassManager();
 
         $backendName = $this->getBackendName($input, $manager);
 

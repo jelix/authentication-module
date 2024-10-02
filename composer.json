@@ -14,6 +14,9 @@
         "php": ">=7.4",
         "ircmaxell/random-lib" : "^1.2.0"
     },
+    "conflict": {
+        "jelix/jelix": "<=1.8.0-rc.3"
+    },
     "archive": {
         "exclude": ["/test"]
     },

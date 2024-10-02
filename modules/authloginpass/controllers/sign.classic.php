@@ -1,13 +1,15 @@
 <?php
+
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2024 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
-use \Jelix\Authentication\Core\Session;
 
-class signCtrl extends jController {
+
+class signCtrl extends jController
+{
 
     public $sensitiveParameters = array('password');
 
@@ -20,54 +22,50 @@ class signCtrl extends jController {
      */
     public function in()
     {
-        $rep = $this->getResponse('htmllogin');
-        $rep->title = jLocale::get('authcore~auth.titlePage.login');
-
-        $zp = array(
-            'login' => $this->param('login'),
-            'failed' => $this->param('failed')
-        );
-
-        $rep->body->assignZone('MAIN', 'authloginpass~loginform', $zp);
-
-        return $rep;
+        return $this->redirect('authcore~sign:in');
     }
 
     /**
      * Check credentials given into the form of the loginform zone
      *
-     * @return jResponseRedirect
+     * @return jResponseRedirectUrl
      */
     public function checkCredentials()
     {
-        $rep = $this->getResponse('redirectUrl');
-
+        /** @var $idp \loginpassIdentityProvider */
         $idp = jAuthentication::manager()->getIdpById('loginpass');
-        /** @var \Jelix\Authentication\LoginPass\Manager $lpManager */
+
+        /** @var $lpManager \Jelix\Authentication\LoginPass\Manager */
         $lpManager = $idp->getManager();
 
-        if ($this->request->isPostMethod() &&
+        $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
+        $failUrl = jUrl::get('authcore~sign:in', $params);
+
+        if (
+            $this->request->isPostMethod() &&
             $user = $lpManager->verifyPassword($this->param('login'), $this->param('password'))
         ) {
-
-            $sessionOk = jAuthentication::session()->setSessionUser($user, 'loginpass');
-            if ($sessionOk) {
-                $rep->url = $this->param('urlback');
-                if ($rep->url == '') {
-                    $rep->url = $lpManager->getUrlAfterLogin();
-                }
-                if ($rep->url == '') {
-                    $rep->url = '/';
-                }
-                return $rep;
+            $urlBack = $this->param('urlback');
+            if ($urlBack == '') {
+                $urlBack = $lpManager->getUrlAfterLogin();
             }
+            if ($urlBack == '') {
+                $urlBack = jApp::urlBasePath();
+            }
+
+            $workflow = jAuthentication::startAuthenticationWorkflow($user, $idp);
+            $workflow->setFinalUrl($urlBack);
+            $workflow->setFailUrl($failUrl);
+            $nextUrl = $workflow->getNextAuthenticationUrl();
+            if (!$workflow->isSuccess()) {
+                $_SESSION['LOGINPASS_ERROR'] = $workflow->getErrorMessage();
+            }
+            else {
+                unset($_SESSION['LOGINPASS_ERROR']);
+            }
+            return $this->redirectToUrl($nextUrl);
         }
 
-        $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
-        $rep->url = jUrl::get('authcore~sign:in', $params);
-
-        return $rep;
+        return $this->redirectToUrl($failUrl);
     }
-
 }
-

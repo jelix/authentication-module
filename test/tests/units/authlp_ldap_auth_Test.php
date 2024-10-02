@@ -1,7 +1,7 @@
 <?php
 /**
  * @author      laurent Jouanneau
- * @copyright   2019 laurent Jouanneau
+ * @copyright   2019-2024 laurent Jouanneau
  * @link        https://www.jelix.org
  * @licence     MIT
  */
@@ -29,10 +29,11 @@ class authlp_ldap_auth_Test extends \Jelix\UnitTests\UnitTestCase {
         'adminPassword'      =>  'passjelix',
         'searchUserBaseDN' => 'ou=people,dc=tests,dc=jelix',
         'searchUserFilter' => "(&(objectClass=inetOrgPerson)(uid=%%LOGIN%%))",
+        'searchUserByEmailFilter' => "(&(objectClass=inetOrgPerson)(mail=%%EMAIL%%))",
         'bindUserDN' => "uid=%?%,ou=people,dc=tests,dc=jelix",
         'newUserDN' => "uid=%%LOGIN%%,ou=people,dc=tests,dc=jelix",
-        'newUserLdapAttributes' => "objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%USERNAME%%,sn:%%USERNAME%%",
-        'searchAttributes' => "uid:login,displayName:username,mail:email",
+        'newUserLdapAttributes' => "objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%REALNAME%%,sn:%%REALNAME%%",
+        'searchAttributes' => "uid:login,displayName:realname,mail:email",
     );
 
     function testUserExists() {
@@ -113,7 +114,15 @@ class authlp_ldap_auth_Test extends \Jelix\UnitTests\UnitTestCase {
         $this->assertEquals('robert@tests.jelix' , $user->getEmail());
     }
 
-
+    /**
+     * @depends testChangeHashedPassword
+     */
+    function testGetUserByEmail()
+    {
+        $ldap = new ldapBackend($this->ldapProfile, array());
+        $this->assertEquals('testldap', $ldap->userWithEmailExists('robert@tests.jelix'));
+        $this->assertFalse($ldap->userWithEmailExists('unknown@tests.jelix'));
+    }
 
     /**
      * @depends testChangePassword

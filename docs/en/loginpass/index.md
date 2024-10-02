@@ -134,7 +134,7 @@ You can use any dao, but it should have at least all fields you found into the
 `user` dao of the `authloginpass` module.
 
 With `sessionAttributes`, you can indicate the properties to load into the
-user object in session. It is a liste of properties separated by a comma.
+user object in session. It is a list of properties separated by a comma.
 
 
 ```ini
@@ -170,9 +170,10 @@ adminUserDn="cn=admin,dc=tests,dc=jelix"
 adminPassword="passjelix"
 searchUserBaseDN="ou=people,dc=tests,dc=jelix"
 searchUserFilter="(&(objectClass=inetOrgPerson)(uid=%%LOGIN%%))"
+searchUserByEmailFilter="(&(objectClass=inetOrgPerson)(mail=%%EMAIL%%))"
 bindUserDN="uid=%?%,ou=people,dc=tests,dc=jelix"
 newUserDN="uid=%%LOGIN%%,ou=people,dc=tests,dc=jelix"
-newUserLdapAttributes="objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%USERNAME%%,sn:%%USERNAME%%"
+newUserLdapAttributes="objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%REALNAME%%,sn:%%REALNAME%%"
 searchAttributes="uid:login,displayName:username,mail:email"
 ;searchGroupKeepUserInDefaultGroups=on
 ;searchGroupProperty=

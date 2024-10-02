@@ -1,50 +1,64 @@
 <?php
+
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2023 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
 
 namespace Jelix\Authentication\Core\AuthSession;
 
+use Jelix\Authentication\Core\IdentityProviderInterface;
+use Jelix\Authentication\Core\Workflow\WorkflowState;
+use Psr\EventDispatcher\EventDispatcherInterface;
+
 /**
  * Manage the authenticated session
  *
  */
-class AuthSession {
+class AuthSession
+{
 
     /**
      * @var AuthSessionHandlerInterface
      */
     protected $handler;
 
-    public function __construct(AuthSessionHandlerInterface $handler)
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $evDispatcher;
+
+    public function __construct(AuthSessionHandlerInterface $handler, EventDispatcherInterface $evDispatcher)
     {
         $this->handler = $handler;
+        $this->evDispatcher = $evDispatcher;
     }
 
     /**
      * @param AuthUser $user
-     * @param string $IPid
+     * @param IdentityProviderInterface $idp
      * @return bool false if the authenticated user is not allowed to use the application
      */
-    public function setSessionUser(AuthUser $user, $IdpId)
+    public function setSessionUser(AuthUser $user, $idp)
     {
-        $event = \jEvent::notify('AuthenticationCanUseApp', array(
+        $event = new \jEvent('AuthenticationCanUseApp', array(
             'user' => $user,
-            'identProviderId' => $IdpId
+            'identProvider' => $idp
         ));
+        $event = $this->evDispatcher->dispatch($event);
         if (false === $event->allResponsesByKeyAreTrue('canUseApp')) {
             return false;
         }
 
-        $this->handler->setSessionUser($user, $IdpId);
+        $this->handler->setSessionUser($user, $idp->getId());
 
-        \jEvent::notify('AuthenticationLogin', array(
+        $event = new \jEvent('AuthenticationLogin', array(
             'user' => $user,
-            'identProviderId' => $IdpId
+            'identProvider' => $idp
         ));
+        $this->evDispatcher->dispatch($event);
 
         return true;
     }
@@ -54,9 +68,11 @@ class AuthSession {
         if ($this->handler->hasSessionUser()) {
             $user = $this->handler->getSessionUser();
             $this->handler->unsetSessionUser();
-            \jEvent::notify('AuthenticationLogout', array('user' => $user));
-        }
-        else {
+            $event = new \jEvent('AuthenticationLogout', array(
+                'user' => $user,
+            ));
+            $this->evDispatcher->dispatch($event);
+        } else {
             $this->handler->unsetSessionUser();
         }
     }
@@ -77,5 +93,27 @@ class AuthSession {
     public function getIdentityProviderId()
     {
         return $this->handler->getIdentityProviderId();
+    }
+
+    /**
+     * @param WorkflowState $workflow
+     * @return void
+     */
+    public function setWorkflowState(WorkflowState $workflow)
+    {
+        $this->handler->setWorkflowState($workflow);
+    }
+
+    public function unsetWorkflowState()
+    {
+        $this->handler->unsetWorkflowState();
+    }
+
+    /**
+     * @return WorkflowState
+     */
+    public function getWorkflowState()
+    {
+        return $this->handler->getWorkflowState();
     }
 }

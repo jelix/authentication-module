@@ -5,7 +5,7 @@ services:
     build: ./docker-conf/openldap
     container_name: jelix_auth_ldap
     environment:
-      SLAPD_FORCE_RECONFIGURE: "true"
+      #SLAPD_FORCE_RECONFIGURE: "true"
       SLAPD_PASSWORD: "passjelix"
       SLAPD_ORGANISATION: "Jelix"
       SLAPD_DOMAIN: "tests.jelix"
@@ -18,7 +18,7 @@ services:
     networks:
       default:
         aliases:
-           - ldap.jelix
+          - ldap.jelix
   php:
     build:
       context: ./docker-conf/phpfpm

@@ -153,6 +153,17 @@ function launch() {
     cleanTmp
 }
 
+
+function initData()
+{
+  php $APPDIR/console.php account:create admin admin-test@jelix.org Bob SuperAdmin
+  php $APPDIR/console.php account:login:create admin --backend=inifile --set-pass=jelix
+  php $APPDIR/console.php account:create john john@jelix.org John Doe
+  php $APPDIR/console.php account:idp:set john loginpass john
+  php $APPDIR/console.php account:create laurent laurent@jelix.org  Laurent
+  php $APPDIR/console.php account:login:create laurent --backend=daotablesqlite --set-pass=jelix
+}
+
 case $COMMAND in
     clean_tmp)
         cleanTmp;;
@@ -161,6 +172,9 @@ case $COMMAND in
     reset)
           cleanApp
           launchInstaller
+          ;;
+    init-data)
+          initData
           ;;
     launch)
         launch;;

@@ -1,0 +1,6 @@
+<events xmlns="http://jelix.org/ns/events/1.0">
+   <listener name="authAccount">
+       <event name="AuthWorkflowStep"/>
+       <event name="AuthLPCanResetPassword"/>
+   </listener>
+</events>

@@ -1,40 +1,48 @@
 <?php
+
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019 Laurent Jouanneau
+ * @copyright  2019-2023 Laurent Jouanneau
  * @licence   MIT
  */
 
 /**
  */
-class sessionauthCoordPlugin implements jICoordPlugin {
+class sessionauthCoordPlugin implements jICoordPlugin
+{
 
     protected $config;
 
-    function __construct($conf){
+    function __construct($conf)
+    {
         $this->config = $conf;
     }
 
     /**
      * @param    array  $params   plugin parameters for the current action
-     * @return null or jSelectorAct  if action should change
+     * @return null|jIActionSelector  if action should change
      */
-    public function beforeAction ($params)
+    public function beforeAction($params)
     {
         $sessionHandler = jAuthentication::session();
         $isLogonned = $sessionHandler->hasSessionUser();
 
-        $needAuth = isset($params['auth.required']) ? ($params['auth.required']==true):$this->config['authRequired'];
-        $selector = null;
-        $authManager = jAuthentication::manager();
+        $needAuth = isset($params['auth.required']) ? ($params['auth.required'] == true) : $this->config['authRequired'];
+
         /** @var jRequest $request */
         $request = jApp::coord()->request;
+
+        $selector = jAuthentication::checkWorkflowAndAction($isLogonned, jApp::coord()->action);
+        if ($selector) {
+            // the workflow force to go to a controller of a workflow step
+            return $selector;
+        }
 
         try {
             if ($isLogonned) {
                 // the user is already authenticated
                 $authId = $sessionHandler->getIdentityProviderId();
-                $authenticator = $authManager->getIdpById($authId);
+                $authenticator = jAuthentication::manager()->getIdpById($authId);
 
                 // let's check if the authentication is still valid
                 if ($authenticator) {
@@ -43,14 +51,15 @@ class sessionauthCoordPlugin implements jICoordPlugin {
                         jAuthentication::getCurrentUser(),
                         $needAuth
                     );
-                }
-                else {
+                } else {
                     throw new \jHttp401UnauthorizedException(jLocale::get('authcore~auth.error.not.authenticated'));
                 }
-            }
-            else {
-                // the user is not authenticated, check with all identity provider
-                foreach ($authManager->getIdpList() as $authenticator) {
+            } else {
+
+                // The user is not authenticated, check with all identity provider
+                // because some of them may support stateless authentication.
+                foreach (jAuthentication::manager()->getIdpList() as $authenticator) {
+                    // we may have here a \jHttp401UnauthorizedException
                     $selector = $authenticator->checkSessionValidity(
                         $request,
                         null,
@@ -61,21 +70,18 @@ class sessionauthCoordPlugin implements jICoordPlugin {
                     }
                 }
             }
-        }
-        catch (\jHttp401UnauthorizedException $e) {
+        } catch (\jHttp401UnauthorizedException $e) {
             $sessionHandler->unsetSessionUser();
 
             if ($request->isAjax()) {
                 $action = $this->config['missingAuthAjaxAction'];
-            }
-            else {
+            } else {
                 $action = $this->config['missingAuthAction'];
             }
 
             if ($action) {
                 $selector = new jSelectorAct($action);
-            }
-            else {
+            } else {
                 throw $e;
             }
         }
@@ -83,10 +89,11 @@ class sessionauthCoordPlugin implements jICoordPlugin {
         return $selector;
     }
 
+    public function beforeOutput()
+    {
+    }
 
-    public function beforeOutput(){}
-
-    public function afterProcess (){}
-
-
+    public function afterProcess()
+    {
+    }
 }

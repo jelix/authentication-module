@@ -1,9 +1,9 @@
 <?php
 /**
- * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
- * @link     https://jelix.org
- * @licence MIT
+ * @author    Laurent Jouanneau
+ * @copyright 2019-2024 Laurent Jouanneau
+ * @link      https://jelix.org
+ * @licence   MIT
  */
 
 namespace Jelix\Authentication\LoginPass;
@@ -90,6 +90,7 @@ class Manager
     }
 
     /**
+     * List of activated backends
      * @return BackendPluginInterface[]
      */
     public function getBackends() {
@@ -116,6 +117,20 @@ class Manager
         foreach($this->backends as $backend) {
             if ($backend->userExists($login)) {
                 return $backend;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param string $email
+     * @return AuthUser
+     */
+    public function searchUserHavingEmail($email) {
+        foreach($this->backends as $backend) {
+            $login = $backend->userWithEmailExists($email);
+            if ($login) {
+                return $backend->getUser($login);
             }
         }
         return null;
@@ -198,6 +213,14 @@ class Manager
         return false;
     }
 
+    /**
+     * @param string $login
+     * @param string $password
+     * @param array $attributes
+     * @param string $backendName
+     * @return AuthUser|null
+     * @throws \Exception
+     */
     public function createUser($login, $password, array $attributes, $backendName = '')
     {
         if ($backendName) {
@@ -215,12 +238,12 @@ class Manager
         if ($backend->createUser($login, $password, $user->getEmail(), $user->getName())) {
             \jEvent::notify('AuthenticationUserCreation', array(
                 'user' => $user,
-                'identProviderId' => 'loginpass'
+                'identProvider' => \jAuthentication::manager()->getIdpById('loginpass')
             ));
-            return true;
+            return $user;
         }
 
-        return false;
+        return null;
 
     }
 
@@ -244,9 +267,38 @@ class Manager
 
         \jEvent::notify('AuthenticationUserDeletion', array(
             'user' => $user,
-            'identProviderId' => 'loginpass'
+            'identProvider' => \jAuthentication::manager()->getIdpById('loginpass')
         ));
         return true;
     }
 
+    /**
+     * Looks for the user corresponding to $login in all the backends
+     * 
+     * @param string $login The login to search
+     * @return AuthUser|null The user corresponding to login, null if not found.
+     */
+    public function getUser($login) {
+        $back = $this->getBackendHavingUser($login);
+        if (!$back) {
+            return null;
+        }
+        $user = $back->getUser($login);
+        return $user;
+    }
+
+    /**
+     * Updates $user's infos
+     * 
+     * @param AuthUser $user The user to modify
+     */
+    public function updateUser($user)
+    {
+        $login = $user->getLogin();
+        $back = $this->getBackendHavingUser($login);
+        if (!$back) {
+            return ;
+        }
+        $back->updateUser($login, $user->getAttributes());
+    }
 }

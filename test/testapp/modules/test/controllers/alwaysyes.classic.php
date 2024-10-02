@@ -1,26 +1,33 @@
 <?php
+
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
- * @link     http://jelix.org
+ * @copyright 2019-2023 Laurent Jouanneau
+ * @link     https://jelix.org
  * @licence MIT
  */
+
 use Jelix\Authentication\Core\AuthSession\AuthUser;
 
-class alwaysyesCtrl extends jController {
+class alwaysyesCtrl extends jController
+{
     /**
      *
      */
-    function signin() {
-        $rep = $this->getResponse('redirect');
-
-        $user = new AuthUser('testuser',
+    function signin()
+    {
+        $user = new AuthUser(
+            'testuser',
             array(
-                AuthUser::ATTR_NAME =>'User Test'
-            ));
-        jAuthentication::session()->setSessionUser($user, 'alwaysyes');
-        $rep->action = 'test~default:index';
-        return $rep;
+                AuthUser::ATTR_NAME => 'User Test'
+            )
+        );
+        $idp = jAuthentication::manager()->getIdpById('alwaysyes');
+        jAuthentication::session()->setSessionUser($user, $idp);
+
+        $workflow = jAuthentication::startAuthenticationWorkflow($user, $idp);
+        $workflow->setFinalUrl(jUrl::get('test~default:index'));
+
+        return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
     }
 }
-

@@ -32,7 +32,7 @@ class DeleteUserCommand extends  AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $login = $input->getArgument('login');
-        $manager = $this->getManager();
+        $manager = $this->getLoginPassManager();
         $backendName = $this->getBackendName($input, $manager);
 
         if (!$manager->deleteUser($login, $backendName)) {
