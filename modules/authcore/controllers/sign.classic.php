@@ -23,7 +23,12 @@ class signCtrl extends jController
         $rep->title = jLocale::get('authcore~auth.titlePage.login');
 
         $tpl = new jTpl();
-        if (!jAuthentication::isCurrentUserAuthenticated()) {
+        if (jAuthentication::isCurrentUserAuthenticated()) {
+            $config = jApp::config()->authentication;
+            if (isset($config['signInAlreadyAuthAction']) && $config['signInAlreadyAuthAction']) {
+                return $this->redirect($config['signInAlreadyAuthAction']);
+            }
+        } else {
             $manager = jAuthentication::manager();
             $htmlForms = array();
             foreach ($manager->getIdpList() as $idp) {

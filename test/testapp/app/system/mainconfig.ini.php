@@ -195,6 +195,8 @@ idp[]=loginpass
 idp[]=alwaysyes
 sessionHandler=php
 
+signInAlreadyAuthAction="adminui~default:index"
+
 [sessionauth]
 authRequired=off
 missingAuthAction="authcore~sign:in"
