@@ -73,6 +73,11 @@ class CreateUserCommand extends  AbstractCommand
             $backendName = $manager->getFirstBackendName();
         }
 
+        $backend = $manager->getBackendByName($backendName);
+        if ($backend->userExists($login)) {
+            throw new \Exception('A user already exists with this login');
+        }
+
         if (!$manager->createUser($login, $password, array(
             AuthUser::ATTR_NAME => $userName,
             AuthUser::ATTR_EMAIL => $userEmail
@@ -80,5 +85,6 @@ class CreateUserCommand extends  AbstractCommand
         ) {
             throw new \Exception('The user has not been created');
         }
+        return 0;
     }
 }

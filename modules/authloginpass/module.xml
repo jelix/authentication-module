@@ -12,7 +12,6 @@
     <dependencies>
         <jelix minversion="1.7.0" maxversion="1.8.*"/>
         <module name="authcore" />
-        <module name="jacl2db" />
     </dependencies>
     <autoload>
         <namespacePathMap name="Jelix\Authentication\LoginPass" dir="lib/" />
