@@ -138,13 +138,19 @@ class jAuthentication
 
     public static function getSigninPageUrl()
     {
-        // TODO url should be get from configuration
+        $config = jApp::config()->authentication;
+        if (isset($config['signInAction']) && $config['signInAction']) {
+            return jUrl::get($config['signInAction']);
+        }
         return jUrl::get('authcore~sign:in');
     }
 
     public static function getSignoutPageUrl()
     {
-        // TODO url should be get from configuration
+        $config = jApp::config()->authentication;
+        if (isset($config['signOutAction']) && $config['signOutAction']) {
+            return jUrl::get($config['signOutAction']);
+        }
         return jUrl::get('authcore~sign:out');
     }
 

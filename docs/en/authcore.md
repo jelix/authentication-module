@@ -17,6 +17,12 @@ idp[]=
 ; name of the session handler used to store session data for authentication
 sessionHandler=php
 
+; action to sign in
+signInAction="authcore~sign:in"
+
+; action to sign out
+signOutAction="authcore~sign:out"
+
 ; action to redirect to when displaying the login page whereas the user is
 ; already authenticated. Typical action: the action of the home page
 signInAlreadyAuthAction=

@@ -233,6 +233,4 @@ featureDeleteUser=on
 featureChangePassword=on
 
 
-[acl2]
-driver=db
-authAdapterClass="\Jelix\Authentication\Core\Acl2Adapter"
+
