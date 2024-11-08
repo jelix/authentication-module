@@ -18,4 +18,10 @@
     <a href="{jurl 'account~profile:modify'}" class="btn btn-primary">
         {@account~account.profile.button.modify@}
     </a>
+    {if $allowDelete}
+    <a href="{jurl 'account~profile:delete'}" class="btn btn-primary">
+    {@account~account.profile.button.delete@}
+    </a>
+    {/if}
+    
 {/ifusernotauthenticated}
