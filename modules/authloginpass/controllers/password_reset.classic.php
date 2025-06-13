@@ -81,7 +81,7 @@ class password_resetCtrl extends \Jelix\Authentication\LoginPass\AbstractPasswor
 
         $user = $this->passwordReset->findUser($email);
         if (!$user) {
-            \jLog::log('A password reset is attempted for unknown user. No user having the email  "'.$email.'"', 'warning');
+            \jLog::log('A password reset is attempted for unknown user. No user having the email  "'.$email.'"', 'auth');
             // bad given email, ignore the error, so no chance to discover
             // if a login is associated to an email or not
             jForms::destroy('password_reset');

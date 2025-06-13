@@ -91,14 +91,14 @@ class PasswordReset {
     function sendEmail($user)
     {
         if (!$user) {
-            \jLog::log('A password reset is attempted for unknown user', 'warning');
+            \jLog::log('A password reset is attempted for unknown user', 'auth');
             throw new PasswordResetException(PasswordResetException::CODE_BAD_LOGIN_EMAIL);
         }
 
         $login = $user->getLogin();
         $email = $user->getEmail();
         if ($email == '') {
-            \jLog::log('A password reset is attempted for the user "'.$login.'" having no mail', 'warning');
+            \jLog::log('A password reset is attempted for the user "'.$login.'" having no mail', 'auth');
             throw new PasswordResetException(PasswordResetException::CODE_BAD_LOGIN_EMAIL);
         }
 

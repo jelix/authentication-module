@@ -162,7 +162,7 @@ class Manager
         $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
         $accIdp = $daoIdp->findByIdpAndUser($idpId, $authUserId);
         if (!$accIdp) {
-            \jLog::log('no account-idp for '.$idpId. ' - '. $authUserId);
+            \jLog::log('search account: no account-idp for '.$idpId. ' - '. $authUserId, 'auth');
             return null;
         }
 
@@ -179,10 +179,10 @@ class Manager
 
         $record = $dao->get($accIdp->account_id);
         if (!$record) {
-            \jLog::log('no account for account '.$accIdp->username);
+            \jLog::log('search account: no account for account '.$accIdp->username, 'auth');
             return null;
         }
-        \jLog::log('account found for '.$authUserId);
+        //\jLog::log('search account: account found for '.$authUserId, 'auth');
         return new Account($record);
     }
 
