@@ -88,6 +88,7 @@ class ldapBackend extends BackendAbstract
             'featureCreateUser' => true,
             'featureDeleteUser' => true,
             'featureChangePassword' => true,
+            'aclAdapterClass' => ''
         );
 
         // iterate each default parameter and apply it to actual params if missing in $params.
@@ -458,7 +459,6 @@ class ldapBackend extends BackendAbstract
         ldap_close($connectAdmin);
         if ($userGroups !== false) {
             // the user is at least in a ldap group, so we synchronize ldap groups
-            // with jAcl2 groups
             $this->synchronizeAclGroups($login, $userGroups);
         }
 
@@ -474,41 +474,14 @@ class ldapBackend extends BackendAbstract
 
     protected function synchronizeAclGroups($login, $userGroups)
     {
-        if ($this->_params['searchGroupKeepUserInDefaultGroups']) {
-            // Add default groups
-            $gplist = jDao::get('jacl2db~jacl2group', 'jacl2_profile')
-                ->getDefaultGroups();
-            foreach ($gplist as $group) {
-                $idx = array_search($group->name, $userGroups);
-                if ($idx === false) {
-                    $userGroups[] = $group->name;
-                }
-            }
+        if ($this->_params['aclAdapterClass'] == '') {
+            throw new \Exception('cannot synchronize acl groups, class is missing into aclAdapterClass');
         }
 
-        // we know the user group: we should be sure it is the same in jAcl2
-        $gplist = jDao::get('jacl2db~jacl2groupsofuser', 'jacl2_profile')
-            ->getGroupsUser($login);
-        $groupsToRemove = array();
-        foreach ($gplist as $group) {
-            if ($group->grouptype == 2) { // private group
-                continue;
-            }
-            $idx = array_search($group->name, $userGroups);
-            if ($idx !== false) {
-                unset($userGroups[$idx]);
-            } else {
-                $groupsToRemove[] = $group->name;
-            }
-        }
-        foreach ($groupsToRemove as $group) {
-            jAcl2DbUserGroup::removeUserFromGroup($login, $group);
-        }
-        foreach ($userGroups as $newGroup) {
-            if (jAcl2DbUserGroup::getGroup($newGroup)) {
-                jAcl2DbUserGroup::addUserToGroup($login, $newGroup);
-            }
-        }
+        $class = $this->_params['aclAdapterClass'];
+        /** @var \Jelix\Authentication\LoginPass\LdapAclAdapterInterface $aclAdapter */
+        $aclAdapter = new $class();
+        $aclAdapter->synchronizeAclGroups($login, $userGroups, $this->_params['searchGroupKeepUserInDefaultGroups']);
     }
 
     /**

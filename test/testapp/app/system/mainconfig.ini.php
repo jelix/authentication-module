@@ -231,6 +231,7 @@ profile=openldap
 featureCreateUser=on
 featureDeleteUser=on
 featureChangePassword=on
+aclAdapterClass="\Jelix\Authentication\LoginPass\LdapAcl2Adapter"
 
 
 

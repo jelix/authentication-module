@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="authloginpass@modules.jelix.org" name="authloginpass" createdate="2019-09-27">
-        <version date="2024-04-04">0.4.0-pre</version>
+        <version date="2024-10-02">0.4.0b1</version>
         <label lang="en_US">JelixAuth LoginPass</label>
         <description lang="en_US">Identity provider based on Login/password, for JelixAuth</description>
         <license>MIT</license>
@@ -10,9 +10,8 @@
         <homepageURL>https://jelix.org</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.8.0-alpha.2" maxversion="1.8.*"/>
+        <jelix minversion="1.8.0" maxversion="1.8.*"/>
         <module name="authcore" />
-        <module name="jacl2db" />
     </dependencies>
     <autoload>
         <namespacePathMap name="Jelix\Authentication\LoginPass" dir="lib/" />

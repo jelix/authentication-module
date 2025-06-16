@@ -73,6 +73,11 @@ class CreateUserCommand extends  AbstractCommand
             $backendName = $manager->getFirstBackendName();
         }
 
+        $backend = $manager->getBackendByName($backendName);
+        if ($backend->userExists($login)) {
+            throw new \Exception('A user already exists with this login');
+        }
+
         if (!$manager->createUser($login, $password, array(
             AuthUser::ATTR_NAME => $displayedName,
             AuthUser::ATTR_EMAIL => $userEmail

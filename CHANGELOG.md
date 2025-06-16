@@ -1,5 +1,4 @@
 
-
 Next version
 ------------
 
@@ -53,6 +52,13 @@ Changes into the dao for the dbdao backend of loginpass:
 **CONFIGURATION CHANGES:**
 
 - new configuration properties for the ldap backend: `searchUserByEmailFilter`
+
+0.3.1
+-----
+
+- loginpass commands: fix returned values.
+- fix loginpass dao: jdao doesn't support yet json type
+- fix loginpass:user:create: check if user already exist
 
 0.3.0
 -----
