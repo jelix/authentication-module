@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="authloginpass@modules.jelix.org" name="authloginpass" createdate="2019-09-27">
-        <version date="2024-10-02">0.4.0b1</version>
+        <version date="2025-06-16">0.4.0</version>
         <label lang="en_US">JelixAuth LoginPass</label>
         <description lang="en_US">Identity provider based on Login/password, for JelixAuth</description>
         <license>MIT</license>
-        <copyright>2019-2024 Laurent Jouanneau</copyright>
+        <copyright>2019-2025 Laurent Jouanneau</copyright>
         <creator name="Laurent Jouanneau" email="laurent@jelix.org"/>
         <homepageURL>https://jelix.org</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.8.0" maxversion="1.8.*"/>
+        <jelix minversion="1.8.0" maxversion="1.9.0-beta.1"/>
         <module name="authcore" />
     </dependencies>
     <autoload>

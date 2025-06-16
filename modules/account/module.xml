@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="account@jelix.org" name="account" createdate="2021-01-12">
-        <version date="2024-10-02">0.4.0b1</version>
+        <version date="2025-06-16">0.4.0</version>
         <label lang="en_US">account</label>
         <description lang="en_US" />
         <license URL="">All rights reserved</license>
-        <copyright>2019-2024 Laurent Jouanneau and other contributors</copyright>
+        <copyright>2019-2025 Laurent Jouanneau and other contributors</copyright>
         <creator name="test" email=""/>
         <!--<contributor name="hisname" email="hisemail@yoursite.undefined"/>-->
         <homepageURL></homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.8.0" maxversion="1.8.*"/>
+        <jelix minversion="1.8.0" maxversion="1.9.0-beta.1"/>
         <module name="authcore" />
     </dependencies>
     <autoload>
