@@ -2,7 +2,10 @@
 Next version
 ------------
 
-There is a new **account module** which add feature for user accounts into an application.
+0.4.0
+-----
+
+There is a new **account module** which add features for user accounts into an application.
 Its feature:
 - page for the user to show and modify its profile (name, email, and any other informations
   if the application provides its own form and dao)
