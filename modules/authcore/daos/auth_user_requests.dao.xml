@@ -17,7 +17,7 @@
       <property name="req_status" fieldname="req_status" required="yes" datatype="string" maxlength="20" />
       <property name="req_login" fieldname="req_login" required="yes" datatype="string" maxlength="255" />
       <property name="req_email" fieldname="req_email" required="yes" datatype="string" maxlength="255" />
-      <property name="req_content" fieldname="req_content" datatype="json" />
+      <property name="req_content" fieldname="req_content" datatype="text" />
 
    </record>
    <factory>
