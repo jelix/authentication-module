@@ -3,4 +3,7 @@
         <event name="adminui.loading" />
         <event name="adminui.dashboard.loading" />
     </listener>
+    <listener name='account'>
+        <event name='CanAccountBeDeleted'/>
+    </listener>
 </events>

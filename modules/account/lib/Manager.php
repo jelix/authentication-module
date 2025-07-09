@@ -250,4 +250,9 @@ class Manager
         $daoIdp->delete([$idpId, $authUserId, $accountId]);
     }
 
+    public static function deleteAccount($accountId)
+    {
+        $dao = \jDao::get(self::$daoName, self::$daoProfile);
+        $dao->delete($accountId);
+    }
 }
