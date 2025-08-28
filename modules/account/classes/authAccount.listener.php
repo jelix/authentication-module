@@ -1,6 +1,7 @@
 <?php
 
 use Jelix\Authentication\Account;
+use Jelix\Authentication\Account\Notification\AuthenticationNotifier;
 use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;
 use Jelix\Authentication\Core\Workflow\Step\StepException;
 use Jelix\Authentication\LoginPass\AuthLPCanResetPasswordEvent;
@@ -27,6 +28,8 @@ class authAccountListener extends jEventListener
         $account = Account\Manager::searchAccountByIdp($idpId, $user->getUserId(), true);
         if ($account) {
             $event->setAccount($account);
+            $notifier = new AuthenticationNotifier();
+            $notifier->successAuth($account);
         }
         else {
             $isAccountCreationAllowed = false;
