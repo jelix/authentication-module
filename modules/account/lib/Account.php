@@ -57,4 +57,9 @@ class Account implements UserAccountInterface
     {
         return $this->data['email'];
     }
+
+    public function getNotifyAuthSuccess()
+    {
+        return $this->data['notify_auth_success'];
+    }
 }

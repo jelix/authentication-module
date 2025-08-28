@@ -6,6 +6,7 @@
 
 use Jelix\Authentication\Account\Manager;
 use Jelix\Authentication\Account\Account;
+use Jelix\Authentication\Account\Notification\AuthenticationNotifier;
 
 class profileCtrl extends jController {
 
@@ -27,6 +28,7 @@ class profileCtrl extends jController {
         }
 
         $form->initFromDao('account~accounts', $formId);
+        $this->disableNotificationCtrlIfDenied($form);
 
         $tpl = new \jTpl();
         $tpl->assign('form', $form);
@@ -54,6 +56,7 @@ class profileCtrl extends jController {
         }
 
         $form->initFromDao('account~accounts', $formId);
+        $this->disableNotificationCtrlIfDenied($form);
 
         $tpl = new jTpl();
         $tpl->assign('form', $form);
@@ -106,6 +109,14 @@ class profileCtrl extends jController {
         $rep->action = 'account~profile:index';
 
         return $rep;
+    }
+
+    protected function disableNotificationCtrlIfDenied(jFormsBase $form) {
+        $notifier = new AuthenticationNotifier();
+
+        if (!$notifier->canUsersOverwriteNotifConf()) {
+            $form->getControl('notify_auth_success')->deactivate();
+        }
     }
 }
 
