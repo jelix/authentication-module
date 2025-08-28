@@ -25,6 +25,7 @@
            0 new account, invalid account
            1 valid account
            -->
+      <property name="notify_auth_success" fieldname="notify_auth_success" datatype="integer" />
       <property name="create_date" fieldname="create_date" datatype="datetime"
                 insertpattern="now()" updatepattern=""/>
 
