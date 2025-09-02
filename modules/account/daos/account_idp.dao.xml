@@ -16,6 +16,7 @@
        <property name="last_used" fieldname="last_used" datatype="datetime"/>
        <property name="usage_count" fieldname="usage_count" datatype="integer" required="yes" default="0"/>
        <property name="idp_data" fieldname="idp_data" datatype="text"/>
+       <property name="inactivity_notification_sended" fieldname="inactivity_notification_sended" datatype="integer" />
    </record>
    <factory>
         <method name="findByIdpAndUser" type="selectfirst">
@@ -39,6 +40,19 @@
             <conditions>
                 <eq property="account_id" expr="$account_id" />
             </conditions>
+        </method>
+        <method name="findInactiveNotNotified" type='select'>
+        <parameter name="inactive_date" />
+        <conditions logic="AND">
+            <lt property="last_used" expr="$inactive_date" />
+            <neq property="inactivity_notification_sended" value="1" />
+        </conditions>
+        </method>
+        <method name="findInactiveToDelete" type='select'>
+        <parameter name="deletion_date" />
+        <conditions logic="AND">
+            <lt property="last_used" expr="$deletion_date" />
+        </conditions>
         </method>
    </factory>
 </dao>

@@ -4,11 +4,15 @@
  * @copyright 2021-2024 Laurent Jouanneau and other contributors
  * @license    MIT
  */
+
 namespace Jelix\Authentication\Account;
 
+use DateInterval;
+use DateTimeImmutable;
 use jAuthentication;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
 use Jelix\Authentication\Core\IdentityProviderInterface;
+use Jelix\Core\Infos\AppInfos;
 
 class Manager
 {
@@ -172,6 +176,7 @@ class Manager
             }
             $accIdp->last_used = date('Y-m-d H:i:s');
             $accIdp->usage_count++;
+            $accIdp->inactivity_notification_sended = 0;
             $daoIdp->update($accIdp);
         }
 
@@ -250,4 +255,78 @@ class Manager
         $daoIdp->delete([$idpId, $authUserId, $accountId]);
     }
 
+    /**
+     * return delay value form app config param named $paramName, ensure is integer > 0
+     *
+     * @param string $paramName the param name
+     *
+     * @return bool|integer
+     */
+    protected static function getInactiveDelayValue(string $paramName)
+    {
+        $config = \jApp::config()->authentication;
+        if (isset($config[$paramName]) && $config[$paramName]) {
+            $inactiveDelay = $config[$paramName];
+            if ($inactiveDelay == 'none') {
+
+                return false;
+            }
+            if (filter_var($inactiveDelay, FILTER_VALIDATE_INT, ['min_range' => 1])) {
+
+                return $inactiveDelay;
+            }
+            trigger_error('Invalid value for '.$inactiveDelay.' must be > 0', E_USER_NOTICE);
+
+            return false;
+        }
+
+        return false;
+    }
+
+    public static function notifyOrDropInactive()
+    {
+        $inactiveNotificationDelay = self::getInactiveDelayValue('inactiveNotificationDelay');
+        $inactiveDeletionDelay = self::getInactiveDelayValue('inactiveDeletionDelay');
+
+        $now = new DateTimeImmutable();
+        if (is_int($inactiveDeletionDelay)) {
+            $inactiveNotificationDelay = $now->sub(new DateInterval('P'.$inactiveNotificationDelay.'D'));
+
+            $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+
+            $inactiveUsersToNotif = ($daoIdp->findInactiveNotNotified($inactiveNotificationDelay->format('Y-m-d')));
+            $appInfos  = AppInfos::load();
+            $appName = $appInfos->getLabel();
+
+            foreach($inactiveUsersToNotif as $user) {
+                // send email
+                $email = $user->idp_user_email;
+                $mailer = new \jMailer();
+                $tpl = $mailer->Tpl('account~mailBodyInactivity', true);
+                $mailer->addAddress($email);
+                $mailer->Subject = \jLocale::get('account~account.email.inactivity.subject', [$appName]);
+                $tpl->assign('lastUsedDate', $user->last_used);
+                $tpl->assign('appName', $appName);
+                $tpl->assign('deletionDate', $inactiveNotificationDelay->format('Y-m-d'));
+                try {
+                    $mailer->send();
+                } catch (\Exception $e) {
+                    //
+                    continue;
+                }
+                // mail sended : update user field
+                $user->inactivity_notification_sended = 1;
+                $daoIdp->update($user);
+            }
+        }
+         if (is_int($inactiveDeletionDelay)) {
+            $notifDeletionDate = $now->sub(new DateInterval('P'.$inactiveDeletionDelay.'D'));
+
+            $inactiveUsersToDelete = ($daoIdp->findInactiveToDelete($notifDeletionDate->format('Y-m-d')));
+            foreach($inactiveUsersToDelete as $user) {
+                $user->enabled = 0;
+                $daoIdp->update($user);
+            }
+        }
+    }
 }
