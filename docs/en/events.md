@@ -107,3 +107,9 @@ This event is sent to extend the content of the "view profile" page.
 The view profile currently display information of the profile (username, first name, e-mail, ...) and a button to edit values.
 use `addContent(string $content, int $position)` to add some content to the page. Initial content is on position 5.
 
+`AuthAdminGetIDPPlugin`
+-----------------
+
+This event is sent to build the IDP list (existing regardless the `[authentication]` configuration).
+
+Use the event when you create a module so that it is known by idpadmin module.
