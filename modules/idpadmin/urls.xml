@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+    <url pathinfo="/list" action="default:index" />
+    <url pathinfo="/pre" action="default:prepareEdit" />
+    <url pathinfo="/edit" action="default:showEdit" />
+    <url pathinfo="/save" action="default:save" />
+</suburls>
