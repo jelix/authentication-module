@@ -102,3 +102,9 @@ See the `Jelix\Authentication\LoginPass\AuthLPCanResetPasswordEvent` class.
 
 
 
+`declareIDPlugin`
+-----------------
+
+This event is sent to build the IDP list (existing regardless the `[authentication]` configuration).
+
+Use the event when you create a module so that it is known by idpadmin module.
