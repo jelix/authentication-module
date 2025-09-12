@@ -32,6 +32,7 @@ authloginpass.enabled=on
 account.enabled=on
 
 accountadmin.enabled=on
+idpadmin.enabled=on
 [coordplugins]
 sessionauth=on
 jacl2=1
