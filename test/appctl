@@ -5,7 +5,7 @@ shift
 
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
-    echo "Possible commands: clean_tmp, reset, install, rights, composer-install, composer-update"
+    echo "Possible commands: clean_tmp, reset, install, rights, composer-install, composer-update, install-admin"
     echo " unit-tests,  shell, shellroot"
     echo " ldapreset, ldapusers"
     exit 1;
@@ -45,6 +45,15 @@ case $COMMAND in
     ldapshell)
        docker exec -it ${CONTAINER_PREFIX}_ldap  /bin/bash -l
      ;;
+    install-admin)
+        docker exec -t -i ${CONTAINER_PREFIX}_php /bin/bash -c 'php test/testapp/console.php account:create admin admin@example.com' 
+        docker exec -t -i ${CONTAINER_PREFIX}_php /bin/bash -c 'php test/testapp/console.php account:login:create -b daotablesqlite admin -p adminpass'
+        docker exec -t -i ${CONTAINER_PREFIX}_php /bin/bash -c 'php test/testapp/console.php acl2user:register admin'
+        docker exec -t -i ${CONTAINER_PREFIX}_php /bin/bash -c 'php test/testapp/console.php acl2user:addgroup admin admins'
+        docker exec -t -i ${CONTAINER_PREFIX}_php /bin/bash -c 'php test/testapp/console.php acl2:add admins idpadmin.view'
+        docker exec -t -i ${CONTAINER_PREFIX}_php /bin/bash -c 'php test/testapp/console.php acl2:add admins idpadmin.edit'
+        echo "admin account created, login admin, password adminpass"
+    ;;
     *)
         echo "wrong command"
         exit 2
