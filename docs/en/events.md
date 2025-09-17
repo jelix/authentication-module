@@ -101,4 +101,9 @@ the module can say no if there is no registrated account.
 See the `Jelix\Authentication\LoginPass\AuthLPCanResetPasswordEvent` class.
 
 
+`ProfileViewPageEvent`
+----------------------
+This event is sent to extend the content of the "view profile" page.
+The view profile currently display information of the profile (username, first name, e-mail, ...) and a button to edit values.
+use `addContent(string $content, int $position)` to add some content to the page. Initial content is on position 5.
 
