@@ -1,0 +1,5 @@
+<events xmlns="http://jelix.org/ns/events/1.0">
+    <listener name="Jelix\Authentication\LoginPass\ProfileEventListener">
+        <event name="ProfileViewPageEvent" />
+    </listener>
+</events>
