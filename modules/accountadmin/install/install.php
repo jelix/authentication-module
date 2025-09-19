@@ -14,5 +14,14 @@ class accountadminModuleInstaller extends \Jelix\Installer\Module\Installer {
         jAcl2DbManager::createRight('my.right', 'accountadmin~acl.my.right', 'right.group.id');
         jAcl2DbManager::addRight('admins', 'my.right'); // for admin group
         */
+        $groupName = 'accountadmin.subject.group';
+        // Add rights group
+        jAcl2DbManager::createRightGroup($groupName, 'accountadmin~accountadmin.rights.group.name');
+
+        $rights = ['list', 'account.view', 'account.edit', 'account.delete', 'account.create'];
+        foreach($rights as $r) {
+            // Add right subject
+            jAcl2DbManager::createRight('accountadmin.'.$r, 'accountadmin~accountadmin.right.'.$r, $groupName);
+        }
     }
 }
