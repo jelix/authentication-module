@@ -7,6 +7,16 @@
 use Jelix\Authentication\Account\Manager;
 
 class defaultCtrl extends jControllerDaoCrud {
+
+    public $pluginParams = array(
+        '*' => array( 'auth.required' => true),
+        'index' => [ 'jacl2.right' => 'accountadmin.list'],
+        'view' => [ 'jacl2.right' => 'accountadmin.account.view'],
+        'create' => [ 'jacl2.right' => 'accountadmin.account.create'],
+        'delete' => [ 'jacl2.right' => 'accountadmin.account.delete'],
+        'update' => [ 'jacl2.right' => 'accountadmin.account.edit'],
+    );
+
     protected $dao = 'account~accounts';
 
     protected $form = 'accountadmin~account_admin';
