@@ -30,6 +30,8 @@ class profileCtrl extends jController {
 
         $tpl = new \jTpl();
         $tpl->assign('form', $form);
+        $evResponse = jEvent::notify('CanAccountBeDeleted', array('account' => $currentUser));
+        $tpl->assign('allowDelete', $evResponse->allResponsesByKeyAreTrue('allowDelete'));
         $content = $tpl->fetch('profile_index');
         $rep->body->assign('MAIN', $content);
     
@@ -106,6 +108,40 @@ class profileCtrl extends jController {
         $rep->action = 'account~profile:index';
 
         return $rep;
+    }
+
+    public function delete()
+    {
+        $rep = $this->getResponse('redirect');
+
+        $account = Manager::getCurrentUserAccount();
+        if (!$account) {
+            $rep->action = 'account~profile:index';
+
+            return $rep;
+        }
+        $user = jAuthentication::getCurrentUser();
+        $idpAccountList = Manager::searchIdpUsedByAccount($account->getAccountId());
+        foreach($idpAccountList as $idpAccount) {
+            $idpId = $idpAccount->idp_id; 
+            Manager::detachAccountFromIdp($account->getAccountId(), $idpId, $user->getUserId());
+            if ($idpId == 'loginpass') {
+                /** @var loginpassIdentityProvider $loginpassIDP */
+                $loginpassIDP = jAuthentication::manager()->getIdpById('loginpass');
+                $backend = $loginpassIDP->getManager()->getBackendHavingUser($user->getLogin());
+                if (!is_null($backend)) {
+                    try{
+                        $loginpassIDP->getManager()->deleteUser($user->getLogin(), $backend->getRegisterKey());
+                    } catch (\Exception $e) {
+                        // Log ?
+                    }
+                }
+            }
+        }
+        Manager::deleteAccount($account->getAccountId());
+        $url = jAuthentication::signout();
+
+        return $this->redirectToUrl($url);
     }
 }
 
