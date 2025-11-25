@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="authloginpass@modules.jelix.org" name="authloginpass" createdate="2019-09-27">
-        <version date="2024-05-01">0.3.1</version>
+        <version date="2025-11-25">0.3.2</version>
         <label lang="en_US">JelixAuth LoginPass</label>
         <description lang="en_US">Identity provider based on Login/password, for JelixAuth</description>
         <license>MIT</license>
-        <copyright>2019-2024 Laurent Jouanneau</copyright>
+        <copyright>2019-2025 Laurent Jouanneau</copyright>
         <creator name="Laurent Jouanneau" email="laurent@jelix.org"/>
         <homepageURL>https://jelix.org</homepageURL>
     </info>

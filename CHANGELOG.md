@@ -4,6 +4,8 @@
 
 - Fix security issue with PHP session: session id must be changed after authentication
   to avoid session fixation attacks
+- Remove strong dependency to jAcl2
+
 
 0.3.1
 -----
