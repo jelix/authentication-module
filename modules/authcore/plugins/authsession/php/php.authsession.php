@@ -20,6 +20,9 @@ class phpAuthSessionHandler implements AuthSessionHandlerInterface {
      */
     public function setSessionUser(AuthUser $user, $IPid)
     {
+        if (session_status() == \PHP_SESSION_ACTIVE) {
+            session_regenerate_id();
+        }
         $_SESSION[self::SESSION_NAME] = array(
             'user' => $user,
             'identProviderId' => $IPid
@@ -30,6 +33,9 @@ class phpAuthSessionHandler implements AuthSessionHandlerInterface {
     {
         if (isset($_SESSION[self::SESSION_NAME])) {
             unset($_SESSION[self::SESSION_NAME]);
+        }
+        if (session_status() == \PHP_SESSION_ACTIVE) {
+            session_regenerate_id();
         }
     }
 

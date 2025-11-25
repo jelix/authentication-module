@@ -1,4 +1,10 @@
 
+0.3.2
+-----
+
+- Fix security issue with PHP session: session id must be changed after authentication
+  to avoid session fixation attacks
+
 0.3.1
 -----
 
