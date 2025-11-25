@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="account@jelix.org" name="account" createdate="2021-01-12">
-        <version date="2025-11-25">0.4.1</version>
+        <version date="2025-11-25">0.5.0-pre</version>
         <label lang="en_US">account</label>
         <description lang="en_US" />
         <license URL="">All rights reserved</license>
