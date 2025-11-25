@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="authcore@modules.jelix.org" name="authcore" createdate="2019-09-27">
-        <version date="2025-06-16">0.4.0</version>
+        <version date="2025-11-25">0.4.1</version>
         <label lang="en_US">JelixAuth Core</label>
         <description lang="en_US">Core of authentication system</description>
         <license>MIT</license>
