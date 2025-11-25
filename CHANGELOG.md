@@ -7,6 +7,8 @@ Next version
 
 - Fix security issue with PHP session: session id must be changed after authentication
   to avoid session fixation attacks
+- Fix auth_user_requests dao: replace json type by text.
+  Json datatype is supported only in a future version of JelixDao.
 
 0.4.0
 -----
@@ -61,6 +63,12 @@ Changes into the dao for the dbdao backend of loginpass:
 **CONFIGURATION CHANGES:**
 
 - new configuration properties for the ldap backend: `searchUserByEmailFilter`
+
+0.3.2
+-----
+
+- Fix security issue with PHP session: session id must be changed after authentication
+  to avoid session fixation attacks
 
 0.3.1
 -----
