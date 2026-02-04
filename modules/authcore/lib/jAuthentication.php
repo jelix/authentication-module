@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019-2023 Laurent Jouanneau
+ * @copyright 2019-2026 Laurent Jouanneau
  * @link     https://jelix.org
  * @licence MIT
  */
@@ -176,5 +176,17 @@ class jAuthentication
         }
         self::session()->unsetSessionUser();
         return $url;
+    }
+
+    /**
+     * An idp must call it when an authentication fails.
+     *
+     * @return void
+     */
+    public static function authenticationFail($login = '')
+    {
+        \jEvent::notify('AuthenticationFail', array(
+            'login' => $login
+        ));
     }
 }
