@@ -32,8 +32,12 @@ class AuthenticationNotifier
 
     private function isNotificationEnabled(Account $account)
     {
-        if ($this->notifyMode == self::NOTIFY_ALWAYS || $this->notifyMode == self::NOTIFY_ALWAYS) {
-            return $this->notifyMode == self::NOTIFY_ALWAYS;
+        if ($this->notifyMode == self::NOTIFY_ALWAYS) {
+            return true;
+
+        }
+        if ($this->notifyMode == self::NOTIFY_NEVER) {
+            return false;
         }
         // must check Account value
         $value = $account->getNotifyAuthSuccess();
@@ -43,6 +47,7 @@ class AuthenticationNotifier
         if($this->notifyMode == self::NOTIFY_ON_USER_CAN_OPT_OUT) {
             return $value != 0 ;
         }
+        return false;
     }
 
     public function successAuth(Account $account)
