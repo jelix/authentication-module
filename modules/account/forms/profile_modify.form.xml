@@ -16,6 +16,11 @@
     <input type="email" ref="email">
         <label locale="account~account.profile.th.email"/>
     </input>
+    <radiobuttons ref="notify_auth_success" required='true'>
+        <label locale="account~account.profile.th.notify_auth_success"/>
+        <item value="1" locale='account~account.profile.notify_auth_success.text.on' />
+        <item value="0" locale='account~account.profile.notify_auth_success.text.off' />
+    </radiobuttons >
 
 <output ref="create_date">
     <label locale="account~account.profile.th.createdate"/>
