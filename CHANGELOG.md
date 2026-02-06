@@ -2,6 +2,13 @@
 Next version
 ------------
 
+- A user can be notified by email that someone (and himself) has been authenticated on the application.
+- 
+
+
+
+
+
 0.4.1
 -----
 
@@ -114,4 +121,4 @@ loginpass provider:
 - implementation of a authentication provider 'loginpass' (module 'authloginpass'), allowing to the user to
   authenticate with a login and a password. Several backends are provided: dbdao (SQL database), inifile, ldap
 - support of a session manager: you have the choice to store data about authenticated user during the session: into a PHP session, or only memory (for stateless authentication)
-- a controller to sign in and sign out, displaying HTML content provided by implementation of all activated authentication provders. HTML content can be a form, a button, a link...
+- a controller to sign in and sign out, displaying HTML content provided by implementation of all activated authentication providers. HTML content can be a form, a button, a link...
