@@ -1,7 +1,7 @@
 <?php
 /**
  * @author    Laurent Jouanneau
- * @copyright 2019-2024 Laurent Jouanneau
+ * @copyright 2019-2026 Laurent Jouanneau
  * @link      https://jelix.org
  * @licence   MIT
  */
@@ -207,9 +207,6 @@ class Manager
                return $user;
             }
         }
-        \jEvent::notify('AuthenticationFail', array(
-            'login' => $login
-        ));
         return false;
     }
 

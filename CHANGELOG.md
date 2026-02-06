@@ -2,30 +2,38 @@
 Next version
 ------------
 
+0.4.1
+-----
+
+- Fix security issue with PHP session: session id must be changed after authentication
+  to avoid session fixation attacks
+- Fix auth_user_requests dao: replace json type by text.
+  Json datatype is supported only in a future version of JelixDao.
+
 0.4.0
 -----
 
-There is a new **account module** which add features for user accounts into an application.
+There is a new **account module** which adds features for user accounts into an application.
 Its feature:
-- page for the user to show and modify its profile (name, email, and any other informations
+- page for the user to show and modify its profile (name, email, and any other information
   if the application provides its own form and dao)
 - commands to 
   - list accounts, 
   - attach/detach an account to an identity managed by an authentication provider
   - list attached identities to an account
-  - create an account, or create an account with a loginpass identity
+  - create an account or create an account with a loginpass identity
  
 
 This new version implements also a **workflow for the authentication process**. 
-The authentication process has several steps that modules can bring, allowing a high customization.
+The authentication process has several steps that modules can bring, allowing high customization.
 Major Steps are :
 - primary authentication by an authentication provider (with a login form, or remote authentication etc..)
 - retrieve of the application account corresponding to the authenticated user
 - or creation of the account, if the automatic account creation is enabled
 - second factor step, if a module provides a second factor for authentication
-- access validation step : modules can provide additionnal steps, like   
+- access validation step: modules can provide additional steps, like   
   acknowledgment of terms of service, or a form to force to change the password, etc.
-- final step: the user session is complete and the user can use the application.
+- final step: the user session is complete, and the user can use the application.
  
 
 **Other new features**:
@@ -55,6 +63,12 @@ Changes into the dao for the dbdao backend of loginpass:
 **CONFIGURATION CHANGES:**
 
 - new configuration properties for the ldap backend: `searchUserByEmailFilter`
+
+0.3.2
+-----
+
+- Fix security issue with PHP session: session id must be changed after authentication
+  to avoid session fixation attacks
 
 0.3.1
 -----
