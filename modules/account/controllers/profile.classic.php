@@ -7,6 +7,7 @@
 use Jelix\Authentication\Account\Manager;
 use Jelix\Authentication\Account\Account;
 use Jelix\Authentication\Account\ProfileViewPageEvent;
+use Jelix\Authentication\Account\Notification\AuthenticationNotifier;
 
 class profileCtrl extends jController {
 
@@ -28,9 +29,13 @@ class profileCtrl extends jController {
         }
 
         $form->initFromDao('account~accounts', $formId);
+        $this->disableNotificationCtrlIfDenied($form);
 
         $tpl = new \jTpl();
         $tpl->assign('form', $form);
+        $evResponse = jEvent::notify('CanAccountBeDeleted', array('account' => $currentUser));
+        $tpl->assign('allowDelete', $evResponse->allResponsesByKeyAreTrue('allowDelete'));
+
         // ProfileViewPageEvent allowing to extend page content
         $profileEvent = new ProfileViewPageEvent($tpl);
         // add profile information view
@@ -59,6 +64,7 @@ class profileCtrl extends jController {
         }
 
         $form->initFromDao('account~accounts', $formId);
+        $this->disableNotificationCtrlIfDenied($form);
 
         $tpl = new jTpl();
         $tpl->assign('form', $form);
@@ -111,6 +117,48 @@ class profileCtrl extends jController {
         $rep->action = 'account~profile:index';
 
         return $rep;
+    }
+
+    protected function disableNotificationCtrlIfDenied(jFormsBase $form) {
+        $notifier = new AuthenticationNotifier();
+
+        if (!$notifier->canUsersOverwriteNotifConf()) {
+            $form->getControl('notify_auth_success')->deactivate();
+        }
+    }
+
+    public function delete()
+    {
+        $rep = $this->getResponse('redirect');
+
+        $account = Manager::getCurrentUserAccount();
+        if (!$account) {
+            $rep->action = 'account~profile:index';
+
+            return $rep;
+        }
+        $user = jAuthentication::getCurrentUser();
+        $idpAccountList = Manager::searchIdpUsedByAccount($account->getAccountId());
+        foreach($idpAccountList as $idpAccount) {
+            $idpId = $idpAccount->idp_id; 
+            Manager::detachAccountFromIdp($account->getAccountId(), $idpId, $user->getUserId());
+            if ($idpId == 'loginpass') {
+                /** @var loginpassIdentityProvider $loginpassIDP */
+                $loginpassIDP = jAuthentication::manager()->getIdpById('loginpass');
+                $backend = $loginpassIDP->getManager()->getBackendHavingUser($user->getLogin());
+                if (!is_null($backend)) {
+                    try{
+                        $loginpassIDP->getManager()->deleteUser($user->getLogin(), $backend->getRegisterKey());
+                    } catch (\Exception $e) {
+                        // Log ?
+                    }
+                }
+            }
+        }
+        Manager::deleteAccount($account->getAccountId());
+        $url = jAuthentication::signout();
+
+        return $this->redirectToUrl($url);
     }
 }
 

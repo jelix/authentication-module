@@ -197,6 +197,7 @@ idp[]=alwaysyes
 sessionHandler=php
 
 signInAlreadyAuthAction="adminui~default:index"
+notifyAuthMode=enabled
 
 [sessionauth]
 authRequired=off
