@@ -7,9 +7,9 @@
  * @licence   MIT
  */
 
-class accountModuleUpgrader_041 extends \Jelix\Installer\Module\Installer
+class accountModuleUpgrader_050a1 extends \Jelix\Installer\Module\Installer
 {
-    protected $targetVersions = array('0.4.1');
+    protected $targetVersions = array('0.5.0-alpha.1');
     protected $date = '2025-08-22';
 
     public function install(Jelix\Installer\Module\API\InstallHelpers $helpers)

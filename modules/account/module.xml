@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="account@jelix.org" name="account" createdate="2021-01-12">
-        <version date="2025-11-25">0.5.0-pre</version>
+        <version date="2026-02-06">0.5.0-alpha.1</version>
         <label lang="en_US">account</label>
         <description lang="en_US" />
         <license URL="">All rights reserved</license>
-        <copyright>2019-2025 Laurent Jouanneau and other contributors</copyright>
+        <copyright>2019-2026 Laurent Jouanneau and other contributors</copyright>
         <creator name="test" email=""/>
         <!--<contributor name="hisname" email="hisemail@yoursite.undefined"/>-->
         <homepageURL></homepageURL>
