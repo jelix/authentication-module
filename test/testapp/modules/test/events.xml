@@ -3,6 +3,9 @@
         <event name="adminui.loading" />
         <event name="adminui.dashboard.loading" />
     </listener>
+    <listener name="\TestAuth\ProfileEventListener">
+        <event name="ProfileViewPageEvent" />
+    </listener>
     <listener name='account'>
         <event name='CanAccountBeDeleted'/>
     </listener>

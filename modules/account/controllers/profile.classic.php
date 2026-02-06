@@ -6,6 +6,7 @@
 
 use Jelix\Authentication\Account\Manager;
 use Jelix\Authentication\Account\Account;
+use Jelix\Authentication\Account\ProfileViewPageEvent;
 use Jelix\Authentication\Account\Notification\AuthenticationNotifier;
 
 class profileCtrl extends jController {
@@ -34,8 +35,13 @@ class profileCtrl extends jController {
         $tpl->assign('form', $form);
         $evResponse = jEvent::notify('CanAccountBeDeleted', array('account' => $currentUser));
         $tpl->assign('allowDelete', $evResponse->allResponsesByKeyAreTrue('allowDelete'));
-        $content = $tpl->fetch('profile_index');
-        $rep->body->assign('MAIN', $content);
+
+        // ProfileViewPageEvent allowing to extend page content
+        $profileEvent = new ProfileViewPageEvent($tpl);
+        // add profile information view
+        $profileEvent->addContent($tpl->fetch('profile_index'), 5);
+        \jApp::services()->eventDispatcher()->dispatch($profileEvent);
+        $rep->body->assign('MAIN', $profileEvent->buildContent());
     
         return $rep;
     }
