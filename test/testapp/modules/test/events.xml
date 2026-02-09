@@ -9,4 +9,7 @@
     <listener name='account'>
         <event name='CanAccountBeDeleted'/>
     </listener>
+    <listener name='TestAuth\AuthCoreEventListener'>
+        <event name="AuthAdminGetIDPPlugin" />
+    </listener>
 </events>

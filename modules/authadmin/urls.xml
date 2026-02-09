@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+    <url pathinfo="/list" action="idpadmin:index" />
+    <url pathinfo="/pre" action="idpadmin:prepareEdit" />
+    <url pathinfo="/edit" action="idpadmin:showEdit" />
+    <url pathinfo="/save" action="idpadmin:save" />
+</suburls>
