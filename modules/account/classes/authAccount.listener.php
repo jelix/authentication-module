@@ -3,7 +3,7 @@
 use Jelix\Authentication\Account;
 use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;
 use Jelix\Authentication\Core\Workflow\Step\StepException;
-use Jelix\Authentication\LoginPass\AuthLPCanResetPasswordEvent;
+use Jelix\Authentication\LoginPass\LoginPassCanResetPasswordEvent;
 
 class authAccountListener extends jEventListener
 {
@@ -44,12 +44,12 @@ class authAccountListener extends jEventListener
     }
 
     /**
-     * @param AuthLPCanResetPasswordEvent $event
+     * @param LoginPassCanResetPasswordEvent $event
      * @return void
      */
-    function onAuthLPCanResetPassword($event)
+    function onLoginPassCanResetPassword($event)
     {
-        if (!($event instanceof AuthLPCanResetPasswordEvent)) {
+        if (!($event instanceof LoginPassCanResetPasswordEvent)) {
             return;
         }
 

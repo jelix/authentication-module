@@ -115,7 +115,7 @@ class PasswordReset {
 
         // check if a component does not want to reset the password
         if ($this->eventManager) {
-            $event = new \Jelix\Authentication\LoginPass\AuthLPCanResetPasswordEvent('loginpass', $user);
+            $event = new \Jelix\Authentication\LoginPass\LoginPassCanResetPasswordEvent('loginpass', $user);
             $this->eventManager->dispatch($event);
             if (!$event->isResetPasswordAllowed()) {
                 throw new PasswordResetException(PasswordResetException::CODE_BAD_STATUS);

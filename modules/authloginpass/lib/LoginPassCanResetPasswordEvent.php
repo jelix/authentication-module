@@ -15,12 +15,12 @@ use Jelix\Authentication\Core\AuthSession\AuthUser;
  *
  * A listener can allow or deny this change.
  */
-class AuthLPCanResetPasswordEvent extends \jEvent
+class LoginPassCanResetPasswordEvent extends \jEvent
 {
 
     public function __construct(string $idpId, AuthUser $authUser)
     {
-        parent::__construct('AuthLPCanResetPassword',
+        parent::__construct('LoginPassCanResetPassword',
             array(
                 'user' => $authUser,
                 'idpId' => $idpId

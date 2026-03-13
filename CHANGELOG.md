@@ -6,6 +6,8 @@ Next version
 
 BREAKING CHANGES:
 - events `AuthenticationUserCreation` and `AuthenticationUserDeletion` are renamed to `LoginPassCreation` and `LoginPassDeletion`
+- event `AuthLPCanResetPassword` is renamed to `LoginPassCanResetPassword`
+- class `AuthLPCanResetPasswordEvent` is renamed to `LoginPassCanResetPasswordEvent`
 - Session cleanup is now the responsibility of the identity provider. 
 
 
