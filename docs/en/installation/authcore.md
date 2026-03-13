@@ -42,11 +42,11 @@ authRequired=off
 
 
 Authentication into your application can rely on several identity providers (aka "idp").
-An identity provider is a component that handle a type of authentication, or 
+An identity provider is a component that handles a type of authentication, or 
 an authentication protocol. Its role is to verify that the user is authenticated,
-or to check credentials when a user log in etc. 
+or to check credentials when a user logs in etc. 
  
-Example of identify providers:
+Example of identity providers:
  
 - authentication with a login and a password (against a database table, an ldap server etc..)
 - authentication with the SAML protocol
