@@ -2,6 +2,13 @@
 Next version
 ------------
 
+- New method `jAuthentication::authenticationFail()`
+
+BREAKING CHANGES:
+- events `AuthenticationUserCreation` and `AuthenticationUserDeletion` are renamed to `LoginPassCreation` and `LoginPassDeletion`
+
+
+
 0.4.1
 -----
 

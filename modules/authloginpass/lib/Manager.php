@@ -233,7 +233,7 @@ class Manager
         $user = new AuthUser($login, $attributes);
 
         if ($backend->createUser($login, $password, $user->getEmail(), $user->getName())) {
-            \jEvent::notify('AuthenticationUserCreation', array(
+            \jEvent::notify('LoginPassCreation', array(
                 'user' => $user,
                 'identProvider' => \jAuthentication::manager()->getIdpById('loginpass')
             ));
@@ -261,8 +261,7 @@ class Manager
         if (!is_object($user)) {
             return $user;
         }
-
-        \jEvent::notify('AuthenticationUserDeletion', array(
+        \jEvent::notify('LoginPassDeletion', array(
             'user' => $user,
             'identProvider' => \jAuthentication::manager()->getIdpById('loginpass')
         ));

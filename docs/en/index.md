@@ -13,7 +13,7 @@ Documentation about the authentication framework, for developers who want to imp
 into their application, or to develop a new identity provider, a second factor authentication module etc.
 
 
-* [what is the authentication workflow](framework/authentication-workflow.md)
+* [what is the authentication workflow](framework/authentication-workflow.md)?
 * [events for your listeners](framework/events.md)
 
 * [Implementing a second factor authentication page](framework/second-factor-page.md)

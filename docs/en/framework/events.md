@@ -50,8 +50,8 @@ Parameters:
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
 
 
-`AuthenticationUserCreation`
-----------------------------
+`LoginPassCreation`
+-------------------
 
 Event triggered when a user has been registered into a backend of the `loginpass`
 identity provider.
@@ -64,8 +64,8 @@ Parameters:
 - `user`: a `Jelix\Authentication\Core\AuthSession\AuthUser` object
 - `identProvider`: the `loginpass` authentication provider object
 
-`AuthenticationUserDeletion`
-----------------------------
+`LoginPassDeletion`
+-------------------
 
 Event triggered when a user has been deleted from a backend of the `loginpass`
 identity provider.
