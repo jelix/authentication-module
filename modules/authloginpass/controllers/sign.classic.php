@@ -32,19 +32,20 @@ class signCtrl extends jController
      */
     public function checkCredentials()
     {
+        $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
+        $failUrl = jUrl::get('authcore~sign:in', $params);
+
+        if (!$this->request->isPostMethod()) {
+            return $this->redirectToUrl($failUrl);
+        }
+
         /** @var $idp \loginpassIdentityProvider */
         $idp = jAuthentication::manager()->getIdpById('loginpass');
 
         /** @var $lpManager \Jelix\Authentication\LoginPass\Manager */
         $lpManager = $idp->getManager();
 
-        $params = array('login' => $this->param('login'), 'failed' => 1, 'urlback' => $this->param('urlback'));
-        $failUrl = jUrl::get('authcore~sign:in', $params);
-
-        if (
-            $this->request->isPostMethod() &&
-            $user = $lpManager->verifyPassword($this->param('login'), $this->param('password'))
-        ) {
+        if ($user = $lpManager->verifyPassword($this->param('login'), $this->param('password'))) {
             $urlBack = $this->param('urlback');
             if ($urlBack == '') {
                 $urlBack = $lpManager->getUrlAfterLogin();
