@@ -172,9 +172,12 @@ class jAuthentication
             }
         }
         if ($url == '') {
+            // if no URL is provided to logout the user, we logout him here.
+            // this is the responsability of the idp to clean the session.
             $url = self::getSigninPageUrl();
+            self::session()->unsetSessionUser();
         }
-        self::session()->unsetSessionUser();
+
         return $url;
     }
 

@@ -6,7 +6,7 @@ Next version
 
 BREAKING CHANGES:
 - events `AuthenticationUserCreation` and `AuthenticationUserDeletion` are renamed to `LoginPassCreation` and `LoginPassDeletion`
-
+- Session cleanup is now the responsibility of the identity provider. 
 
 
 0.4.1
