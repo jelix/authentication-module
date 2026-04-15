@@ -19,6 +19,18 @@ services:
       default:
         aliases:
           - ldap.jelix
+  pgsql:
+    image: postgres:15
+    container_name: "jelix_auth_pgsql"
+    environment:
+      POSTGRES_DB: testapp
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: jelix
+      POSTGRES_HOST_AUTH_METHOD: md5
+    volumes:
+      - jelix_auth_pg_data:/var/lib/postgresql/data
+    ports:
+      - ${TESTAPP_PGSQL_PORT}:5432
   php:
     build:
       context: ./docker-conf/phpfpm
@@ -51,3 +63,6 @@ services:
         aliases:
           - jelixauth.local
           - tests.jelix
+volumes:
+  jelix_auth_pg_data:
+    name: "jelix_auth_pg_data"

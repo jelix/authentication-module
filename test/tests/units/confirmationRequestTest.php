@@ -108,7 +108,7 @@ class confirmationRequestTest extends TestCase
     public function testCheckExpiredCode()
     {
         $db = \jDb::getConnection();
-        $db->exec('UPDATE auth_user_requests SET req_expiration_date = \'2023-12-12 12-12\' WHERE req_id = \''.self::$reqId."'");
+        $db->exec('UPDATE auth_user_requests SET req_expiration_date = \'2023-12-12 12:12\' WHERE req_id = \''.self::$reqId."'");
         $this->expectException(RequestException::class);
         $this->expectExceptionCode(RequestException::CODE_EXPIRED_CODE);
         $requests = new Requests();

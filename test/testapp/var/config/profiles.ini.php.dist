@@ -6,10 +6,12 @@
 default=test
 
 [jdb:test]
-driver="sqlite3"
-database="var:db/test.sqlite"
-persistent= on
-force_encoding = on
+driver="pgsql"
+host=pgsql
+database=testapp
+user=test_user
+password=jelix
+
 
 [jdb:daotablesqlite]
 driver="sqlite3"

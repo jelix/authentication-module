@@ -45,9 +45,11 @@ case $COMMAND in
     ldapshell)
        docker exec -it ${CONTAINER_PREFIX}_ldap  /bin/bash -l
      ;;
+    pgsql)
+       docker exec -it --user postgres -e PGPASSWORD="jelix" ${CONTAINER_PREFIX}_pgsql psql --username=test_user testapp
+       ;;
     *)
         echo "wrong command"
         exit 2
         ;;
 esac
-
