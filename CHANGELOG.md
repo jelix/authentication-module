@@ -2,9 +2,15 @@
 Next version
 ------------
 
-- New method `jAuthentication::authenticationFail()`
+New features:
+- A user can be notified by email that someone (and himself) has been
+  authenticated on the application.
+- new configuration parameter `notifyAuthMode` to enable/disable this feature.
+- new account admin page to manage users accounts.
+- new event `ProfileViewPageEvent` allowing to add more fields into the profile page.
 
-CHANGES:
+API CHANGES:
+- New method `jAuthentication::authenticationFail()`
 - The event object for the event `AuthWorkflowStep` having the `create_account` step name, is now an instance of `Jelix\Authentication\Core\Workflow\Event\CreateAccountEvent`.
 
 
@@ -127,4 +133,4 @@ loginpass provider:
 - implementation of a authentication provider 'loginpass' (module 'authloginpass'), allowing to the user to
   authenticate with a login and a password. Several backends are provided: dbdao (SQL database), inifile, ldap
 - support of a session manager: you have the choice to store data about authenticated user during the session: into a PHP session, or only memory (for stateless authentication)
-- a controller to sign in and sign out, displaying HTML content provided by implementation of all activated authentication provders. HTML content can be a form, a button, a link...
+- a controller to sign in and sign out, displaying HTML content provided by implementation of all activated authentication providers. HTML content can be a form, a button, a link...

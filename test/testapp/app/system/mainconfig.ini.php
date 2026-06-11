@@ -31,6 +31,7 @@ authcore.enabled=on
 authloginpass.enabled=on
 account.enabled=on
 
+accountadmin.enabled=on
 [coordplugins]
 sessionauth=on
 jacl2=1
@@ -196,6 +197,7 @@ idp[]=alwaysyes
 sessionHandler=php
 
 signInAlreadyAuthAction="adminui~default:index"
+notifyAuthMode=enabled
 
 [sessionauth]
 authRequired=off

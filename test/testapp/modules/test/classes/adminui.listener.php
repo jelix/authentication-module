@@ -44,6 +44,9 @@ class adminuiListener extends jEventListener
         }
 
         $navigation = new SubMenu('nav', 'Navigation', 10);
+        if(\jAcl2::check('accountadmin.list')) {
+            $navigation->addJelixLinkItem('account', 'accountadmin~default:index', array(), 'users');
+        }
         $navigation->addJelixLinkItem('index test', 'test~default:index', array(), 'circle-o');
         $uim->sidebar()->addMenuItem($navigation);
     }

@@ -26,6 +26,8 @@ signOutAction="authcore~sign:out"
 ; action to redirect to when displaying the login page whereas the user is
 ; already authenticated. Typical action: the action of the home page
 signInAlreadyAuthAction=
+; always/never/enabled/disabled (enabled/disabled : user can override value)
+notifyAuthMode=
 
 [sessionauth]
 ; action to redirect to when authentication is needed and the user is not authenticated
