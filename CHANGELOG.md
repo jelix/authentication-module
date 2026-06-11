@@ -4,6 +4,10 @@ Next version
 
 - New method `jAuthentication::authenticationFail()`
 
+CHANGES:
+- The event object for the event `AuthWorkflowStep` having the `create_account` step name, is now an instance of `Jelix\Authentication\Core\Workflow\Event\CreateAccountEvent`.
+
+
 BREAKING CHANGES:
 - events `AuthenticationUserCreation` and `AuthenticationUserDeletion` are renamed to `LoginPassCreation` and `LoginPassDeletion`
 - event `AuthLPCanResetPassword` is renamed to `LoginPassCanResetPassword`

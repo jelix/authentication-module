@@ -100,4 +100,6 @@ class of the event is `Jelix\Authentication\Core\Workflow\Event\WorkflowStepEven
 
 For the step `get_account`, the class is `Jelix\Authentication\Core\Workflow\Event\GetAccountEvent`.
 
+For the step `check_account`, the class is `Jelix\Authentication\Core\Workflow\Event\CheckAccountEvent`.
 
+For the step `create_account`, the class is `Jelix\Authentication\Core\Workflow\Event\CreateAccountEvent`.
