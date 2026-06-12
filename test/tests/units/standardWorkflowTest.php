@@ -228,7 +228,7 @@ class standardWorkflowTest extends TestCase
         $this->assertEquals('bob@example.com', $givenAccount->getEmail());
         $this->assertNull($givenAccount->data);
 
-        // --- then it redirects to the next url
+        // --- then it redirects to the next url which is the second factor url
         $redirectUrl = $workflow->getNextAuthenticationUrl();
 
         $this->assertEquals('/url1', $redirectUrl);
@@ -315,6 +315,12 @@ class standardWorkflowTest extends TestCase
                 $createAccountAction
             ])
         );
+        $this->evDispatcher->setListenerForStep(
+            'check_account',
+            function(Workflow\Event\CheckAccountEvent $event){
+                $event->getAccount()->data = 'check_account called';
+            });
+
         $this->evDispatcher->addWorkflowActionForStep(
             'access_validation',
             new Workflow\WorkflowAction('/url2', [
@@ -330,7 +336,7 @@ class standardWorkflowTest extends TestCase
         $this->assertNull($givenAccount);
 
 
-        // --- then it redirects to the next url
+        // --- then it redirects to the next url which is the create account url
         $redirectUrl = $workflow->getNextAuthenticationUrl();
 
         $this->assertEquals('/url3', $redirectUrl);
@@ -343,7 +349,7 @@ class standardWorkflowTest extends TestCase
         $this->assertEquals('/url3', $this->workflowState->getCurrentActionUrl());
         $this->assertEquals($checkResult, $createAccountAction);
 
-        // --- in the controller of the first step at /url3
+        // --- in the controller of the first step at /url3 : creation of the account
         $workflow = $this->standardWorkflow->getWorkflow();
         $currentStep = $workflow->getCurrentStep();
         $this->assertNotNull($currentStep);
@@ -353,8 +359,10 @@ class standardWorkflowTest extends TestCase
         $account = new AccountForTest('123', 'bob', 'Bob Morane', 'bob@example.com');
         $workflow->getTemporaryUser()->setAccount($account);
 
-        // --- then it redirects to the next url
+        // --- then it redirects to the next url : check_account should be, and second_factor
+        // ignored, as there is no second factor step for newly created account
         $redirectUrl = $workflow->getNextAuthenticationUrl();
+        $this->assertEquals('check_account called', $account->data);
 
         $this->assertEquals('/url2', $redirectUrl);
         $this->assertFalse($workflow->isFinished());

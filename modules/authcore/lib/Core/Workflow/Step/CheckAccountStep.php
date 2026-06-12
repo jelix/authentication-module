@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2024 Laurent Jouanneau
+ * @copyright 2024-2026 Laurent Jouanneau
  * @link     https://jelix.org
  * @license  MIT
  */
@@ -26,8 +26,17 @@ class CheckAccountStep extends AbstractStep
      */
     public function startStep($transition, WorkflowState $workflowState)
     {
-        $event = new CheckAccountEvent($transition, $workflowState->getTemporaryUser(), $workflowState->getIdpId());
+        $event = new CheckAccountEvent(
+            $transition,
+            $workflowState->getTemporaryUser(),
+            $workflowState->getIdpId(),
+            $workflowState->userHasNewAccount()
+        );
         $this->eventDispatcher->dispatch($event);
         $this->workflowState->setActions($event->getActions());
+
+        if ($workflowState->userHasNewAccount()) {
+            $this->transition = 'new_account_checked';
+        }
     }
 }

@@ -9,6 +9,11 @@ New features:
 - new account admin page to manage users accounts.
 - new event `ProfileViewPageEvent` allowing to add more fields into the profile page.
 
+BEHAVIOR CHANGES:
+
+- The event `AuthWorkflowStep` for the step `check_account` is now dispatched after an account has been created. 
+  The event object `CheckAccountEvent` has a new method `isAccountNewlyCreated()` to know if the account has been created just before the dispatch.
+
 API CHANGES:
 - New method `jAuthentication::authenticationFail()`
 - The event object for the event `AuthWorkflowStep` having the `create_account` step name, is now an instance of `Jelix\Authentication\Core\Workflow\Event\CreateAccountEvent`.

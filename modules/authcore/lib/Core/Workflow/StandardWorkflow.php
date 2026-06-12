@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2022-2023 Laurent Jouanneau
+ * @copyright 2022-2026 Laurent Jouanneau
  * @link     https://jelix.org
  * @license  MIT
  */
@@ -78,11 +78,15 @@ class StandardWorkflow
             ),
             'account_created' => array(
                 'from' => 'create_account',
-                'to' => 'access_validation'
+                'to' => 'check_account'
             ),
             'account_checked' => array(
                 'from' => 'check_account',
                 'to' => 'second_factor'
+            ),
+            'new_account_checked' => array(
+                'from' => 'check_account',
+                'to' => 'access_validation'
             ),
             'second_factor_success' => array(
                 'from' => 'second_factor',

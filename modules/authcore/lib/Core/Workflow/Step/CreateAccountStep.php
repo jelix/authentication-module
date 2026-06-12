@@ -28,5 +28,6 @@ class CreateAccountStep extends AbstractStep
         $event = new CreateAccountEvent($transition, $workflowState->getTemporaryUser(), $workflowState->getIdpId());
         $this->eventDispatcher->dispatch($event);
         $this->workflowState->setActions($event->getActions());
+        $this->workflowState->newAccountCreated();
     }
 }

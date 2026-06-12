@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2022-2023 Laurent Jouanneau
+ * @copyright 2022-2026 Laurent Jouanneau
  * @link     https://jelix.org
  * @license  MIT
  */
@@ -64,6 +64,8 @@ class WorkflowState
      * @var int one of END_STATUS_* const.
      */
     protected $endStatus = 0;
+
+    protected $newAccount = false;
 
     public function __construct(AuthUser $temporaryUser, $idpId)
     {
@@ -206,4 +208,13 @@ class WorkflowState
         return $this->errorMessage;
     }
 
+    public function newAccountCreated()
+    {
+        $this->newAccount = true;
+    }
+
+    public function userHasNewAccount()
+    {
+        return $this->newAccount;
+    }
 }

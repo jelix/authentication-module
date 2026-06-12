@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2024 Laurent Jouanneau
+ * @copyright 2024-2026 Laurent Jouanneau
  * @link     http://jelix.org
  * @license  MIT
  */
@@ -15,8 +15,11 @@ use Jelix\Authentication\Core\AuthSession\UserAccountInterface;
 
 class CheckAccountEvent extends WorkflowStepEvent
 {
-    public function __construct($transition, AuthUser $authenticatedUser, $idpId)
+    protected $accountNewlyCreated;
+
+    public function __construct($transition, AuthUser $authenticatedUser, $idpId, $accountCreated = false)
     {
+        $this->accountNewlyCreated = $accountCreated;
         parent::__construct('check_account', $transition, $authenticatedUser, $idpId);
     }
 
@@ -28,4 +31,8 @@ class CheckAccountEvent extends WorkflowStepEvent
         return $this->getUserBeingAuthenticated()->getAccount();
     }
 
+    public function isAccountNewlyCreated()
+    {
+        return $this->accountNewlyCreated;
+    }
 }
