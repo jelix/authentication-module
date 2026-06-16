@@ -210,6 +210,8 @@ backends[]=daotablesqlite
 backends[]=inifile
 after_login="adminui~default:index"
 loginResponse=htmllogin
+;set to false to deny password modification
+;passwordChangeEnabled=false
 
 [loginpass:common]
 passwordHashAlgo=1

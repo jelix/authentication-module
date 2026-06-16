@@ -9,4 +9,7 @@
     <url pathinfo="/signin/reset/code/:request_id/password" action="password_reset:resetpassword" />
     <url pathinfo="/signin/reset/code/:request_id/save" action="password_reset:save" />
     <url pathinfo="/signin/reset/changed" action="password_reset:changed" />
+
+    <url pathinfo="/password/reset/show" action="passwordEdit:show" />
+    <url pathinfo="/password/reset/save" action="passwordEdit:save" />
 </suburls>
