@@ -31,6 +31,18 @@ class CheckAccountEvent extends WorkflowStepEvent
         return $this->getUserBeingAuthenticated()->getAccount();
     }
 
+    /**
+     * Should be called by listeners that modified the account and want to
+     * propagate the updated account into the workflow and the session.
+     *
+     * @param UserAccountInterface $account
+     * @return void
+     */
+    public function setAccount(UserAccountInterface $account)
+    {
+        $this->getUserBeingAuthenticated()->setAccount($account);
+    }
+
     public function isAccountNewlyCreated()
     {
         return $this->accountNewlyCreated;

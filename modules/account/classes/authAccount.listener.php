@@ -2,6 +2,7 @@
 
 use Jelix\Authentication\Account;
 use Jelix\Authentication\Account\Notification\AuthenticationNotifier;
+use Jelix\Authentication\Core\Workflow\Event\CheckAccountEvent;
 use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;
 use Jelix\Authentication\Core\Workflow\Step\StepException;
 use Jelix\Authentication\LoginPass\LoginPassCanResetPasswordEvent;
@@ -12,11 +13,16 @@ class authAccountListener extends jEventListener
     );
 
     /**
-     * @param GetAccountEvent $event
+     * @param GetAccountEvent|CheckAccountEvent $event
      * @return void
      */
     function onAuthWorkflowStep($event)
     {
+        if ($event instanceof CheckAccountEvent) {
+            $this->onCheckAccount($event);
+            return;
+        }
+
         if (!($event instanceof GetAccountEvent)) {
             return;
         }
@@ -42,6 +48,25 @@ class authAccountListener extends jEventListener
             }
             else {
                 throw new StepException(jLocale::get('account~account.error.no.account', $user->getLogin()));
+            }
+        }
+    }
+
+    /**
+     * @param CheckAccountEvent $event
+     * @return void
+     * @throws StepException
+     */
+    protected function onCheckAccount(CheckAccountEvent $event)
+    {
+        $account = $event->getAccount();
+        if ($account instanceof Account\Account) {
+            $status = $account->getData('status');
+            if ($status !== null && $status < Account\Manager::STATUS_VALID) {
+                throw new StepException(
+                    \jLocale::get('account~account.error.account.disabled',
+                        $event->getUserBeingAuthenticated()->getLogin())
+                );
             }
         }
     }

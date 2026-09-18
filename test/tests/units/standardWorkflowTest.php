@@ -400,4 +400,52 @@ class standardWorkflowTest extends TestCase
         $this->assertEquals($this->workflowState::END_STATUS_SUCCESS, $this->workflowState->getEndStatus());
     }
 
+    public function testCheckAccountSetAccountPropagates()
+    {
+        $manager = $this->createMock(AuthenticatorManager::class);
+
+        $sfAction = new \jSelectorDebugAction('classic', 'testapp', 'secondfactor:index');
+        $valAction = new \jSelectorDebugAction('classic', 'testapp', 'validation:index');
+
+        $this->evDispatcher->setListenerForStep(
+            'get_account',
+            function(Workflow\Event\GetAccountEvent $event){
+                $account = new AccountForTest('123', 'bob', 'Bob Morane', 'bob@example.com');
+                $event->setAccount($account);
+            });
+
+        $this->evDispatcher->setListenerForStep(
+            'check_account',
+            function(Workflow\Event\CheckAccountEvent $event){
+                $updatedAccount = new AccountForTest(
+                    '123', 'bob', 'Robert Morane', 'bob.new@example.com'
+                );
+                $event->setAccount($updatedAccount);
+            });
+
+        $this->evDispatcher->addWorkflowActionForStep(
+            'second_factor',
+            new Workflow\WorkflowAction('/url1', [
+                $sfAction
+            ])
+        );
+        $this->evDispatcher->addWorkflowActionForStep(
+            'access_validation',
+            new Workflow\WorkflowAction('/url2', [
+                $valAction
+            ])
+        );
+
+        $workflow = $this->standardWorkflow->start($this->workflowState);
+        $workflow->setFinalUrl('http://localhost/home');
+
+        $redirectUrl = $workflow->getNextAuthenticationUrl();
+        $this->assertEquals('/url1', $redirectUrl);
+
+        $account = $this->workflowState->getTemporaryUser()->getAccount();
+        $this->assertNotNull($account);
+        $this->assertEquals('Robert Morane', $account->getRealName());
+        $this->assertEquals('bob.new@example.com', $account->getEmail());
+    }
+
 }

@@ -255,4 +255,50 @@ class Manager
         $dao = \jDao::get(self::$daoName, self::$daoProfile);
         $dao->delete($accountId);
     }
+
+    /**
+     * Returns the full account_idp record for a given IDP and user.
+     *
+     * Gives access to all fields including idp_data, enabled,
+     * idp_user_email, usage_count, etc.
+     *
+     * @param string $idpId
+     * @param string $authUserId
+     * @return \jDaoRecordBase|null
+     */
+    public static function getIdpLink($idpId, $authUserId)
+    {
+        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        return $daoIdp->findByIdpAndUser($idpId, $authUserId);
+    }
+
+    /**
+     * Updates properties on the account_idp record for a given IDP and user.
+     *
+     * If a property value is an array or object, it will be JSON-encoded
+     * (useful for idp_data).
+     *
+     * @param string $idpId
+     * @param string $authUserId
+     * @param array $properties associative array of property names and values
+     * @return bool true if the record was found and updated
+     */
+    public static function updateIdpLink($idpId, $authUserId, array $properties)
+    {
+        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $accIdp = $daoIdp->findByIdpAndUser($idpId, $authUserId);
+        if (!$accIdp) {
+            return false;
+        }
+
+        foreach ($properties as $prop => $value) {
+            if (is_array($value) || is_object($value)) {
+                $value = json_encode($value);
+            }
+            $accIdp->$prop = $value;
+        }
+
+        $daoIdp->update($accIdp);
+        return true;
+    }
 }
