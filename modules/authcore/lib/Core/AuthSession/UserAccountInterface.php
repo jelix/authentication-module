@@ -9,11 +9,11 @@
 namespace Jelix\Authentication\Core\AuthSession;
 
 /**
- * interface that should be implemented by objects representing an account
- * that are given by listeners responding to the `GetAccountEvent` during
+ * Interface that should be implemented by objects representing an account
+ * that are given by listeners responding to the `GetAccountEvent` or `CheckAccountEvent` during
  * authentication.
  *
- * Object implementing this interface are stored into the session, so it should
+ * The object implementing this interface is stored into the session, so it should
  * not contain too much data and should be serializable.
  */
 interface UserAccountInterface
