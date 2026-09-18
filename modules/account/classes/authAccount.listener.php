@@ -31,7 +31,8 @@ class authAccountListener extends jEventListener
         $user = $event->getUserBeingAuthenticated();
         $idpId = $event->getIdpId();
 
-        $account = Account\Manager::searchAccountByIdp($idpId, $user->getUserId(), true);
+        $manager = new Account\Manager();
+        $account = $manager->searchAccountByIdp($idpId, $user->getUserId(), true);
         if ($account) {
             $event->setAccount($account);
             $notifier = new AuthenticationNotifier();
@@ -85,7 +86,8 @@ class authAccountListener extends jEventListener
 
         // if a user has no account, we don't allow him to recover his account
         // and so, to reset his password.
-        $account = Account\Manager::searchAccountByIdp($event->getIdpId(), $userId);
+        $manager = new Account\Manager();
+        $account = $manager->searchAccountByIdp($event->getIdpId(), $userId);
         if ($account) {
             $event->allow();
         }

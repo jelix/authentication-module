@@ -1,7 +1,7 @@
 <?php
 /**
  * @author alagroy
- * @copyright 2021-2024 Laurent Jouanneau and other contributors
+ * @copyright 2021-2026 Laurent Jouanneau and other contributors
  * @license    MIT
  */
 namespace Jelix\Authentication\Account;
@@ -16,23 +16,28 @@ class Manager
 
     protected static $daoIdp = 'account~account_idp';
 
-    protected static $daoProfile = 'account';
+    protected $daoProfile;
 
     const STATUS_VALID = 1;
     const STATUS_INVALID = 0;
     const STATUS_DISABLED = -1;
     const STATUS_DELETED = -2;
 
+    public function __construct($daoProfile = 'account')
+    {
+        $this->daoProfile = $daoProfile;
+    }
+
     /**
      * Retrieves a registered account from the Dao.
-     * 
+     *
      * @param string $username The account's username
-     * 
-     * @return Account An Account object containing the account's infos or null if the account doesn't exist.
+     *
+     * @return Account|null An Account object containing the account's infos or null if the account doesn't exist.
      */
-    public static function getAccount($username)
+    public function getAccount($username)
     {
-        $dao = \jDao::get(self::$daoName, self::$daoProfile);
+        $dao = \jDao::get(self::$daoName, $this->daoProfile);
 
         $record = $dao->findByUserName($username);
         if (!$record) {
@@ -46,32 +51,32 @@ class Manager
      *
      * @return \jDaoRecordBase The record containing the account
      */
-    public static function createAccountObject($userName, $email)
+    public function createAccountObject($userName, $email)
     {
-        $newAccount = \jDao::createRecord(self::$daoName, self::$daoProfile);
+        $newAccount = \jDao::createRecord(self::$daoName, $this->daoProfile);
         $newAccount->username = $userName;
         $newAccount->email = $email;
         $newAccount->status = self::STATUS_VALID;
         return $newAccount;
     }
 
-    public static function saveNewAccount($newAccount)
+    public function saveNewAccount($newAccount)
     {
-        $dao = \jDao::get(self::$daoName, self::$daoProfile);
+        $dao = \jDao::get(self::$daoName, $this->daoProfile);
         $dao->insert($newAccount);
     }
 
     /**
      * Creates a new account from the authenticated user
-     * 
+     *
      * @param AuthUser $user The user to create
      *
-     * @return Account The new account or null if account already exists.
+     * @return Account|null The new account or null if account already exists.
      */
-    public static function createAccountFromAuthUser($user, $status = null)
+    public function createAccountFromAuthUser($user, $status = null)
     {
         $login = $user->getLogin();
-        if (self::accountExists($login)) {
+        if ($this->accountExists($login)) {
             return null;
         }
 
@@ -79,7 +84,7 @@ class Manager
             $status = self::STATUS_VALID;
         }
 
-        $newAccount = self::createAccountObject($login, $user->getEmail());
+        $newAccount = $this->createAccountObject($login, $user->getEmail());
 
         $username  = $user->getName();
         $names = explode(' ', $username, 2);
@@ -93,19 +98,19 @@ class Manager
         }
 
         $newAccount->status = $status;
-        self::saveNewAccount($newAccount);
+        $this->saveNewAccount($newAccount);
         return new Account($newAccount);
     }
 
     /**
      * Checks whether an account exists for the given name
-     * 
+     *
      * @param string $username The name to check
      * @return bool true if account exists
      */
-    public static function accountExists($username)
+    public function accountExists($username)
     {
-        if (self::getAccount($username)) {
+        if ($this->getAccount($username)) {
             return true;
         }
         return false;
@@ -114,26 +119,26 @@ class Manager
     /**
      * @return Account|null
      */
-    public static function getCurrentUserAccount()
+    public function getCurrentUserAccount()
     {
         $user = jAuthentication::getCurrentUser();
         if (!$user) {
             return null;
         }
-        return self::getAccount($user->getLogin());
+        return $this->getAccount($user->getLogin());
     }
 
     /**
      * Modifies the information of a user
-     * 
+     *
      * @param array $newInfos An associative array containing the information to modify and their new values
-     * @param Account $user the user to modify, if null, the modified user will be the current one.
-     * 
-     * @return Account|false False if an error occurred, else a new Account object wih the updated information
+     * @param int|string $accountId the account id of the user to modify
+     *
+     * @return Account|false False if an error occurred, else a new Account object with the updated information
      */
-    public static function modifyInfos($newInfos, $accountId)
+    public function modifyInfos($newInfos, $accountId)
     {
-        $dao = \jDao::get(self::$daoName, self::$daoProfile);
+        $dao = \jDao::get(self::$daoName, $this->daoProfile);
         $record = $dao->get($accountId);
         if (!$record) {
             return false;
@@ -147,9 +152,9 @@ class Manager
         return new Account($record);
     }
 
-    public static function getAccountList()
+    public function getAccountList()
     {
-        return \jDao::get(self::$daoName, self::$daoProfile)->findAll();
+        return \jDao::get(self::$daoName, $this->daoProfile)->findAll();
     }
 
     /**
@@ -157,9 +162,9 @@ class Manager
      * @param string $authUserId
      * @return null|Account
      */
-    public static function searchAccountByIdp($idpId, $authUserId, $markUsage = false)
+    public function searchAccountByIdp($idpId, $authUserId, $markUsage = false)
     {
-        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
         $accIdp = $daoIdp->findByIdpAndUser($idpId, $authUserId);
         if (!$accIdp) {
             \jLog::log('search account: no account-idp for '.$idpId. ' - '. $authUserId, 'auth');
@@ -175,24 +180,23 @@ class Manager
             $daoIdp->update($accIdp);
         }
 
-        $dao = \jDao::get(self::$daoName, self::$daoProfile);
+        $dao = \jDao::get(self::$daoName, $this->daoProfile);
 
         $record = $dao->get($accIdp->account_id);
         if (!$record) {
             \jLog::log('search account: no account for account '.$accIdp->username, 'auth');
             return null;
         }
-        //\jLog::log('search account: account found for '.$authUserId, 'auth');
         return new Account($record);
     }
 
     /**
      * @param integer $accountId
-     * @return null|Account
+     * @return \Iterator
      */
-    public static function searchIdpUsedByAccount($accountId)
+    public function searchIdpUsedByAccount($accountId)
     {
-        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
         $list = $daoIdp->findByAccount($accountId);
         return $list;
     }
@@ -202,9 +206,9 @@ class Manager
      * @param string $idpId
      * @return bool
      */
-    public static function isAccountUsingIdp($accountId, $idpId)
+    public function isAccountUsingIdp($accountId, $idpId)
     {
-        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
         $accIdp = $daoIdp->findByIdpAndAccount($idpId, $accountId);
         if ($accIdp) {
             return true;
@@ -220,9 +224,9 @@ class Manager
      * @param object|array $idpData
      * @return void
      */
-    public static function attachAccountToIdp($accountId, $idpId, $authUserId, $authUserEmail, $idpData = [], $firstUse = false)
+    public function attachAccountToIdp($accountId, $idpId, $authUserId, $authUserEmail, $idpData = [], $firstUse = false)
     {
-        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
         $recordIdp = $daoIdp->createRecord();
         $recordIdp->idp_id = $idpId;
         $recordIdp->idp_user_id = $authUserId;
@@ -244,15 +248,15 @@ class Manager
      * @return void
      * @throws \jException
      */
-    public static function detachAccountFromIdp($accountId, $idpId, $authUserId)
+    public function detachAccountFromIdp($accountId, $idpId, $authUserId)
     {
-        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
         $daoIdp->delete([$idpId, $authUserId, $accountId]);
     }
 
-    public static function deleteAccount($accountId)
+    public function deleteAccount($accountId)
     {
-        $dao = \jDao::get(self::$daoName, self::$daoProfile);
+        $dao = \jDao::get(self::$daoName, $this->daoProfile);
         $dao->delete($accountId);
     }
 
@@ -266,9 +270,9 @@ class Manager
      * @param string $authUserId
      * @return \jDaoRecordBase|null
      */
-    public static function getIdpLink($idpId, $authUserId)
+    public function getIdpLink($idpId, $authUserId)
     {
-        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
         return $daoIdp->findByIdpAndUser($idpId, $authUserId);
     }
 
@@ -283,9 +287,9 @@ class Manager
      * @param array $properties associative array of property names and values
      * @return bool true if the record was found and updated
      */
-    public static function updateIdpLink($idpId, $authUserId, array $properties)
+    public function updateIdpLink($idpId, $authUserId, array $properties)
     {
-        $daoIdp = \jDao::get(self::$daoIdp, self::$daoProfile);
+        $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
         $accIdp = $daoIdp->findByIdpAndUser($idpId, $authUserId);
         if (!$accIdp) {
             return false;

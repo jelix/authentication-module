@@ -31,7 +31,8 @@ class AccountListCommand extends \Jelix\Scripts\ModuleCommandAbstract
     {
         $table = new Table($output);
         $table->setHeaders(array('Id', 'Username', 'Email', 'First Name', 'Last name', 'Status', 'Create Date'));
-        foreach (Manager::getAccountList() as $account) {
+        $manager = new Manager();
+        foreach ($manager->getAccountList() as $account) {
             $table->addRow(array(
                 $account->account_id,
                 $account->username,

@@ -16,7 +16,8 @@ class profileCtrl extends jController {
     function index() {
         $rep = $this->getResponse('html');
 
-        $currentUser = Manager::getCurrentUserAccount();
+        $manager = new Manager();
+        $currentUser = $manager->getCurrentUserAccount();
         $formId = $currentUser->getData('account_id');
         $form = jForms::get('account~profile_modify', $formId);
         if (!$form) {
@@ -50,7 +51,8 @@ class profileCtrl extends jController {
     {
         $rep = $this->getResponse('html');
 
-        $currentAccount = Manager::getCurrentUserAccount();
+        $manager = new Manager();
+        $currentAccount = $manager->getCurrentUserAccount();
 
         $formId = $currentAccount->getData('account_id');
         $form = jForms::get('account~profile_modify', $formId);
@@ -76,7 +78,8 @@ class profileCtrl extends jController {
     {
         $rep = $this->getResponse('redirect');
 
-        $account = Manager::getCurrentUserAccount();
+        $manager = new Manager();
+        $account = $manager->getCurrentUserAccount();
         if (!$account) {
             $rep->action = 'account~profile:index';
 
@@ -84,7 +87,7 @@ class profileCtrl extends jController {
         }
         $accountId = $account->getAccountId();
         $form = jForms::get('account~profile_modify', $accountId);
-        
+
         if (!$form) {
             jMessage::add(jLocale::get('account.profile.modify.form.error'), 'error');
             $rep->action = 'account~profile:index';
@@ -108,7 +111,7 @@ class profileCtrl extends jController {
         }, ARRAY_FILTER_USE_KEY);
 
         // update account information into the session
-        $updatedAccount = Manager::modifyInfos($newInfos,$accountId);
+        $updatedAccount = $manager->modifyInfos($newInfos,$accountId);
 
         $user = jAuthentication::getCurrentUser();
         $user->setAccount($updatedAccount);
@@ -131,17 +134,18 @@ class profileCtrl extends jController {
     {
         $rep = $this->getResponse('redirect');
 
-        $account = Manager::getCurrentUserAccount();
+        $manager = new Manager();
+        $account = $manager->getCurrentUserAccount();
         if (!$account) {
             $rep->action = 'account~profile:index';
 
             return $rep;
         }
         $user = jAuthentication::getCurrentUser();
-        $idpAccountList = Manager::searchIdpUsedByAccount($account->getAccountId());
+        $idpAccountList = $manager->searchIdpUsedByAccount($account->getAccountId());
         foreach($idpAccountList as $idpAccount) {
-            $idpId = $idpAccount->idp_id; 
-            Manager::detachAccountFromIdp($account->getAccountId(), $idpId, $user->getUserId());
+            $idpId = $idpAccount->idp_id;
+            $manager->detachAccountFromIdp($account->getAccountId(), $idpId, $user->getUserId());
             if ($idpId == 'loginpass') {
                 /** @var loginpassIdentityProvider $loginpassIDP */
                 $loginpassIDP = jAuthentication::manager()->getIdpById('loginpass');
@@ -155,7 +159,7 @@ class profileCtrl extends jController {
                 }
             }
         }
-        Manager::deleteAccount($account->getAccountId());
+        $manager->deleteAccount($account->getAccountId());
         $url = jAuthentication::signout();
 
         return $this->redirectToUrl($url);

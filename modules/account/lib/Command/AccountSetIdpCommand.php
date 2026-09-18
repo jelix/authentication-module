@@ -50,12 +50,13 @@ class AccountSetIdpCommand extends \Jelix\Scripts\ModuleCommandAbstract
             $userId = $accountName;
         }
 
-        $account = Manager::getAccount($accountName);
+        $manager = new Manager();
+        $account = $manager->getAccount($accountName);
         if (!$account) {
             throw new \Exception('The account '.$accountName.' does not exist');
         }
 
-        if (Manager::isAccountUsingIdp($account->getAccountId(), 'loginpass')) {
+        if ($manager->isAccountUsingIdp($account->getAccountId(), 'loginpass')) {
             throw new \Exception('The account '.$accountName.' has already a login into the given identity provider');
         }
         $idpManager = \jAuthentication::manager();
@@ -64,7 +65,7 @@ class AccountSetIdpCommand extends \Jelix\Scripts\ModuleCommandAbstract
             throw new \Exception('The identity provider '.$idpId.' does not exist');
         }
 
-        Manager::attachAccountToIdp($account->getAccountId(), $idpId, $userId, $account->getEmail());
+        $manager->attachAccountToIdp($account->getAccountId(), $idpId, $userId, $account->getEmail());
 
         return 0;
     }

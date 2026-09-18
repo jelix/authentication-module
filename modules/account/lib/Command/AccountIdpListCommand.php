@@ -36,12 +36,13 @@ class AccountIdpListCommand extends \Jelix\Scripts\ModuleCommandAbstract
     {
         $accountName = $input->getArgument('account');
 
-        $account = Manager::getAccount($accountName);
+        $manager = new Manager();
+        $account = $manager->getAccount($accountName);
         if (!$account) {
             throw new \Exception('The account '.$accountName.' does not exist');
         }
 
-        $list = Manager::searchIdpUsedByAccount($account->getAccountId());
+        $list = $manager->searchIdpUsedByAccount($account->getAccountId());
 
         $table = new Table($output);
         $table->setHeaders(array('Idp', 'user id', 'user email', 'enabled',

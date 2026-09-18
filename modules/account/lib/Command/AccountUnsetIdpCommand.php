@@ -50,12 +50,13 @@ class AccountUnsetIdpCommand extends \Jelix\Scripts\ModuleCommandAbstract
             $userId = $accountName;
         }
 
-        $account = Manager::getAccount($accountName);
+        $manager = new Manager();
+        $account = $manager->getAccount($accountName);
         if (!$account) {
             throw new \Exception('The account '.$accountName.' does not exist');
         }
 
-        if (!Manager::isAccountUsingIdp($account->getAccountId(), 'loginpass')) {
+        if (!$manager->isAccountUsingIdp($account->getAccountId(), 'loginpass')) {
             $output->writeln('The account '.$accountName.' does not use the given identity provider');
             return 1;
         }
@@ -66,7 +67,7 @@ class AccountUnsetIdpCommand extends \Jelix\Scripts\ModuleCommandAbstract
             throw new \Exception('The identity provider '.$idpId.' does not exist');
         }
 
-        Manager::detachAccountFromIdp($account->getAccountId(), $idpId, $userId);
+        $manager->detachAccountFromIdp($account->getAccountId(), $idpId, $userId);
 
         return 0;
     }

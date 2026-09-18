@@ -56,12 +56,13 @@ class LoginCreateCommand extends AbstractCommand
     {
         $accountName = $input->getArgument('account');
 
-        $existingAccount = Manager::getAccount($accountName);
+        $manager = new Manager();
+        $existingAccount = $manager->getAccount($accountName);
         if (!$existingAccount) {
             throw new \Exception('The account '.$accountName.' does not exists');
         }
 
-        if (Manager::isAccountUsingIdp($existingAccount->getAccountId(), 'loginpass')) {
+        if ($manager->isAccountUsingIdp($existingAccount->getAccountId(), 'loginpass')) {
             throw new \Exception('The account '.$accountName.' has already a login');
         }
 
@@ -90,7 +91,7 @@ class LoginCreateCommand extends AbstractCommand
             throw new \Exception('The login has not been created');
         }
 
-        Manager::attachAccountToIdp($existingAccount->getAccountId(), 'loginpass', $login, $userEmail);
+        $manager->attachAccountToIdp($existingAccount->getAccountId(), 'loginpass', $login, $userEmail);
 
         return 0;
     }
