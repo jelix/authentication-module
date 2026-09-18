@@ -140,6 +140,9 @@ fi
 #    fi
 #fi
 
+if [ ! -d /var/run/slapd ]; then
+  mkdir /var/run/slapd
+fi
 chown -R openldap:openldap /etc/ldap/slapd.d/ /var/lib/ldap/ /var/run/slapd/
 
 exec "$@"
