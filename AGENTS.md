@@ -47,7 +47,7 @@ All code lives under `modules/`. Each module follows the Jelix module structure 
 
 - **authcore** — Core authentication engine. Namespace: `Jelix\Authentication\Core`. Contains the workflow engine, session management, identity provider interface, and the `jAuthentication` static facade (the main entry point for application code).
 - **authloginpass** — Login/password identity provider. Namespace: `Jelix\Authentication\LoginPass`. Supports pluggable backends (database DAO, LDAP, ini file) via `BackendPluginInterface`. Includes password reset flow.
-- **account** — Full account management: profile page, CLI commands, email notifications, event listener for workflow steps. Namespace: `Jelix\Authentication\Account`.
+- **account** — Full account management: profile page, CLI commands, email notifications, event listener for workflow steps. Namespace: `Jelix\Authentication\Account`. It provides also an account management adapter for the workflow, `Jelix\Authentication\Account\AccountWorkflowAdapterForWorkflow`.
 - **accountadmin** — Admin UI for account management.
 
 ### Core architecture
@@ -60,7 +60,7 @@ The core design is a state-machine workflow (`Workflow` class) with named steps 
 
 `get_account` → `create_account` (if no account) → `check_account` → `second_factor` → `access_validation` → `auth_done`
 
-Each step is a class implementing `StepInterface` under `authcore/lib/Core/Workflow/Step/`. Steps emit events (`WorkflowStepEvent`, `CreateAccountEvent`, `CheckAccountEvent`, `GetAccountEvent`) that third-party modules can listen to (Jelix event system).
+Each step is a class implementing `StepInterface` under `authcore/lib/Core/Workflow/Step/`. Some steps (starting with `check_account`) emit events (`WorkflowStepEvent`, `CheckAccountEvent`) that third-party modules can listen to (Jelix event system).
 
 A `fail` transition can fire from most steps, leading to `auth_fail`.
 

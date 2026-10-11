@@ -199,6 +199,8 @@ sessionHandler=php
 signInAlreadyAuthAction="adminui~default:index"
 notifyAuthMode=enabled
 
+accountWorkflowAdapter="\Jelix\Authentication\Account\AccountManagerForWorkflow"
+
 [sessionauth]
 authRequired=off
 missingAuthAction="authcore~sign:in"
@@ -234,6 +236,3 @@ featureCreateUser=on
 featureDeleteUser=on
 featureChangePassword=on
 aclAdapterClass="\Jelix\Authentication\LoginPass\LdapAcl2Adapter"
-
-
-

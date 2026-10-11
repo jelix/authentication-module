@@ -3,6 +3,7 @@ require_once(__DIR__.'/../testapp/application.init.php');
 require_once(__DIR__.'/units/lib/EventDispatcherForTests.php');
 require_once(__DIR__.'/units/lib/AuthManagerForTest.php');
 require_once(__DIR__.'/units/lib/AccountForTest.php');
+require_once(__DIR__.'/units/lib/AccountWorkflowAdapterForTest.php');
 
 jApp::setEnv('jelixtests');
 jApp::loadConfig('index/config.ini.php');

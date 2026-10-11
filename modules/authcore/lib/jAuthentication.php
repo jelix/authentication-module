@@ -7,6 +7,7 @@
  * @licence MIT
  */
 
+use Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface;
 use Jelix\Authentication\Core\AuthenticatorManager;
 use Jelix\Authentication\Core\AuthSession\AuthSession;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
@@ -25,6 +26,11 @@ class jAuthentication
      * @var AuthenticatorManager
      */
     protected static $manager = null;
+
+    /**
+     * @var AccountWorkflowAdapterInterface
+     */
+    protected static $accountWorkflowAdapter = null;
 
     /**
      * @var AuthSession
@@ -62,6 +68,22 @@ class jAuthentication
         return self::$manager;
     }
 
+    protected static function accountWorkflowAdapter()
+    {
+        if (self::$accountWorkflowAdapter === null) {
+            $authConfig = \jApp::config()->authentication;
+            $amClass = $authConfig['accountWorkflowAdapter'] ?? '';
+            if ($amClass) {
+                /**
+                 * @var \Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface $accountManager
+                 */
+                self::$accountWorkflowAdapter = new $amClass();
+            }
+        }
+
+        return self::$accountWorkflowAdapter;
+    }
+
     /**
      * @return AuthSession
      */
@@ -97,7 +119,8 @@ class jAuthentication
         if (!self::$workflow) {
             self::$workflow = new Workflow\StandardWorkflow(
                 self::session(),
-                \jApp::services()->eventDispatcher()
+                \jApp::services()->eventDispatcher(),
+                self::accountWorkflowAdapter()
             );
         }
         return self::$workflow;

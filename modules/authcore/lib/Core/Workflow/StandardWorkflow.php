@@ -13,6 +13,10 @@ use Jelix\Authentication\Core\AuthenticatorManager;
 use Jelix\Authentication\Core\AuthSession\AuthSession;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
+
+/**
+ * Configure a workflow with a predefined graph of steps
+ */
 class StandardWorkflow
 {
 
@@ -22,26 +26,14 @@ class StandardWorkflow
     protected $workflow;
 
     /**
-     * @var EventDispatcherInterface
-     */
-    protected $evDispatcher;
-
-    /**
-     * @var AuthSession
-     */
-    protected $session;
-
-
-    /**
      * @param EventDispatcherInterface $evDispatcher
      */
     function __construct(
-        AuthSession $sessionHandler,
-        EventDispatcherInterface $evDispatcher
+        protected AuthSession $session,
+        protected EventDispatcherInterface $evDispatcher,
+        protected ?AccountWorkflowAdapterInterface $accountManager = null
     )
     {
-        $this->session = $sessionHandler;
-        $this->evDispatcher = $evDispatcher;
     }
 
     /**
@@ -54,8 +46,8 @@ class StandardWorkflow
         $workflow = new Workflow($workflowState);
 
         $steps = array (
-            new Step\GetAccountStep($evDispatcher, $workflowState),
-            new Step\CreateAccountStep($evDispatcher, $workflowState),
+            new Step\GetAccountStep($evDispatcher, $workflowState, $this->accountManager),
+            new Step\CreateAccountStep($evDispatcher, $workflowState, $this->accountManager),
             new Step\CheckAccountStep($evDispatcher, $workflowState),
             new Step\SecondFactorAuthStep($evDispatcher, $workflowState),
             new Step\AccessValidationStep($evDispatcher, $workflowState),
@@ -68,7 +60,7 @@ class StandardWorkflow
                 'from' => 'get_account',
                 'to' => 'check_account'
             ),
-            'account_not_found' => array(
+            'account_to_create' => array(
                 'from' => 'get_account',
                 'to' => 'create_account'
             ),

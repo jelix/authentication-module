@@ -29,6 +29,9 @@ signInAlreadyAuthAction=
 ; always/never/enabled/disabled (enabled/disabled : user can override value)
 notifyAuthMode=
 
+; the class name of the adapter to use to manage the workflow of account creation
+accountWorkflowAdapter=
+
 [sessionauth]
 ; action to redirect to when authentication is needed and the user is not authenticated
 missingAuthAction=

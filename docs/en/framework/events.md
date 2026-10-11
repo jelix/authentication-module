@@ -94,19 +94,14 @@ See the `Jelix\Authentication\LoginPass\LoginPassCanResetPasswordEvent` class.
 `AuthWorkflowStep`
 ------------------
 
-When the user starts the authentication, this event is emitted at each step of the
+When the user starts the authentication, this event is emitted at some steps of the
 authentication. The step name is indicated into a `stepName` parameter, and the 
 class of the event is `Jelix\Authentication\Core\Workflow\Event\WorkflowStepEvent`.
 
-For the step `get_account`, the class is `Jelix\Authentication\Core\Workflow\Event\GetAccountEvent`.
-
 For the step `check_account`, the class is `Jelix\Authentication\Core\Workflow\Event\CheckAccountEvent`.
-
-For the step `create_account`, the class is `Jelix\Authentication\Core\Workflow\Event\CreateAccountEvent`.
 
 `ProfileViewPageEvent`
 ----------------------
 This event is sent to extend the content of the "view profile" page.
-The view profile currently display information of the profile (username, first name, e-mail, ...) and a button to edit values.
+The view profile currently displays information of the profile (username, first name, e-mail, ...) and a button to edit values.
 use `addContent(string $content, int $position)` to add some content to the page. Initial content is on position 5.
-

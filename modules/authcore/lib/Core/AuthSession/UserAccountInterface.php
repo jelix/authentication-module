@@ -1,7 +1,7 @@
 <?php
 /**
  * @author   Laurent Jouanneau
- * @copyright 2022-2023 Laurent Jouanneau
+ * @copyright 2022-2026 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
@@ -10,8 +10,7 @@ namespace Jelix\Authentication\Core\AuthSession;
 
 /**
  * Interface that should be implemented by objects representing an account
- * that are given by listeners responding to the `GetAccountEvent` or `CheckAccountEvent` during
- * authentication.
+ * It is given by an account workflow adapter during the authentication.
  *
  * The object implementing this interface is stored into the session, so it should
  * not contain too much data and should be serializable.

@@ -14,12 +14,17 @@ BEHAVIOR CHANGES:
 - The event `AuthWorkflowStep` for the step `check_account` is now dispatched after an account has been created. 
   The event object `CheckAccountEvent` has a new method `isAccountNewlyCreated()` to know if the account has been created just before the dispatch.
 
+
 API CHANGES:
 - New method `jAuthentication::authenticationFail()`
-- The event object for the event `AuthWorkflowStep` having the `create_account` step name, is now an instance of `Jelix\Authentication\Core\Workflow\Event\CreateAccountEvent`.
-
+- The `CheckAccountEvent` class has a new method `setAccount()` to change the account associated to the authenticated user.
 
 BREAKING CHANGES:
+- There is no more event `AuthWorkflowStep` for the steps `get_account` and `create_account`. These steps now call
+  an account management adapter. A module implementing accounts management should have an object implementing
+  `Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface` and register it in the configuration.
+- The class `Jelix\Authentication\Account\Manager` is not anymore a static class. It should be instantiated to access
+  to its methods.
 - events `AuthenticationUserCreation` and `AuthenticationUserDeletion` are renamed to `LoginPassCreation` and `LoginPassDeletion`
 - event `AuthLPCanResetPassword` is renamed to `LoginPassCanResetPassword`
 - class `AuthLPCanResetPasswordEvent` is renamed to `LoginPassCanResetPasswordEvent`

@@ -116,6 +116,11 @@ class WorkflowState
         return $this->currentStepName;
     }
 
+    /**
+     * Set new actions for the current step
+     * @param WorkflowAction[] $actions
+     * @return void
+     */
     public function setActions(array $actions)
     {
         $this->actions = $actions;
