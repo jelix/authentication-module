@@ -42,11 +42,16 @@ services:
       APP_USER_ID: ${FPM_USER_ID}
       APP_GROUP_ID: ${FPM_GROUP_ID}
       DISPLAY_ERRORS: "on"
+      PHP_IDE_CONFIG: "serverName=jelixauthsrv"
     volumes:
       - "../:/jelixapp/"
       - "./docker-conf/certs:/customcerts"
     depends_on:
       - openldap
+    networks:
+      - default
+    extra_hosts:
+      - host.docker.internal:host-gateway
   web:
     image: nginx:alpine
     container_name: jelix_auth_web
