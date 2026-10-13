@@ -1,14 +1,14 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2023 Laurent Jouanneau
+ * @copyright  2023-2026 Laurent Jouanneau
  * @license   MIT
  */
 namespace Jelix\Authentication\Account\Command;
 
 
 use Jelix\Authentication\Account\Manager;
-use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\IdentityAttributes;
 use Jelix\Authentication\LoginPass\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -84,8 +84,8 @@ class LoginCreateCommand extends AbstractCommand
         }
 
         $authUser = $lpManager->createUser($login, $password, array(
-            AuthUser::ATTR_NAME => $realName,
-            AuthUser::ATTR_EMAIL => $userEmail
+            IdentityAttributes::DisplayName => $realName,
+            IdentityAttributes::Email => $userEmail
         ), $backendName);
         if (!$authUser) {
             throw new \Exception('The login has not been created');

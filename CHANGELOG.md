@@ -18,6 +18,9 @@ BEHAVIOR CHANGES:
 API CHANGES:
 - New method `jAuthentication::authenticationFail()`
 - The `CheckAccountEvent` class has a new method `setAccount()` to change the account associated to the authenticated user.
+- New class `Jelix\Authentication\Core\IdentityAttributes` defining standardized URI-style keys for user identity
+  attributes (username, email, firstname, lastname, displayname, address, phone, etc.).
+- New class `Jelix\Authentication\Account\ClaimMapping` to map identity attributes to account storage fields.
 
 BREAKING CHANGES:
 - There is no more event `AuthWorkflowStep` for the steps `get_account` and `create_account`. These steps now call
@@ -28,7 +31,17 @@ BREAKING CHANGES:
 - events `AuthenticationUserCreation` and `AuthenticationUserDeletion` are renamed to `LoginPassCreation` and `LoginPassDeletion`
 - event `AuthLPCanResetPassword` is renamed to `LoginPassCanResetPassword`
 - class `AuthLPCanResetPasswordEvent` is renamed to `LoginPassCanResetPasswordEvent`
-- Session cleanup is now the responsibility of the identity provider. 
+- Session cleanup is now the responsibility of the identity provider.
+- The constants `AuthUser::ATTR_LOGIN`, `AuthUser::ATTR_NAME` and `AuthUser::ATTR_EMAIL` have been removed.
+  User attributes now use URI-style keys defined in the new class `Jelix\Authentication\Core\IdentityAttributes`
+  (e.g. `jelix/identity/username`, `jelix/identity/emailaddress`, `jelix/identity/displayname`).
+  Identity providers must use these keys when creating `AuthUser` objects.
+- The LDAP backend `searchAttributes` configuration must now map to `IdentityAttributes` keys instead of
+  short names. For example: `uid:jelix/identity/username,mail:jelix/identity/emailaddress` instead of
+  `uid:login,mail:email`.
+- The account module now uses a configurable claim-mapping (`[account:claim-mapping]` INI section) to map
+  identity attributes to account fields during account creation. Default mapping is provided for the
+  standard fields (username, firstname, lastname, email). 
 
 
 0.4.1

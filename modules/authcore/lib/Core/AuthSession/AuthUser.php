@@ -1,12 +1,14 @@
 <?php
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019-2024 Laurent Jouanneau
+ * @copyright 2019-2026 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
 
 namespace Jelix\Authentication\Core\AuthSession;
+
+use Jelix\Authentication\Core\IdentityAttributes;
 
 /**
  * Properties about a user in an authentication session
@@ -30,21 +32,6 @@ class AuthUser
      */
     protected $account;
 
-    /**
-     * Name of the attribute containing the username/login (technical name) of the user
-     */
-    const ATTR_LOGIN = 'login';
-
-    /**
-     * Name of the attribute containing the real name/ displayed name of the user
-     */
-    const ATTR_NAME = 'realname';
-
-    /**
-     * Name of the attribute containing the e-mail of the user
-     */
-    const ATTR_EMAIL = 'email';
-
     const STATUS_PWD_CHANGED = 3;
     const STATUS_MAIL_CHANGED = 2;
     const STATUS_VALID = 1;
@@ -56,8 +43,9 @@ class AuthUser
      * AuthUser constructor.
      *
      * The technical id of the user and user's attributes should be given.
-     * Attributes should contain data like email, real name, login.
-     * These information should be stored at the keys indicated into the ATTR_* constants.
+     * Attributes should contain data like email, name, login.
+     * These information should be stored at the keys indicated into the
+     * IdentityAttributes constants.
      *
      * @param string $userId Technical id of the user from the authentication provider
      * @param array $attributes list of attributes
@@ -90,9 +78,17 @@ class AuthUser
             }
         }
 
-        if (isset($this->attributes[self::ATTR_NAME]) && $this->attributes[self::ATTR_NAME] !== '') {
-            return $this->attributes[self::ATTR_NAME];
+        if (isset($this->attributes[IdentityAttributes::DisplayName]) && $this->attributes[IdentityAttributes::DisplayName] !== '') {
+            return $this->attributes[IdentityAttributes::DisplayName];
         }
+
+        $first = $this->attributes[IdentityAttributes::FirstName] ?? '';
+        $last = $this->attributes[IdentityAttributes::LastName] ?? '';
+        $combined = trim($first . ' ' . $last);
+        if ($combined !== '') {
+            return $combined;
+        }
+
         return $this->getLogin();
     }
 
@@ -101,8 +97,8 @@ class AuthUser
      * @return string
      */
     function getEmail() {
-        if (isset($this->attributes[self::ATTR_EMAIL]) && $this->attributes[self::ATTR_EMAIL] !== '') {
-            return $this->attributes[self::ATTR_EMAIL];
+        if (isset($this->attributes[IdentityAttributes::Email]) && $this->attributes[IdentityAttributes::Email] !== '') {
+            return $this->attributes[IdentityAttributes::Email];
         }
         return '';
     }
@@ -113,8 +109,8 @@ class AuthUser
      * @return string
      */
     function getLogin() {
-        if (isset($this->attributes[self::ATTR_LOGIN]) && $this->attributes[self::ATTR_LOGIN] !== '') {
-            return $this->attributes[self::ATTR_LOGIN];
+        if (isset($this->attributes[IdentityAttributes::UserName]) && $this->attributes[IdentityAttributes::UserName] !== '') {
+            return $this->attributes[IdentityAttributes::UserName];
         }
         return $this->userId;
     }
@@ -140,14 +136,14 @@ class AuthUser
     /**
      * Set a specific attribute.
      *
-     * Any attributes except the email and the login can be set.
+     * Any attributes except the username and the email can be set.
      *
      * @param string $name
      * @param mixed $value
      * @return void
      */
     function setAttribute($name, $value) {
-        if (!in_array($name, array(self::ATTR_LOGIN, self::ATTR_EMAIL))) {
+        if (!in_array($name, array(IdentityAttributes::UserName, IdentityAttributes::Email))) {
             $this->attributes[$name] = $value;
         }
     }

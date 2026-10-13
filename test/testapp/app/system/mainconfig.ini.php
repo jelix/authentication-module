@@ -199,7 +199,7 @@ sessionHandler=php
 signInAlreadyAuthAction="adminui~default:index"
 notifyAuthMode=enabled
 
-accountWorkflowAdapter="\Jelix\Authentication\Account\AccountManagerForWorkflow"
+accountWorkflowAdapter="\Jelix\Authentication\Account\AccountWorkflowAdapterForWorkflow"
 
 [sessionauth]
 authRequired=off
@@ -236,3 +236,9 @@ featureCreateUser=on
 featureDeleteUser=on
 featureChangePassword=on
 aclAdapterClass="\Jelix\Authentication\LoginPass\LdapAcl2Adapter"
+
+[account:claim-mapping]
+username=jelix/identity/username
+firstname=jelix/identity/firstname
+lastname=jelix/identity/lastname
+email=jelix/identity/email

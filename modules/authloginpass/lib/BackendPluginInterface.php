@@ -123,7 +123,7 @@ interface BackendPluginInterface
      * Updates user informations
      * 
      * @param string $login The user's login
-     * @param array $attributes The attributes to modify
+     * @param array $attributes The attributes to modify. You can use IdentityAttributes constants for the keys.
      * 
      * @return void
      */

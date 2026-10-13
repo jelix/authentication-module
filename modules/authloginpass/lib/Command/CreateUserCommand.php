@@ -1,12 +1,12 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019 Laurent Jouanneau
+ * @copyright  2019-2026 Laurent Jouanneau
  * @license   MIT
  */
 namespace Jelix\Authentication\LoginPass\Command;
 
-use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\IdentityAttributes;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -79,8 +79,8 @@ class CreateUserCommand extends  AbstractCommand
         }
 
         if (!$manager->createUser($login, $password, array(
-            AuthUser::ATTR_NAME => $displayedName,
-            AuthUser::ATTR_EMAIL => $userEmail
+            IdentityAttributes::DisplayName => $displayedName,
+            IdentityAttributes::Email => $userEmail
             ), $backendName)
         ) {
             throw new \Exception('The user has not been created');

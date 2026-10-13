@@ -1,11 +1,12 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019-2024 Laurent Jouanneau
+ * @copyright  2019-2026 Laurent Jouanneau
  * @license   MIT
  */
 
 use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\IdentityAttributes;
 
 /**
  * authentication backend for the authloginpass module
@@ -31,6 +32,12 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
      * @var \jDaoRecordBase|null the user record retrieved during userExists
      */
     protected $latestExistingUser = null;
+
+    protected static $identityToDao = array(
+        IdentityAttributes::UserName => 'login',
+        IdentityAttributes::DisplayName => 'realname',
+        IdentityAttributes::Email => 'email',
+    );
 
     /**
      * @inheritdoc
@@ -142,17 +149,17 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
     protected function getAuthObject($userRec)
     {
         $attributes = array(
-            AuthUser::ATTR_LOGIN =>$userRec->login,
-            AuthUser::ATTR_NAME =>$userRec->realname,
-            AuthUser::ATTR_EMAIL =>$userRec->email,
+            IdentityAttributes::UserName => $userRec->login,
+            IdentityAttributes::DisplayName => $userRec->realname,
+            IdentityAttributes::Email => $userRec->email,
         );
 
         $sessionAttributes = $this->getConfigurationParameter('sessionAttributes');
         if ($sessionAttributes == 'ALL') {
             $userProperties = get_object_vars($userRec);
-            unset($userProperties[AuthUser::ATTR_NAME]);
-            unset($userProperties[AuthUser::ATTR_EMAIL]);
-            unset($userProperties[AuthUser::ATTR_LOGIN]);
+            unset($userProperties['login']);
+            unset($userProperties['realname']);
+            unset($userProperties['email']);
             unset($userProperties['password']);
             $attributes = array_merge($userProperties, $attributes);
         }
@@ -162,7 +169,7 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             $sessionAttributes[] = 'status';
             $sessionAttributes[] = 'user_id';
             foreach($sessionAttributes as $prop) {
-                if ($prop == AuthUser::ATTR_NAME || $prop == AuthUser::ATTR_EMAIL || $prop == AuthUser::ATTR_LOGIN) {
+                if ($prop == 'login' || $prop == 'realname' || $prop == 'email') {
                     continue;
                 }
                 if (property_exists($userRec, $prop)) {
@@ -239,8 +246,9 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
         }
 
         foreach($attributes as $key => $value) {
-            if (property_exists($userRec, $key)) {
-                $userRec->$key = $value;
+            $daoKey = self::$identityToDao[$key] ?? $key;
+            if (property_exists($userRec, $daoKey)) {
+                $userRec->$daoKey = $value;
             }
         }
         $this->daoFactory->update($userRec);

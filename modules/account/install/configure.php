@@ -23,7 +23,15 @@ class accountModuleConfigurator extends \Jelix\Installer\Module\Configurator
     {
         $ini = $helpers->getSingleConfigIni();
         if ($ini->getValue('accountWorkflowAdapter', 'authentication') === null) {
-            $ini->setValue('accountWorkflowAdapter', "\Jelix\Authentication\Account\AccountManagerForWorkflow", 'authentication');
+            $ini->setValue('accountWorkflowAdapter', "\Jelix\Authentication\Account\AccountWorkflowAdapterForWorkflow", 'authentication');
+        }
+
+        $section = 'account:claim-mapping';
+        if ($ini->getValue('username', $section) === null) {
+            $ini->setValue('username', 'jelix/identity/username', $section);
+            $ini->setValue('firstname', 'jelix/identity/givenname', $section);
+            $ini->setValue('lastname', 'jelix/identity/surname', $section);
+            $ini->setValue('email', 'jelix/identity/emailaddress', $section);
         }
     }
 

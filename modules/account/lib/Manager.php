@@ -18,14 +18,31 @@ class Manager
 
     protected $daoProfile;
 
+    /**
+     * @var ClaimMapping
+     */
+    protected $claimMapping;
+
     const STATUS_VALID = 1;
     const STATUS_INVALID = 0;
     const STATUS_DISABLED = -1;
     const STATUS_DELETED = -2;
 
-    public function __construct($daoProfile = 'account')
+    public function __construct($daoProfile = 'account', ClaimMapping $claimMapping = null)
     {
         $this->daoProfile = $daoProfile;
+
+        if ($claimMapping === null) {
+            $configSection = 'account:claim-mapping';
+            $configData = [];
+            if (property_exists(\jApp::config(), $configSection) &&
+                is_array(\jApp::config()->$configSection)
+            ) {
+                $configData = \jApp::config()->$configSection;
+            }
+            $claimMapping = new ClaimMapping($configData);
+        }
+        $this->claimMapping = $claimMapping;
     }
 
     /**
@@ -69,13 +86,18 @@ class Manager
     /**
      * Creates a new account from the authenticated user
      *
+     * Uses the claim-mapping configuration to map identity attributes
+     * to account fields.
+     *
      * @param AuthUser $user The user to create
      *
      * @return Account|null The new account or null if account already exists.
      */
     public function createAccountFromAuthUser($user, $status = null)
     {
-        $login = $user->getLogin();
+        $mappedFields = $this->claimMapping->mapAuthUserToAccountFields($user);
+
+        $login = $mappedFields['username'] ?? $user->getLogin();
         if ($this->accountExists($login)) {
             return null;
         }
@@ -84,17 +106,30 @@ class Manager
             $status = self::STATUS_VALID;
         }
 
-        $newAccount = $this->createAccountObject($login, $user->getEmail());
+        $email = $mappedFields['email'] ?? $user->getEmail();
+        $newAccount = $this->createAccountObject($login, $email);
 
-        $username  = $user->getName();
-        $names = explode(' ', $username, 2);
-        if (count($names) > 1) {
-            $newAccount->firstname = $names[0];
-            $newAccount->lastname = $names[1];
+        foreach ($mappedFields as $field => $value) {
+            if ($field === 'username' || $field === 'email') {
+                continue;
+            }
+            if (property_exists($newAccount, $field)) {
+                $newAccount->$field = $value;
+            }
         }
-        else {
-            $newAccount->firstname = '';
-            $newAccount->lastname = $username;
+
+        if (empty($newAccount->firstname) && empty($newAccount->lastname)) {
+            $displayName = $user->getName();
+            if ($displayName && $displayName !== $login) {
+                $names = explode(' ', $displayName, 2);
+                if (count($names) > 1) {
+                    $newAccount->firstname = $names[0];
+                    $newAccount->lastname = $names[1];
+                } else {
+                    $newAccount->firstname = '';
+                    $newAccount->lastname = $displayName;
+                }
+            }
         }
 
         $newAccount->status = $status;

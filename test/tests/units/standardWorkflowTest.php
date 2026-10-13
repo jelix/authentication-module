@@ -6,6 +6,7 @@ use Jelix\Authentication\Core\Workflow;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
 use Jelix\Authentication\Core\AuthSession\AuthSession;
 use Jelix\Authentication\Core\AuthenticatorManager;
+use Jelix\Authentication\Core\IdentityAttributes;
 
 
 require_once (__DIR__.'/../../../modules/authcore/plugins/authsession/var/var.authsession.php');
@@ -43,9 +44,9 @@ class standardWorkflowTest extends TestCase
         $session = new AuthSession($varSessionHandler, $this->evDispatcher);
         $this->standardWorkflow = new Workflow\StandardWorkflow($session, $this->evDispatcher, $this->accountManager);
         $user = new AuthUser('123', array(
-            AuthUser::ATTR_LOGIN => 'bob',
-            AuthUser::ATTR_NAME => 'Bob Morane',
-            AuthUser::ATTR_EMAIL => 'bob@example.com',
+            IdentityAttributes::UserName => 'bob',
+            IdentityAttributes::DisplayName => 'Bob Morane',
+            IdentityAttributes::Email => 'bob@example.com',
         ));
         $this->workflowState = new Workflow\WorkflowState($user, 'baridp');
     }

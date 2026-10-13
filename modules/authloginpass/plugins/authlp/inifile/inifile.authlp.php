@@ -1,11 +1,12 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2019-2024 Laurent Jouanneau
+ * @copyright  2019-2026 Laurent Jouanneau
  * @license   MIT
  */
 
 use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\IdentityAttributes;
 
 /**
  * authentication backend for the authloginpass module
@@ -27,6 +28,12 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
     protected $iniContent;
 
     protected $isWritable = true;
+
+    protected static $identityToIni = array(
+        IdentityAttributes::UserName => 'login',
+        IdentityAttributes::DisplayName => 'name',
+        IdentityAttributes::Email => 'email',
+    );
 
     public function __construct($params)
     {
@@ -162,15 +169,15 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
     protected function getAuthObject($login, $userProperties)
     {
         $attributes = array(
-            AuthUser::ATTR_NAME =>$userProperties['name'],
-            AuthUser::ATTR_EMAIL =>$userProperties['email'],
+            IdentityAttributes::DisplayName => $userProperties['name'],
+            IdentityAttributes::Email => $userProperties['email'],
         );
 
         $sessionAttributes = $this->getConfigurationParameter('sessionAttributes');
         if ($sessionAttributes == 'ALL') {
-            unset($userProperties[AuthUser::ATTR_NAME]);
-            unset($userProperties[AuthUser::ATTR_EMAIL]);
-            unset($userProperties[AuthUser::ATTR_LOGIN]);
+            unset($userProperties['name']);
+            unset($userProperties['email']);
+            unset($userProperties['login']);
             unset($userProperties['password']);
             $attributes = array_merge($userProperties, $attributes);
         }
@@ -179,7 +186,7 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             // always retrieve the status property, we may need it
             $sessionAttributes[] = 'status';
             foreach($sessionAttributes as $prop) {
-                if ($prop == AuthUser::ATTR_NAME || $prop == AuthUser::ATTR_EMAIL || $prop == AuthUser::ATTR_LOGIN) {
+                if ($prop == 'name' || $prop == 'email' || $prop == 'login') {
                     continue;
                 }
                 if (isset($userProperties[$prop])) {
@@ -238,8 +245,15 @@ class inifileBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             return ;
         }
         $section = 'login:'.$login;
+
+        $iniAttributes = array();
+        foreach ($attributes as $key => $value) {
+            $iniKey = self::$identityToIni[$key] ?? $key;
+            $iniAttributes[$iniKey] = $value;
+        }
+
         $ini = new \Jelix\IniFile\IniModifier($this->iniFile);
-        $ini->setValues($attributes, $section);
+        $ini->setValues($iniAttributes, $section);
         $ini->save();
     }
 

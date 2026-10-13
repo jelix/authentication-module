@@ -9,6 +9,23 @@ own account management, you need to "plug" this management to the authentication
 
 Here is how.
 
+Identity attributes
+-------------------
+
+Identity providers set user attributes on the `AuthUser` object using URI-style
+keys defined in the class `Jelix\Authentication\Core\IdentityAttributes`.
+For example:
+
+- `jelix/identity/username` — the login / username
+- `jelix/identity/emailaddress` — the email address
+- `jelix/identity/displayname` — the display name
+- `jelix/identity/givenname` — the first name
+- `jelix/identity/surname` — the last name
+
+You can retrieve these attributes from an `AuthUser` with
+`$authUser->getAttribute(IdentityAttributes::Email)` or use the convenience
+methods `$authUser->getLogin()`, `$authUser->getEmail()`, `$authUser->getName()`.
+
 The account object
 ------------------
 

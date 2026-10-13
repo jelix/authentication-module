@@ -28,7 +28,7 @@ searchUserFilter="(&(objectClass=posixAccount)(uid=%%LOGIN%%))"
 bindUserDN="uid=%?%,ou=users,dc=XY,dc=fr"
 newUserDN="uid=%%LOGIN%%,ou=people,dc=tests,dc=jelix"
 newUserLdapAttributes="objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%REALNAME%%,sn:%%REALNAME%%"
-searchAttributes="uid:login,givenName:firstname,sn:lastname,mail:email"
+searchAttributes="uid:jelix/identity/username,givenName:jelix/identity/givenname,sn:jelix/identity/surname,mail:jelix/identity/emailaddress"
 searchGroupFilter="(&(objectClass=posixGroup)(cn=XYZ*)(memberUid=%%LOGIN%%))"
 searchGroupProperty="cn"
 searchGroupBaseDN=""
@@ -75,23 +75,24 @@ To verify password, or to register the user into the Jelix application the
 first time he authenticate himself, the plugin needs some data about the user.
 
 You should indicate to it which ldap attributes it can retrieve, and which
-database fields that will receive the ldap attributes values.
+identity attribute keys will receive the ldap attributes values.
 
 You indicate such informations into the `searchAttributes` property. It is a 
-pair of names, `<ldap attribute>:<table field>`, separated by a comma.
+pair of names, `<ldap attribute>:<identity attribute key>`, separated by a comma.
+The identity attribute keys are URI-style keys defined by the class
+`Jelix\Authentication\Core\IdentityAttributes` (e.g. `jelix/identity/username`,
+`jelix/identity/emailaddress`, `jelix/identity/displayname`, `jelix/identity/givenname`,
+`jelix/identity/surname`...).
 
-In this example, `searchAttributes="uid:login,givenName,sn:lastname,mail:email,dn:"`:
+In this example, `searchAttributes="uid:jelix/identity/username,givenName,sn:jelix/identity/surname,mail:jelix/identity/emailaddress,dn:"`:
 
-- the value of the `uid` ldap attribute will be stored into the `login` field 
-- the value of the `sn` ldap attribute will be stored into the `lastname` field
-- the value of the `givenName` ldap attribute will be stored into a field that
-  have the same name, as there is no field name nor `:`.
-- there will not be mapping for the `dn` property. There is a `:` without field name.
-  It will be readed from ldap, and can be used into the `bindUserDN` DN template.
+- the value of the `uid` ldap attribute will be stored into the `jelix/identity/username` identity attribute
+- the value of the `sn` ldap attribute will be stored into the `jelix/identity/surname` identity attribute
+- the value of the `givenName` ldap attribute will be stored into an identity attribute that
+  have the same name, as there is no identity attribute key nor `:`.
+- there will not be mapping for the `dn` property. There is a `:` without identity attribute key.
+  It will be read from ldap, and can be used into the `bindUserDN` DN template.
   (see below).
-
-The possible list of possible fields is indicated into the dao file, whose name
-is indicated into the `dao` configuration property.
 
 
 Configuration properties for authentication

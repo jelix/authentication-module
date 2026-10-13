@@ -1,7 +1,7 @@
 <?php
 /**
  * @author      laurent Jouanneau
- * @copyright   2019-2024 laurent Jouanneau
+ * @copyright   2019-2026 laurent Jouanneau
  * @link        https://www.jelix.org
  * @licence     MIT
  */
@@ -33,7 +33,7 @@ class authlp_ldap_auth_Test extends \Jelix\UnitTests\UnitTestCase {
         'bindUserDN' => "uid=%?%,ou=people,dc=tests,dc=jelix",
         'newUserDN' => "uid=%%LOGIN%%,ou=people,dc=tests,dc=jelix",
         'newUserLdapAttributes' => "objectClass:inetOrgPerson,userPassword:%%PASSWORD%%,cn:%%REALNAME%%,sn:%%REALNAME%%",
-        'searchAttributes' => "uid:login,displayName:realname,mail:email",
+        'searchAttributes' => "uid:jelix/identity/username,displayName:jelix/identity/displayname,mail:jelix/identity/emailaddress",
     );
 
     function testUserExists() {
