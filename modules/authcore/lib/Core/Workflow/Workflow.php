@@ -2,7 +2,7 @@
 
 /**
  * @author   Laurent Jouanneau
- * @copyright 2022-2023 Laurent Jouanneau
+ * @copyright 2022-2026 Laurent Jouanneau
  * @link     https://jelix.org
  * @license  MIT
  */
@@ -10,6 +10,7 @@
 namespace Jelix\Authentication\Core\Workflow;
 
 use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\AuthSession\UserAccountInterface;
 use Jelix\Authentication\Core\Workflow\Step\StepException;
 
 /**
@@ -144,6 +145,17 @@ class Workflow
     public function getIdpId()
     {
         return $this->state->getIdpId();
+    }
+
+    /**
+     * An account manager should call this method when it wants to assign a new account to the temporary user.
+     *
+     * @param UserAccountInterface $account
+     */
+    public function setNewAccountToUser(UserAccountInterface $account)
+    {
+        $this->state->getTemporaryUser()->setAccount($account);
+        $this->state->newAccountCreated();
     }
 
     /**

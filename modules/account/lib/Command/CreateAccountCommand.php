@@ -55,15 +55,16 @@ class CreateAccountCommand extends \Jelix\Scripts\ModuleCommandAbstract
         $lastName = $input->getArgument('lastname');
         $userEmail = $input->getArgument('email');
 
-        $existingAccount = Manager::getAccount($accountName);
+        $manager = new Manager();
+        $existingAccount = $manager->getAccount($accountName);
         if ($existingAccount) {
             throw new \Exception('The account '.$accountName.' already exists');
         }
 
-        $newAccount = Manager::createAccountObject($accountName, $userEmail);
+        $newAccount = $manager->createAccountObject($accountName, $userEmail);
         $newAccount->firstname = $firstName;
         $newAccount->lastname = $lastName;
-        Manager::saveNewAccount($newAccount);
+        $manager->saveNewAccount($newAccount);
 
         return 0;
     }

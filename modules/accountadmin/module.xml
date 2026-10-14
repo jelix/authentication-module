@@ -11,7 +11,7 @@
         <homepageURL></homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.8.8-pre" maxversion="1.8.*"/>
+        <jelix minversion="1.8.8-pre" maxversion="1.9.0-beta.1"/>
         <module name="account" />
     </dependencies>
     <autoload>

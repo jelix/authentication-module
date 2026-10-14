@@ -1,10 +1,10 @@
 ;<?php die(''); ?>
 ;for security reasons , don't remove or modify the first line
 
-locale=fr_FR
+locale=en_US
 charset=UTF-8
 
-availableLocales=fr_FR
+availableLocales=en_US
 
 ; see http://www.php.net/manual/en/timezones.php for supported values
 timeZone="Europe/Paris"
@@ -199,6 +199,9 @@ sessionHandler=php
 signInAlreadyAuthAction="adminui~default:index"
 notifyAuthMode=enabled
 
+accountWorkflowAdapter="\Jelix\Authentication\Account\AccountWorkflowAdapterForWorkflow"
+accountAdapter="\Jelix\Authentication\Account\AccountAdapter"
+
 [sessionauth]
 authRequired=off
 missingAuthAction="authcore~sign:in"
@@ -235,5 +238,8 @@ featureDeleteUser=on
 featureChangePassword=on
 aclAdapterClass="\Jelix\Authentication\LoginPass\LdapAcl2Adapter"
 
-
-
+[account:claim-mapping]
+username=jelix/identity/username
+firstname=jelix/identity/givenname
+lastname=jelix/identity/surname
+email=jelix/identity/email

@@ -7,6 +7,7 @@
 
 use \Jelix\Authentication\LoginPass\BackendAbstract;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\IdentityAttributes;
 
 /**
  * authentication provider for the authloginpass module
@@ -23,8 +24,8 @@ class ldapBackend extends BackendAbstract
      * @var array
      */
     protected $_default_attributes = array(
-        "cn"=>"lastname",
-        "name"=>"firstname"
+        "cn" => 'jelix/identity/surname',
+        "name" => 'jelix/identity/givenname',
     );
 
     protected $_defaultNewUserAttributes = array(
@@ -282,7 +283,8 @@ class ldapBackend extends BackendAbstract
             }
         }
 
-        ldap_mod_replace($connectAdmin, $ldapAttributes->dn, $attributes);
+        $ldapAttrs = $this->createLdapAttributes($attributes);
+        ldap_mod_replace($connectAdmin, $ldapAttributes->dn, $ldapAttrs);
         ldap_close($connectAdmin);
     }
 
@@ -303,8 +305,8 @@ class ldapBackend extends BackendAbstract
         }
 
         $ldapAttributes = $this->createLdapAttributes(array(
-            'email' => $email,
-            'realname' => $name ?: $login
+            IdentityAttributes::Email => $email,
+            IdentityAttributes::DisplayName => $name ?: $login
         ));
 
         foreach($this->_params['newUserLdapAttributes'] as $attr=>$val) {
@@ -633,8 +635,8 @@ class ldapBackend extends BackendAbstract
      *
      * It uses the searchAttributes configuration parameter.
      *
-     * @param array $values list of object attributes
-     * @return array list of ldap attributes
+     * @param array $values list of object attributes. Keys should be IdentityAttributes constants.
+     * @return array list of ldap attributes.
      */
     protected function createLdapAttributes($values)
     {
@@ -817,16 +819,16 @@ class ldapBackendUserLdapAttributes {
 
     public function getLogin()
     {
-        if (isset($this->userAttributes[AuthUser::ATTR_LOGIN])) {
-            return $this->userAttributes[AuthUser::ATTR_LOGIN];
+        if (isset($this->userAttributes[IdentityAttributes::UserName])) {
+            return $this->userAttributes[IdentityAttributes::UserName];
         }
         return null;
     }
 
     public function getEmail()
     {
-        if (isset($this->userAttributes[AuthUser::ATTR_EMAIL])) {
-            return $this->userAttributes[AuthUser::ATTR_EMAIL];
+        if (isset($this->userAttributes[IdentityAttributes::Email])) {
+            return $this->userAttributes[IdentityAttributes::Email];
         }
         return null;
     }

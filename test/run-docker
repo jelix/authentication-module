@@ -35,6 +35,7 @@ fi
 if [ "$CMD" == "reset" ]; then
     # Stop/Remove containers
     docker compose -p jelix-auth-tests rm -sf || true
+    docker volume rm "jelix_auth_pg_data" || true
     exit 0
 elif [ -z "$CMD" ]; then
     CMD="up"

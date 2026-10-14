@@ -1,13 +1,30 @@
 How to manage an account
 ========================
 
-The account module provide a workflow step to load account information about the user
-which is authenticated. You don't have to do anything.
+The account module provides a component to load account information about the user
+which is authenticated, during the get_account step of the workflow. You don't have to do something.
 
 However, if you don't want to use the account module, and if you want to provide your 
 own account management, you need to "plug" this management to the authentication system.
 
 Here is how.
+
+Identity attributes
+-------------------
+
+Identity providers set user attributes on the `AuthUser` object using URI-style
+keys defined in the class `Jelix\Authentication\Core\IdentityAttributes`.
+For example:
+
+- `jelix/identity/username` — the login / username
+- `jelix/identity/emailaddress` — the email address
+- `jelix/identity/displayname` — the display name
+- `jelix/identity/givenname` — the first name
+- `jelix/identity/surname` — the last name
+
+You can retrieve these attributes from an `AuthUser` with
+`$authUser->getAttribute(IdentityAttributes::Email)` or use the convenience
+methods `$authUser->getLogin()`, `$authUser->getEmail()`, `$authUser->getName()`.
 
 The account object
 ------------------
@@ -62,157 +79,175 @@ class MyAccountImplementation implements \Jelix\Authentication\Core\AuthSession\
 This object could also implement other methods you may need into your
 application.
 
-A listener to set the account into the session
+The adapter to set the account into the session
 ------------------------------------------------
 
 To give this object to the authentication system during the authentication
-process, you must create an event listener, that will listen after the
-event named `AuthWorkflowStep`. The object representing this event
-has the class `Jelix\Authentication\Core\Workflow\Event\GetAccountEvent`
-(inheriting from the class `WorkflowStepEvent`). You can test also 
-its `stepName` parameter to check that the step is `get_account`.
+process, you must create an object implementing the  `Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface` interface.
 
+Its class should be indicated into the `accountWorkflowAdapter` configuration parameter of 
+the `authentication` section.
 
-An example of listener, to store into `classe/myGetAccountListener.listener.php`
-of your module.
+The object is called during the `get_account` step of the authentication workflow.
+
+An example of such object:
 
 ```php
-use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;
+use Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface;
 
-class myGetAccountListener extends jEventListener
+class myGetAccountObject implements AccountWorkflowAdapterInterface
 {
 
-    function onAuthWorkflowStep($event)
+    public function searchAccount(WorkflowState $workflowState) : int
     {
-        if ($event instanceof GetAccountEvent) {
+        $idpId = $workflowState->getIdpId();
+        $authUser = $workflowState->getTemporaryUser();
         
+        // your object allowing to search in accounts
+        $loader = new MyAccountLoader();
+        // search 
+        $account = $loader->searchAccount($authUser->getUserId(), $idpId);
+        if ($account) {
+            // an account is found, set it to the authenticated user stored into the session
+            $authUser->setAccount($account);
+            return AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_FOUND;
         }
+        // the account is not found, we should indicate it. 
+        return AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_NOT_FOUND;
+    }
+
+    public function getActionToCreateAccount() : ?WorkflowAction
+    {
+        return null;
     }
 }
 
 ```
 
-On the event, you have a method to retrieve the user being authenticated,
-`getUserBeingAuthenticated()`. It gives a `Jelix\Authentication\Core\AuthSession\AuthUser`
-object. It allows you to search the corresponding account.
+If there is an account, call the method `setAccount($account)` on the `AuthUser` object.
 
-If there is an account (or you have juste created one on the fly), call
-the method `setAccount($account)` on the event.
+If there is no account, you have three choices, depending on the behavior you want to have:
 
-Else call `setUnknownAccount()` if an account can be automatically created.
-Else throw an exception with `StepException`, and the user will return to the authentication form.
-The error message indicated to `StepException` may be displayed (this is the case
-with the authentication form of the authloginpass module). 
+- The authentication must fail, so you have to return `AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_NOT_FOUND` or throw a `StepException` exception. The user will return to the authentication form.
+  The error message indicated to `StepException` may be displayed (this is the case
+  with the authentication form of the authloginpass module).
+- Or you create the account with minimal information, and the user can continue the authentication. See below.
+- Or you want the user to fill a form to create the account, so
+  - you return `AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_TO_CREATE`
+  - you must implement the controller allowing to display and save the form
+  - you must implement the `getActionToCreateAccount()` method on your `myGetAccountObject()`.
+    See below.
+
+After the account is found or created, the user will be redirected to the next authentication step like 2FA or access validation.
+
+Setup the workflow to create an account automatically
+----------------------------------------------------
+
+Your account workflow adapter has to be changed a bit.
+In the `searchAccount` method, create account data, then set the account object with `setAccount($account)` on the `AuthUser` object. Then return `AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_CREATED`
 
 ```php
-use Jelix\Authentication\Core\Workflow\Event\GetAccountEvent;
-use Jelix\Authentication\Core\Workflow\Step\StepException;
+use Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface;
 
-class myGetAccountListener extends jEventListener
+class myGetAccountObject implements AccountWorkflowAdapterInterface
 {
 
-    function onAuthWorkflowStep($event)
+    public function searchAccount(WorkflowState $workflowState) : int
     {
-        if ($event instanceof GetAccountEvent) {
-            $user = $event->getUserBeingAuthenticated();
-    
-            $account = $this->searchAccountFromUserId($user->getUserId());
-            if ($account) {
-                $event->setAccount($account);
-            }
-            else {
-                $isAccountCreationAllowed = ...;
-                if ($isAccountCreationAllowed) {
-                    // it will go to the account creation step
-                    $event->setUnknownAccount();
-                }
-                else {
-                    throw new StepException('No account found');
-                }
-            }
+        $idpId = $workflowState->getIdpId();
+        $authUser = $workflowState->getTemporaryUser();
+        
+        // your object allowing to search in accounts
+        $loader = new MyAccountLoader();
+        // search 
+        $account = $loader->searchAccount($authUser->getUserId(), $idpId);
+        if ($account) {
+            // an account is found, set it to the authenticated user stored into the session
+            $authUser->setAccount($account);
+            return AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_FOUND;
         }
+        
+        // let's create an account with an object you have to create, for example MyAccountCreator
+        $creator = new MyAccountCreator();
+        $account = $creator->createAccountFromUser($authUser);
+        $authUser->setAccount($account);
+
+        // the account is created, we should indicate it. 
+        return AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_CREATED;
     }
-    
-    /**
-    * @param $userId
-    * @return \Jelix\Authentication\Core\AuthSession\UserAccountInterface|null
-    */
-    protected function searchAccountFromUserId($userId)
+
+    public function getActionToCreateAccount() : ?WorkflowAction
     {
-        // here the search of the account
-        // ...
-        // return $account;
+        return null;
     }
 }
+
 ```
 
-If you call `setAccount()`, or if you don't call `setUnknownAccount()`, the user 
-will be redirected to the next authentication step like 2FA or access validation.
 
-If you call `setUnknownAccount()` the user will be redirected to the
-account creation step, and if some module respond to this step, the user will
-have probably a form to fill etc. And then the workflow continue with other
-steps.
+Setup the workflow to create an account with a form
+----------------------------------------------------
 
+You want the user to create an account with a form. It could be a form to fill with personal data.
+For example: name, preferences, and all information not provided by the AuthUser object.
 
-A listener to create an account
--------------------------------
+Your account workflow adapter should be changed:
 
-In the case where there is no account linked to the authenticated
-user (the listener of `GetAccountEvent` called `$event->setUnknownAccount()`),
-a `AuthWorkflowStep` event is emitted, with a `stepName` parameter
-having the value `create_account`. The event object is implemented with the class
-`Jelix\Authentication\Core\Workflow\Event\WorkflowStepEvent`.
+- `searchAccount` must return `AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_TO_CREATE`
+- the `getActionToCreateAccount()` method must return the action to redirect to, that will display
+  and save the form to create the account 
+- you must implement the controller for this action
 
-A listener for this event should then add actions with the `WorkflowStepEvent` object,
-to where the user will be redirected in order to create the account. 
-It could be a form to fill with personal data for example (name, preferences etc).
-
-Here is an example of a listener:
 
 ```php
-use Jelix\Authentication\Core\Workflow\Event\WorkflowStepEvent;
-use Jelix\Authentication\Core\Workflow\WorkflowAction;
+use Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface;
 
-class myAuthAccountListener extends jEventListener
+class myGetAccountObject implements AccountWorkflowAdapterInterface
 {
 
-    function onAuthWorkflowStep(WorkflowStepEvent $event)
+    public function searchAccount(WorkflowState $workflowState) : int
     {
-        if ($event->getStepName() == 'create_account') {
-            $user = $event->getUserBeingAuthenticated();
-            
-            // the url to redirect immediately, to fill a form for example  
-            $formUrl = jUrl::get('mymodule~createaccount:form', 
-                array('uid'=>$user->getUserId()));
-          
-            // add this workflow action, by indicating the possible other action
-            // after filling the form
-            $wrkAction = new WorkflowAction($formUrl, [
-               new jSelectorActFast('classic', 'mymodule', 'createaccount:save'),
-            ]);
-            $event->addAction($wrkAction);  
+        $idpId = $workflowState->getIdpId();
+        $authUser = $workflowState->getTemporaryUser();
+        
+        // your object allowing to search in accounts
+        $loader = new MyAccountLoader();
+        // search 
+        $account = $loader->searchAccount($authUser->getUserId(), $idpId);
+        if ($account) {
+            // an account is found, set it to the authenticated user stored into the session
+            $authUser->setAccount($account);
+            return AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_FOUND;
         }
+        // the account is not found, we should create it. 
+        return AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_TO_CREATE;
+    }
+
+    public function getActionToCreateAccount() : ?WorkflowAction
+    {
+        // the url to redirect immediately, to fill the account form
+        $formUrl = jUrl::get('myaccountmodule~createaccount:form');
+
+        // add this workflow action, by indicating the possible other actions
+        // after filling the form
+        return new WorkflowAction($formUrl, [
+            new \jSelectorActFast('classic', 'myaccountmodule', 'createaccount:save'),
+        ]);
     }
 }
 ```
 
-In the case where the account cannot be created
+Now you create the controller.
 
-
-
-Implementing a controller to create an account
------------------------------------------------
-
-In each actions of the account creation process, you should check that the
+In each action of the account creation process, you should check that the
 authentication workflow is alive, and you could then retrieve user data
 to do the process.
 
 At the end of the account creation process, you should give your account
-object to the authentication system with `$workflow->getTemporaryUser()->setAccount($account);`.
+object to the authentication system with `$workflow->setNewAccountToUser($account);`.
 
 
-Here is an example of controller:
+Here is an example of the controller:
 
 ```php
 
@@ -239,11 +274,12 @@ class createaccountCtrl extends \jController
         // we display the form
         // ..
         
-        return $resp;   
+        return $resp;
     }
 
     function save()
     {
+        // verify we are in the authentication workflow
         $workflow = jAuthentication::getAuthenticationWorkflow();
         if (!$workflow ) {
             return ...;
@@ -265,7 +301,7 @@ class createaccountCtrl extends \jController
             // ...
             
             // now we can indicate the account to the authenticated user
-            $workflow->getTemporaryUser()->setAccount($account);
+            $workflow->setNewAccountToUser($account);
 
             // we can now redirect the user to the next step of the authentication
             return $this->redirectToUrl($workflow->getNextAuthenticationUrl());
@@ -278,51 +314,9 @@ class createaccountCtrl extends \jController
 }
 ```
 
+Adapter to provides features to other components
+------------------------------------------------
 
-A listener to check an account
--------------------------------
+Some components like IDP may need to access to account information or to manage account information. This adapter must implement `\Jelix\Authentication\Core\AccountAdapterInterface`.
 
-After an account is found and loaded, or is created, the next step
-is to check the account. An application may want to do additionnal check,
-relative to its context, model rules etc.
-
-An event `AuthWorkflowStep` event is emitted, with a `stepName` parameter
-having the value `check_account`. The event object is implemented with the class
-`Jelix\Authentication\Core\Workflow\Event\CheckAccountEvent`.
-
-A listener for this event can then check the account (it will found the account
-on the `getAccount()` method of the event object). It can add some actions if needed,
-with the `WorkflowStepEvent` object, to where the user will be redirected in 
-order to do more check.
-
-Here is an example of a listener:
-
-```php
-use Jelix\Authentication\Core\Workflow\Event\WorkflowStepEvent;
-use Jelix\Authentication\Core\Workflow\WorkflowAction;
-
-class myAuthAccountListener extends jEventListener
-{
-
-    function onAuthWorkflowStep(WorkflowStepEvent $event)
-    {
-        if ($event->getStepName() == 'check_account') {
-            $user = $event->getUserBeingAuthenticated();
-            $account = $event->getAccount();
-            
-            // here do some checks, load more data etc.
-            // ...
-            // if the authentication process should be stopped, because
-            // an error during the check:
-            
-            if ($error) {
-                throw new \Jelix\Authentication\Core\Workflow\Step\StepException("You cannot login because....")
-            }              
-        }
-    }
-}
-```
-
-
-
-
+The class name must be indicated in the configuration file, in the `accountAdapter` configuration key of the `[authentication]` section.

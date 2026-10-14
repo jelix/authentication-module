@@ -8,6 +8,7 @@
  */
 
 use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\IdentityAttributes;
 
 class alwaysyesCtrl extends jController
 {
@@ -19,7 +20,7 @@ class alwaysyesCtrl extends jController
         $user = new AuthUser(
             'testuser',
             array(
-                AuthUser::ATTR_NAME => 'User Test'
+                IdentityAttributes::DisplayName => 'User Test'
             )
         );
         $idp = jAuthentication::manager()->getIdpById('alwaysyes');

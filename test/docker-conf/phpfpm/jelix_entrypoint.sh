@@ -20,4 +20,8 @@ if [ -n "$LDAP_TLS_CRT_FILENAME" ]; then
     chmod 0440 /etc/ssl/ldap/ldap.key
 fi
 
+touch /tmp/xdebug_cli.log
+chown userphp:groupphp /tmp/xdebug_cli.log
+chmod 664 /tmp/xdebug_cli.log
+
 /bin/appctl.sh launch

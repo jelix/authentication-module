@@ -7,6 +7,8 @@
  * @licence MIT
  */
 
+use Jelix\Authentication\Core\AccountAdapterInterface;
+use Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface;
 use Jelix\Authentication\Core\AuthenticatorManager;
 use Jelix\Authentication\Core\AuthSession\AuthSession;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
@@ -25,6 +27,16 @@ class jAuthentication
      * @var AuthenticatorManager
      */
     protected static $manager = null;
+
+    /**
+     * @var AccountWorkflowAdapterInterface
+     */
+    protected static $accountWorkflowAdapter = null;
+
+    /**
+     * @var AccountAdapterInterface
+     */
+    protected static $accountAdapter = null;
 
     /**
      * @var AuthSession
@@ -62,6 +74,38 @@ class jAuthentication
         return self::$manager;
     }
 
+    protected static function accountWorkflowAdapter()
+    {
+        if (self::$accountWorkflowAdapter === null) {
+            $authConfig = \jApp::config()->authentication;
+            $amClass = $authConfig['accountWorkflowAdapter'] ?? '';
+            if ($amClass) {
+                /**
+                 * @var \Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface $accountWorkflowAdapter
+                 */
+                self::$accountWorkflowAdapter = new $amClass();
+            }
+        }
+
+        return self::$accountWorkflowAdapter;
+    }
+
+    static function accountAdapter(): AccountAdapterInterface
+    {
+        if (self::$accountAdapter === null) {
+            $authConfig = \jApp::config()->authentication;
+            $amClass = $authConfig['accountAdapter'] ?? '';
+            if ($amClass) {
+                /**
+                 * @var \Jelix\Authentication\Core\AccountAdapterInterface $accountAdapter
+                 */
+                self::$accountAdapter = new $amClass();
+            }
+        }
+
+        return self::$accountAdapter;
+    }
+
     /**
      * @return AuthSession
      */
@@ -97,7 +141,8 @@ class jAuthentication
         if (!self::$workflow) {
             self::$workflow = new Workflow\StandardWorkflow(
                 self::session(),
-                \jApp::services()->eventDispatcher()
+                \jApp::services()->eventDispatcher(),
+                self::accountWorkflowAdapter()
             );
         }
         return self::$workflow;
@@ -106,7 +151,7 @@ class jAuthentication
 
     public static function startAuthenticationWorkflow(AuthUser $user, IdentityProviderInterface $idp)
     {
-        $workflowState = new Workflow\WorkflowState($user, $idp->getId());
+        $workflowState = new Workflow\WorkflowState($user, $idp->getId(), $idp->getWorkflowFeatures());
 
         return self::standardWorkflow()->start($workflowState);
     }

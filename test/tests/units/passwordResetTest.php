@@ -4,6 +4,7 @@ use Jelix\Authentication\LoginPass\PasswordResetException;
 use PHPUnit\Framework\TestCase;
 use Jelix\Authentication\LoginPass\PasswordReset;
 use Jelix\Authentication\Core\AuthSession\AuthUser;
+use Jelix\Authentication\Core\IdentityAttributes;
 use Jelix\JelixModule\Command\MailerTest;
 
 class PasswordResetTest extends TestCase
@@ -40,7 +41,7 @@ class PasswordResetTest extends TestCase
         $this->expectException(PasswordResetException::class);
         $this->expectExceptionCode(PasswordResetException::CODE_BAD_STATUS);
 
-        $manager->user = new AuthUser('test', array('email' => 'nottest.test@test.com'));
+        $manager->user = new AuthUser('test', array(IdentityAttributes::Email => 'nottest.test@test.com'));
         $passReset->sendEmail($manager->user);
     }
 
@@ -52,7 +53,7 @@ class PasswordResetTest extends TestCase
         $this->expectException(PasswordResetException::class);
         $this->expectExceptionCode(PasswordResetException::CODE_BAD_STATUS);
 
-        $manager->user = new AuthUser('test', array('email' => 'test.test@test.com'));
+        $manager->user = new AuthUser('test', array(IdentityAttributes::Email => 'test.test@test.com'));
         $manager->canChangePassword = false;
         $passReset->sendEmail($manager->user);
 
@@ -66,7 +67,7 @@ class PasswordResetTest extends TestCase
         $this->expectException(PasswordResetException::class);
         $this->expectExceptionCode(PasswordResetException::CODE_BAD_STATUS);
 
-        $manager->user = new AuthUser('test', array('email' => 'test.test@test.com', 'status' => AuthUser::STATUS_DEACTIVATED));
+        $manager->user = new AuthUser('test', array(IdentityAttributes::Email => 'test.test@test.com', 'status' => AuthUser::STATUS_DEACTIVATED));
         $manager->canChangePassword = true;
         $passReset->sendEmail($manager->user);
     }
@@ -133,7 +134,7 @@ class PasswordResetTest extends TestCase
         }
 
         try { // email is missing
-            $manager->user = new AuthUser('test', array('login' => 'test'));
+            $manager->user = new AuthUser('test', array(IdentityAttributes::UserName => 'test'));
             $passReset->sendEmail($manager->user);
             $this->fail('no fail on missing email');
         }
@@ -142,7 +143,7 @@ class PasswordResetTest extends TestCase
             $this->assertEquals(PasswordResetException::CODE_BAD_LOGIN_EMAIL, $e->getCode());
         }
 
-        $manager->user = new AuthUser('test', array('login' => 'test', 'email'=>'test@example.com'));
+        $manager->user = new AuthUser('test', array(IdentityAttributes::UserName => 'test', IdentityAttributes::Email => 'test@example.com'));
 
         try { // cannot change password
             $manager->_canChangePassword = false;

@@ -8,7 +8,7 @@
 
 namespace Jelix\Authentication\Core\Workflow\Step;
 
-use Jelix\Authentication\Core\Workflow\Event\CreateAccountEvent;
+use Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface;
 use Jelix\Authentication\Core\Workflow\WorkflowState;
 
 class CreateAccountStep extends AbstractStep
@@ -16,6 +16,14 @@ class CreateAccountStep extends AbstractStep
     protected $name = 'create_account';
 
     protected $transition = 'account_created';
+
+    protected ?AccountWorkflowAdapterInterface $accountManager;
+
+    public function __construct($eventDispatcher, WorkflowState $workflowState, ?AccountWorkflowAdapterInterface $accountManager = null)
+    {
+        $this->accountManager = $accountManager;
+        parent::__construct($eventDispatcher, $workflowState);
+    }
 
     /**
      * start the step.
@@ -25,9 +33,6 @@ class CreateAccountStep extends AbstractStep
      */
     public function startStep($transition, WorkflowState $workflowState)
     {
-        $event = new CreateAccountEvent($transition, $workflowState->getTemporaryUser(), $workflowState->getIdpId());
-        $this->eventDispatcher->dispatch($event);
-        $this->workflowState->setActions($event->getActions());
-        $this->workflowState->newAccountCreated();
+        $this->workflowState->setActions([$this->accountManager->getActionToCreateAccount()]);
     }
 }
