@@ -1,6 +1,6 @@
 <?php
 /**
-* @copyright 2019-2024 Laurent Jouanneau and other contributors
+* @copyright 2019-2026 Laurent Jouanneau and other contributors
 * @license    MIT
 */
 
@@ -111,7 +111,7 @@ class profileCtrl extends jController {
         }, ARRAY_FILTER_USE_KEY);
 
         // update account information into the session
-        $updatedAccount = $manager->modifyInfos($newInfos,$accountId);
+        $updatedAccount = $manager->modifyAccount($newInfos,$accountId);
 
         $user = jAuthentication::getCurrentUser();
         $user->setAccount($updatedAccount);
@@ -165,4 +165,3 @@ class profileCtrl extends jController {
         return $this->redirectToUrl($url);
     }
 }
-

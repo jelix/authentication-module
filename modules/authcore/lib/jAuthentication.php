@@ -129,7 +129,7 @@ class jAuthentication
 
     public static function startAuthenticationWorkflow(AuthUser $user, IdentityProviderInterface $idp)
     {
-        $workflowState = new Workflow\WorkflowState($user, $idp->getId());
+        $workflowState = new Workflow\WorkflowState($user, $idp->getId(), $idp->getWorkflowFeatures());
 
         return self::standardWorkflow()->start($workflowState);
     }

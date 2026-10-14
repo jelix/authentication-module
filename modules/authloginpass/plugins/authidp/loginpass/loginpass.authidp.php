@@ -1,7 +1,7 @@
 <?php
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2026 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
@@ -68,5 +68,10 @@ class loginpassIdentityProvider implements IdentityProviderInterface {
      */
     public function getManager() {
         return $this->manager;
+    }
+
+    public function getWorkflowFeatures(): array
+    {
+        return array();
     }
 }

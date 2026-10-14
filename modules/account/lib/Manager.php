@@ -93,7 +93,7 @@ class Manager
      *
      * @return Account|null The new account or null if account already exists.
      */
-    public function createAccountFromAuthUser($user, $status = null)
+    public function createAccountFromAuthUser(AuthUser $user, $status = null)
     {
         $mappedFields = $this->claimMapping->mapAuthUserToAccountFields($user);
 
@@ -137,6 +137,47 @@ class Manager
         return new Account($newAccount);
     }
 
+    public function updateAccountFromAuthUser(AuthUser $user)
+    {
+        $account = $user->getAccount();
+        if ($account === null) {
+            return null;
+        }
+
+        $dao = \jDao::get(self::$daoName, $this->daoProfile);
+        $accountRecord = $dao->get($account->getAccountId());
+        if (!$accountRecord) {
+            return null;
+        }
+
+        $mappedFields = $this->claimMapping->mapAuthUserToAccountFields($user);
+        foreach ($mappedFields as $field => $value) {
+            if (in_array($field, ['account_id', 'username', 'status', 'notify_auth_success', 'create_date', 'modify_date'])) {
+                continue;
+            }
+            if (property_exists($accountRecord, $field)) {
+                $accountRecord->$field = $value;
+            }
+        }
+
+        if (empty($newAccount->firstname) && empty($newAccount->lastname)) {
+            $displayName = $user->getName();
+            if ($displayName && $displayName !== $user->getLogin()) {
+                $names = explode(' ', $displayName, 2);
+                if (count($names) > 1) {
+                    $accountRecord->firstname = $names[0];
+                    $accountRecord->lastname = $names[1];
+                } else {
+                    $accountRecord->firstname = '';
+                    $accountRecord->lastname = $displayName;
+                }
+            }
+        }
+
+        $dao->update($accountRecord);
+        return new Account($accountRecord);
+    }
+
     /**
      * Checks whether an account exists for the given name
      *
@@ -171,7 +212,7 @@ class Manager
      *
      * @return Account|false False if an error occurred, else a new Account object with the updated information
      */
-    public function modifyInfos($newInfos, $accountId)
+    public function modifyAccount($newInfos, $accountId)
     {
         $dao = \jDao::get(self::$daoName, $this->daoProfile);
         $record = $dao->get($accountId);

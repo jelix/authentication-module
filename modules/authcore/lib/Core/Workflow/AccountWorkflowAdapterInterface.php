@@ -17,8 +17,12 @@ namespace Jelix\Authentication\Core\Workflow;
  */
 interface AccountWorkflowAdapterInterface
 {
-
-    //public function getAccountById(string $accountId): ?UserAccountInterface;
+    /**
+     * indicate to the authentication workflow that the account should be updated at each login, with data provided
+     * into the AuthUser object
+     * @see WorkflowState::getWorkflowFeature()
+     */
+    const WORKFLOW_FEATURE_UPDATE_ACCOUNT_AT_LOGIN = 'account.update';
 
     /**
      * result of searchAccount(): no account corresponding to the authenticated user

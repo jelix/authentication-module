@@ -1,7 +1,7 @@
 <?php
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2026 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
@@ -53,5 +53,10 @@ class AlwaysYesIdentityProvider implements IdentityProviderInterface {
             throw new \jHttp401UnauthorizedException();
         }
         return null;
+    }
+
+    public function getWorkflowFeatures(): array
+    {
+        return array();
     }
 }

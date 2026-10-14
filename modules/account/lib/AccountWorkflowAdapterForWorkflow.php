@@ -26,15 +26,14 @@ class AccountWorkflowAdapterForWorkflow implements AccountWorkflowAdapterInterfa
         $idpId = $workflowState->getIdpId();
         $authUser = $workflowState->getTemporaryUser();
 
+        $isNewAccount = false;
         $account = $this->accountManager->searchAccountByIdp($idpId, $authUser->getUserId(), true);
         if ($account) {
-            $this->accountManager->updateAccountIdpUsage(
-                $account->getAccountId(),
-                $idpId,
-                $authUser->getUserId(),
-                $authUser->getAttribute('idpdata')
-            );
+
+            $result = AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_FOUND;
+
         } else {
+
             $isAccountCreationAllowed = false;
             if (isset(\jApp::config()->accounts['autoCreateAccountOnLogin']) &&
                 \jApp::config()->accounts['autoCreateAccountOnLogin']) {
@@ -43,6 +42,7 @@ class AccountWorkflowAdapterForWorkflow implements AccountWorkflowAdapterInterfa
 
             if ($isAccountCreationAllowed) {
 
+                $isNewAccount = true;
                 $account = $this->accountManager->createAccountFromAuthUser($authUser);
 
                 $this->accountManager->attachAccountToIdp(
@@ -81,8 +81,20 @@ class AccountWorkflowAdapterForWorkflow implements AccountWorkflowAdapterInterfa
                         $authUser->getLogin())
                 );
             }
+
+            if (!$isNewAccount) {
+                if ($workflowState->getWorkflowFeature(AccountWorkflowAdapterInterface::WORKFLOW_FEATURE_UPDATE_ACCOUNT_AT_LOGIN)) {
+                    $this->accountManager->updateAccountFromAuthUser($authUser);
+                }
+                $this->accountManager->updateAccountIdpUsage(
+                    $account->getAccountId(),
+                    $idpId,
+                    $authUser->getUserId(),
+                    $authUser->getAttribute('idpdata')
+                );
+            }
+
             $authUser->setAccount($account);
-            $result = AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_FOUND;
             $notifier = new AuthenticationNotifier();
             $notifier->successAuth($account);
         }

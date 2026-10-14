@@ -1,7 +1,7 @@
 <?php
 /**
  * @author   Laurent Jouanneau
- * @copyright 2019 Laurent Jouanneau
+ * @copyright 2019-2026 Laurent Jouanneau
  * @link     http://jelix.org
  * @licence MIT
  */
@@ -67,4 +67,11 @@ interface IdentityProviderInterface {
      * @throws \jHttp401UnauthorizedException
      */
     public function checkSessionValidity ($request, $authUser, $authRequired);
+
+    /**
+     * list of features that may change the behavior of the authentication workflow and/or the account management.
+     *
+     * @return array
+     */
+    public function getWorkflowFeatures(): array;
 }

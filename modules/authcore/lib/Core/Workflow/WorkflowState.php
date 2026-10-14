@@ -67,10 +67,21 @@ class WorkflowState
 
     protected $newAccount = false;
 
-    public function __construct(AuthUser $temporaryUser, $idpId)
+    /**
+     * @var array list of features that may change the behavior of the authentication workflow and/or the account management
+     */
+    protected $workflowFeatures = array();
+
+    /**
+     * @param AuthUser $temporaryUser
+     * @param string $idpId
+     * @param array $workflowFeatures list of features that may change the behavior of the authentication workflow and/or the account management
+     */
+    public function __construct(AuthUser $temporaryUser, $idpId, array $workflowFeatures = array())
     {
         $this->user = $temporaryUser;
         $this->idpId = $idpId;
+        $this->workflowFeatures = $workflowFeatures;
     }
 
     /**
@@ -222,4 +233,16 @@ class WorkflowState
     {
         return $this->newAccount;
     }
+
+    /**
+     * return a workflow parameter that may change the behavior of the workflow or the account management.
+     *
+     * @param string $workflowFeature the name of the feature to retrieve
+     * @return mixed|null
+     */
+    public function getWorkflowFeature(string $workflowFeature)
+    {
+        return $this->workflowFeatures[$workflowFeature] ?? null;
+    }
+
 }

@@ -14,8 +14,8 @@ BEHAVIOR CHANGES:
 - The event `AuthWorkflowStep` for the step `check_account` is now dispatched after an account has been created. 
   The event object `CheckAccountEvent` has a new method `isAccountNewlyCreated()` to know if the account has been created just before the dispatch.
 
-
 API CHANGES:
+
 - New method `jAuthentication::authenticationFail()`
 - The `CheckAccountEvent` class has a new method `setAccount()` to change the account associated to the authenticated user.
 - New class `Jelix\Authentication\Core\IdentityAttributes` defining standardized URI-style keys for user identity
@@ -23,6 +23,7 @@ API CHANGES:
 - New class `Jelix\Authentication\Account\ClaimMapping` to map identity attributes to account storage fields.
 
 BREAKING CHANGES:
+
 - There is no more event `AuthWorkflowStep` for the steps `get_account` and `create_account`. These steps now call
   an account management adapter. A module implementing accounts management should have an object implementing
   `Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface` and register it in the configuration.
@@ -42,7 +43,8 @@ BREAKING CHANGES:
 - The account module now uses a configurable claim-mapping (`[account:claim-mapping]` INI section) to map
   identity attributes to account fields during account creation. Default mapping is provided for the
   standard fields (username, firstname, lastname, email). 
-
+- the interface `Jelix\Authentication\Core\IdentityProviderInterface` has a new method `getWorkflowFeatures()` 
+  to return the workflow features that may change the behavior of the authentication workflow.
 
 0.4.1
 -----

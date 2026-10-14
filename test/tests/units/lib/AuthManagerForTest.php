@@ -33,4 +33,9 @@ class AuthManagerForTest implements IdentityProviderInterface
     {
         return null;
     }
+
+    public function getWorkflowFeatures(): array
+    {
+        return array();
+    }
 }
