@@ -6,8 +6,8 @@ New features:
 - A user can be notified by email that someone (and himself) has been
   authenticated on the application.
 - new configuration parameter `notifyAuthMode` to enable/disable this feature.
-- new account admin page to manage users accounts.
-- new event `ProfileViewPageEvent` allowing to add more fields into the profile page.
+- new account admin page to manage users' accounts.
+- new event `ProfileViewPageEvent` allowing adding more fields into the profile page.
 
 BEHAVIOR CHANGES:
 
@@ -57,7 +57,8 @@ BREAKING CHANGES:
 0.4.0
 -----
 
-There is a new **account module** which adds features for user accounts into an application.
+There is a new **account module** that adds features for user accounts into an application.
+
 Its feature:
 - page for the user to show and modify its profile (name, email, and any other information
   if the application provides its own form and dao)
@@ -71,7 +72,7 @@ Its feature:
 This new version implements also a **workflow for the authentication process**. 
 The authentication process has several steps that modules can bring, allowing high customization.
 Major Steps are :
-- primary authentication by an authentication provider (with a login form, or remote authentication etc..)
+- primary authentication by an authentication provider (with a login form, or remote authentication etc)
 - retrieve of the application account corresponding to the authenticated user
 - or creation of the account, if the automatic account creation is enabled
 - second factor step, if a module provides a second factor for authentication
@@ -97,7 +98,7 @@ In several places, "username" has been renamed to "realname" to avoid confusion 
 - in dao `authloginpass~user`
 - in ldap attributes
 
-Changes into BackendPluginInterface:
+Changes into `BackendPluginInterface`:
 - new method `public function userWithEmailExists($email)`
 
 Changes into the dao for the dbdao backend of loginpass:
@@ -136,7 +137,7 @@ loginpass provider:
 
 **API BREAKAGE**
 
-- if you provides your own dao file for the dbdao backend, add a new method `getByLoginForAuthentication`
+- if you provide your own dao file for the dbdao backend, add a new method `getByLoginForAuthentication`
 
 
 0.2.2
@@ -149,13 +150,13 @@ loginpass provider:
 -----
 
 - fix typo in a method name into Manager
-- fix ldap: newUserDN should be optional if featureCreateUser is off
+- fix ldap: newUserDN should be optional if `featureCreateUser` is off
 
 0.2.0
 ------
 
 - support of several authentication providers. The user can choose his authentication provider on the login page.
-- implementation of a authentication provider 'loginpass' (module 'authloginpass'), allowing to the user to
+- implementation of an authentication provider 'loginpass' (module 'authloginpass'), allowing the user to
   authenticate with a login and a password. Several backends are provided: dbdao (SQL database), inifile, ldap
-- support of a session manager: you have the choice to store data about authenticated user during the session: into a PHP session, or only memory (for stateless authentication)
+- support of a session manager: you have the choice to store data about an authenticated user during the session: into a PHP session, or only memory (for stateless authentication)
 - a controller to sign in and sign out, displaying HTML content provided by implementation of all activated authentication providers. HTML content can be a form, a button, a link...
