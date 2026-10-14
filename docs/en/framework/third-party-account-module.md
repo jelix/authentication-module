@@ -314,3 +314,9 @@ class createaccountCtrl extends \jController
 }
 ```
 
+Adapter to provides features to other components
+------------------------------------------------
+
+Some components like IDP may need to access to account information or to manage account information. This adapter must implement `\Jelix\Authentication\Core\AccountAdapterInterface`.
+
+The class name must be indicated in the configuration file, in the `accountAdapter` configuration key of the `[authentication]` section.

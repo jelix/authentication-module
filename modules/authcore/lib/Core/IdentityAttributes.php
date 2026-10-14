@@ -42,4 +42,30 @@ class IdentityAttributes
             self::Webpage,
         ];
     }
+
+    /**
+     * Returns labels of given attributes.
+     *
+     * Attributes not known are returned as is.
+     *
+     * @param array $attributes list of attributes
+     * @return array keys are attributes, values are labels
+     * @throws \jExceptionSelector
+     */
+    static function getAttributeLabels(array $attributes)
+    {
+        $attr = self::getAttributes();
+        $labels = [];
+        foreach($attributes as $attribute)
+        {
+            if (in_array($attribute, $attr)) {
+                $labels[$attribute] = \jLocale::get('authcore~auth.identity.attributes.'.str_replace('jelix/identity/', '', $attribute));
+            }
+            else {
+                $labels[$attribute] = $attribute;
+            }
+        }
+        return $labels;
+    }
+
 }

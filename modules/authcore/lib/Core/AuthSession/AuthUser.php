@@ -168,4 +168,15 @@ class AuthUser
     {
         return $this->account;
     }
+
+    static function getDefaultSupportedAccountClaims()
+    {
+        return [
+            IdentityAttributes::UserName,
+            IdentityAttributes::DisplayName,
+            IdentityAttributes::FirstName,
+            IdentityAttributes::LastName,
+            IdentityAttributes::Email
+        ];
+    }
 }

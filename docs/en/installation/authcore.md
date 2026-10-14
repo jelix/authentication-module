@@ -30,7 +30,12 @@ signInAlreadyAuthAction=
 notifyAuthMode=
 
 ; the class name of the adapter to use to manage the workflow of account creation
+; It must implement \Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface
 accountWorkflowAdapter=
+
+; the class name of the adapter for account modules, to provide features to other components
+; It must implement \Jelix\Authentication\Core\AccountAdapterInterface
+accountAdapter=
 
 [sessionauth]
 ; action to redirect to when authentication is needed and the user is not authenticated
@@ -76,5 +81,3 @@ the session handler. Two session handlers are provided:
   in a script running in a shell.
 
 Session handlers are implemented as plugins of type `authsession`.
-
-

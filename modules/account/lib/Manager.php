@@ -33,14 +33,7 @@ class Manager
         $this->daoProfile = $daoProfile;
 
         if ($claimMapping === null) {
-            $configSection = 'account:claim-mapping';
-            $configData = [];
-            if (property_exists(\jApp::config(), $configSection) &&
-                is_array(\jApp::config()->$configSection)
-            ) {
-                $configData = \jApp::config()->$configSection;
-            }
-            $claimMapping = new ClaimMapping($configData);
+            $claimMapping = AccountServices::getClaimMapping();
         }
         $this->claimMapping = $claimMapping;
     }
