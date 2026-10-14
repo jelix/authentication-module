@@ -26,7 +26,7 @@ class AccountWorkflowAdapterForWorkflow implements AccountWorkflowAdapterInterfa
         $idpId = $workflowState->getIdpId();
         $authUser = $workflowState->getTemporaryUser();
 
-        $account = $this->accountManager->searchAccountByIdp($idpId, $authUser->getUserId());
+        $account = $this->accountManager->searchAccountByIdp($idpId, $authUser->getUserId(), true);
         if (!$account) {
             $isAccountCreationAllowed = false;
             if (isset(\jApp::config()->accounts['autoCreateAccountOnLogin']) &&
@@ -38,7 +38,13 @@ class AccountWorkflowAdapterForWorkflow implements AccountWorkflowAdapterInterfa
 
                 $account = $this->accountManager->createAccountFromAuthUser($authUser);
 
-                $this->accountManager->attachAccountToIdp($account->getAccountId(), $idpId, $authUser->getUserId(), $account->getEmail(), array(), true);
+                $this->accountManager->attachAccountToIdp(
+                    $account->getAccountId(),
+                    $idpId,
+                    $authUser->getUserId(),
+                    $account->getEmail(),
+                    $authUser->getAttribute('idpdata') ?? array(),
+                    true);
                 $result = AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_CREATED;
                 /*
                 $actions = [];
