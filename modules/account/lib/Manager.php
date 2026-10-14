@@ -197,7 +197,7 @@ class Manager
      * @param string $authUserId
      * @return null|Account
      */
-    public function searchAccountByIdp($idpId, $authUserId, $markUsage = false)
+    public function searchAccountByIdp($idpId, $authUserId)
     {
         $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
         $accIdp = $daoIdp->findByIdpAndUser($idpId, $authUserId);
@@ -206,17 +206,7 @@ class Manager
             return null;
         }
 
-        if ($markUsage) {
-            if ($accIdp->first_used == '') {
-                $accIdp->first_used = date('Y-m-d H:i:s');
-            }
-            $accIdp->last_used = date('Y-m-d H:i:s');
-            $accIdp->usage_count++;
-            $daoIdp->update($accIdp);
-        }
-
         $dao = \jDao::get(self::$daoName, $this->daoProfile);
-
         $record = $dao->get($accIdp->account_id);
         if (!$record) {
             \jLog::log('search account: no account for account '.$accIdp->username, 'auth');
@@ -274,6 +264,24 @@ class Manager
             $recordIdp->usage_count = 1;
         }
         $daoIdp->insert($recordIdp);
+    }
+
+    public function updateAccountIdpUsage($accountId, $idpId, $authUserId, $idpData=null)
+    {
+        $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
+        $recordIdp = $daoIdp->get([$idpId, $authUserId, $accountId]);
+        if (!$recordIdp) {
+            throw new \jException('account.manager.idp.not_found');
+        }
+        if ($recordIdp->first_used == '') {
+            $recordIdp->first_used = date('Y-m-d H:i:s');
+        }
+        $recordIdp->last_used = date('Y-m-d H:i:s');
+        $recordIdp->usage_count++;
+        if ($idpData !== null) {
+            $recordIdp->idp_data = json_encode($idpData);
+        }
+        $daoIdp->update($recordIdp);
     }
 
     /**

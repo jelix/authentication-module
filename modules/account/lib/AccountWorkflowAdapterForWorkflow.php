@@ -27,7 +27,14 @@ class AccountWorkflowAdapterForWorkflow implements AccountWorkflowAdapterInterfa
         $authUser = $workflowState->getTemporaryUser();
 
         $account = $this->accountManager->searchAccountByIdp($idpId, $authUser->getUserId(), true);
-        if (!$account) {
+        if ($account) {
+            $this->accountManager->updateAccountIdpUsage(
+                $account->getAccountId(),
+                $idpId,
+                $authUser->getUserId(),
+                $authUser->getAttribute('idpdata')
+            );
+        } else {
             $isAccountCreationAllowed = false;
             if (isset(\jApp::config()->accounts['autoCreateAccountOnLogin']) &&
                 \jApp::config()->accounts['autoCreateAccountOnLogin']) {
