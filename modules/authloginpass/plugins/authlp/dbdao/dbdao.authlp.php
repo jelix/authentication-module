@@ -154,8 +154,8 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             IdentityAttributes::Email => $userRec->email,
         );
 
-        $sessionAttributes = $this->getConfigurationParameter('sessionAttributes');
-        if ($sessionAttributes == 'ALL') {
+        $parsed = $this->parseSessionAttributes();
+        if ($parsed === 'ALL') {
             $userProperties = get_object_vars($userRec);
             unset($userProperties['login']);
             unset($userProperties['realname']);
@@ -163,17 +163,15 @@ class dbdaoBackend extends \Jelix\Authentication\LoginPass\BackendAbstract
             unset($userProperties['password']);
             $attributes = array_merge($userProperties, $attributes);
         }
-        else if ($sessionAttributes != '') {
-            $sessionAttributes = preg_split('/\s*,\s*/', $sessionAttributes);
-            // always retrieve the status property, we may need it
-            $sessionAttributes[] = 'status';
-            $sessionAttributes[] = 'user_id';
-            foreach($sessionAttributes as $prop) {
-                if ($prop == 'login' || $prop == 'realname' || $prop == 'email') {
+        else if (count($parsed)) {
+            $parsed[] = array('field' => 'status', 'key' => 'status');
+            $parsed[] = array('field' => 'user_id', 'key' => 'user_id');
+            foreach ($parsed as $item) {
+                if ($item['field'] == 'login' || $item['field'] == 'realname' || $item['field'] == 'email') {
                     continue;
                 }
-                if (property_exists($userRec, $prop)) {
-                    $attributes[$prop] = $userRec->$prop;
+                if (property_exists($userRec, $item['field'])) {
+                    $attributes[$item['key']] = $userRec->{$item['field']};
                 }
             }
         }

@@ -113,6 +113,20 @@ sessionAttributes=role,birthdayDate
 
 A special value, `ALL`, indicate to retrieve all attributes.
 
+You can also map a field to an identity attribute key (URI-style key defined by
+`Jelix\Authentication\Core\IdentityAttributes`), using the syntax `fieldname:identitykey`.
+The value of the field will then be stored under the identity attribute key in the
+`AuthUser` object, instead of the field name. Example:
+
+```ini
+[loginpass:<configuration name>]
+;...
+sessionAttributes=role,birthdayDate:jelix/identity/dateofbirth
+```
+
+In this example, `role` will be stored as `role` in the session, and
+`birthdayDate` will be stored under the key `jelix/identity/dateofbirth`.
+
 
 Options configuration of the `dbdao` backend
 ---------------------------------------------
@@ -135,12 +149,15 @@ You can use any dao, but it should have at least all fields you found into the
 
 With `sessionAttributes`, you can indicate the properties to load into the
 user object in session. It is a list of properties separated by a comma.
+You can also map a property to an identity attribute key using the
+`property:identitykey` syntax (see the inifile backend documentation above
+for details).
 
 
 ```ini
 [loginpass:<configuration name>]
 ;...
-sessionAttributes=role,birthdayDate
+sessionAttributes=role,birthdayDate:jelix/identity/dateofbirth
 ```
 
 A special value, `ALL`, indicate to retrieve all properties.

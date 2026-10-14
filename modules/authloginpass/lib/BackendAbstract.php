@@ -137,4 +137,27 @@ abstract class BackendAbstract implements BackendPluginInterface
     protected function hashPassword($password) {
         return password_hash($password, $this->passwordHashAlgo, $this->passwordHashOptions);
     }
+
+    /**
+     * @return array<array{field: string, key: string}>|string 'ALL' or parsed list
+     */
+    protected function parseSessionAttributes()
+    {
+        $sessionAttributes = $this->getConfigurationParameter('sessionAttributes');
+        if ($sessionAttributes === 'ALL') {
+            return 'ALL';
+        }
+        if ($sessionAttributes == '' || $sessionAttributes === null) {
+            return array();
+        }
+        $items = preg_split('/\s*,\s*/', $sessionAttributes);
+        $result = array();
+        foreach ($items as $item) {
+            $parts = explode(':', $item, 2);
+            $field = trim($parts[0]);
+            $key = isset($parts[1]) ? trim($parts[1]) : $field;
+            $result[] = array('field' => $field, 'key' => $key);
+        }
+        return $result;
+    }
 }
