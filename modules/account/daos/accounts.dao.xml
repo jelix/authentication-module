@@ -6,12 +6,19 @@
    <record>
       <property name="account_id" fieldname="account_id" datatype="autoincrement"/>
 
+      <!-- identifier of the user -->
       <property name="username" fieldname="username"
                 required="yes" datatype="string" maxlength="255" />
 
+      <!-- preferred name to be used when displaying identity  -->
+      <property name="displayname" fieldname="displayname"
+                 datatype="string" maxlength="255" default=""/>
+
+      <!-- given name -->
       <property name="firstname" fieldname="firstname"
                 datatype="string" maxlength="100" />
 
+      <!-- surname -->
       <property name="lastname" fieldname="lastname"
                 datatype="string" maxlength="100" />
 

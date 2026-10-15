@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2023 Laurent Jouanneau
+ * @copyright  2023-2026 Laurent Jouanneau
  * @license   MIT
  */
 namespace Jelix\Authentication\Account\Command;
@@ -30,13 +30,14 @@ class AccountListCommand extends \Jelix\Scripts\ModuleCommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $table = new Table($output);
-        $table->setHeaders(array('Id', 'Username', 'Email', 'First Name', 'Last name', 'Status', 'Create Date'));
+        $table->setHeaders(array('Id', 'Username', 'Email', 'Display Name', 'First Name', 'Last name', 'Status', 'Create Date'));
         $manager = new Manager();
         foreach ($manager->getAccountList() as $account) {
             $table->addRow(array(
                 $account->account_id,
                 $account->username,
                 $account->email,
+                $account->displayname,
                 $account->firstname,
                 $account->lastname,
                 $account->status,

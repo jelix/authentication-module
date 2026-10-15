@@ -45,7 +45,7 @@ class Account implements UserAccountInterface
 
     public function getRealName()
     {
-        return $this->data['firstname'].' '.$this->data['lastname'];
+        return $this->data['displayname'] ?: $this->data['firstname'].' '.$this->data['lastname'];
     }
 
     public function getUserName()

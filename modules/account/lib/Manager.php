@@ -77,6 +77,44 @@ class Manager
     }
 
     /**
+     * @param AuthUser $user
+     * @param \jDaoRecordBase $accountRecord
+     * @return void
+     */
+    protected function updateNames(AuthUser $user, $login, $accountRecord)
+    {
+        if (empty($accountRecord->firstname) && empty($accountRecord->lastname)) {
+            $displayName = $user->getName();
+            if ($displayName && $displayName !== $login) {
+                $names = explode(' ', $displayName, 2);
+                if (count($names) > 1) {
+                    $accountRecord->firstname = $names[0];
+                    $accountRecord->lastname = $names[1];
+                } else {
+                    $accountRecord->firstname = '';
+                    $accountRecord->lastname = $displayName;
+                }
+            }
+        }
+
+        if ($accountRecord->displayname == '') {
+            if ($accountRecord->firstname && $accountRecord->lastname) {
+                $accountRecord->displayname = $accountRecord->firstname . ' ' . $accountRecord->lastname;
+            }
+            else if ($accountRecord->firstname) {
+                $accountRecord->displayname = $accountRecord->firstname;
+            }
+            else if ($accountRecord->lastname) {
+                $accountRecord->displayname = $accountRecord->lastname;
+            }
+            else {
+                $accountRecord->displayname = $login;
+            }
+        }
+
+    }
+
+    /**
      * Creates a new account from the authenticated user
      *
      * Uses the claim-mapping configuration to map identity attributes
@@ -111,19 +149,7 @@ class Manager
             }
         }
 
-        if (empty($newAccount->firstname) && empty($newAccount->lastname)) {
-            $displayName = $user->getName();
-            if ($displayName && $displayName !== $login) {
-                $names = explode(' ', $displayName, 2);
-                if (count($names) > 1) {
-                    $newAccount->firstname = $names[0];
-                    $newAccount->lastname = $names[1];
-                } else {
-                    $newAccount->firstname = '';
-                    $newAccount->lastname = $displayName;
-                }
-            }
-        }
+        $this->updateNames($user, $login, $newAccount);
 
         $newAccount->status = $status;
         $this->saveNewAccount($newAccount);
@@ -153,19 +179,7 @@ class Manager
             }
         }
 
-        if (empty($newAccount->firstname) && empty($newAccount->lastname)) {
-            $displayName = $user->getName();
-            if ($displayName && $displayName !== $user->getLogin()) {
-                $names = explode(' ', $displayName, 2);
-                if (count($names) > 1) {
-                    $accountRecord->firstname = $names[0];
-                    $accountRecord->lastname = $names[1];
-                } else {
-                    $accountRecord->firstname = '';
-                    $accountRecord->lastname = $displayName;
-                }
-            }
-        }
+        $this->updateNames($user, $user->getLogin(), $accountRecord);
 
         $dao->update($accountRecord);
         return new Account($accountRecord);

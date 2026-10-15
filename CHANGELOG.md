@@ -3,18 +3,20 @@ Next version
 ------------
 
 New features:
+
 - A user can be notified by email that someone (and himself) has been
   authenticated on the application.
 - new configuration parameter `notifyAuthMode` to enable/disable this feature.
 - new account admin page to manage users' accounts.
 - new event `ProfileViewPageEvent` allowing adding more fields into the profile page.
+- New property "Display name" on the account.
 
 BEHAVIOR CHANGES:
 
 - The event `AuthWorkflowStep` for the step `check_account` is now dispatched after an account has been created. 
   The event object `CheckAccountEvent` has a new method `isAccountNewlyCreated()` to know if the account has been created just before the dispatch.
 
-API CHANGES:
+New API:
 
 - New method `jAuthentication::authenticationFail()`
 - The `CheckAccountEvent` class has a new method `setAccount()` to change the account associated to the authenticated user.

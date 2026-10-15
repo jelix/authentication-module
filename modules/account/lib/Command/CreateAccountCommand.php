@@ -64,6 +64,7 @@ class CreateAccountCommand extends \Jelix\Scripts\ModuleCommandAbstract
         $newAccount = $manager->createAccountObject($accountName, $userEmail);
         $newAccount->firstname = $firstName;
         $newAccount->lastname = $lastName;
+        $newAccount->displayName = $firstName . ' ' . $lastName;
         $manager->saveNewAccount($newAccount);
 
         return 0;

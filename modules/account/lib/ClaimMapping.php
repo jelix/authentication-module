@@ -23,6 +23,7 @@ class ClaimMapping
 
     protected static $defaults = [
         'username' => IdentityAttributes::UserName,
+        'displayname' => IdentityAttributes::DisplayName,
         'firstname' => IdentityAttributes::FirstName,
         'lastname' => IdentityAttributes::LastName,
         'email' => IdentityAttributes::Email,

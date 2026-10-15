@@ -242,4 +242,4 @@ aclAdapterClass="\Jelix\Authentication\LoginPass\LdapAcl2Adapter"
 username=jelix/identity/username
 firstname=jelix/identity/givenname
 lastname=jelix/identity/surname
-email=jelix/identity/email
+email=jelix/identity/emailaddress

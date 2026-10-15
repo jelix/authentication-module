@@ -57,6 +57,7 @@ class identityAttributesTest extends TestCase
         $this->assertContains(IdentityAttributes::FirstName, $claims);
         $this->assertContains(IdentityAttributes::LastName, $claims);
         $this->assertContains(IdentityAttributes::Email, $claims);
+        $this->assertContains(IdentityAttributes::DisplayName, $claims);
     }
 
     public function testGetSupportedAccountClaimsReturnsIndexedArray()

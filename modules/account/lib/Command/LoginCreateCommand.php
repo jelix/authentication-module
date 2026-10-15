@@ -84,7 +84,7 @@ class LoginCreateCommand extends AbstractCommand
         }
 
         $authUser = $lpManager->createUser($login, $password, array(
-            IdentityAttributes::DisplayName => $realName,
+            IdentityAttributes::DisplayName => $displayName,
             IdentityAttributes::Email => $userEmail
         ), $backendName);
         if (!$authUser) {

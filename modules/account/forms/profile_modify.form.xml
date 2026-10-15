@@ -13,6 +13,10 @@
         <label locale="account~account.profile.th.lastname"/>
     </input>
 
+    <input type="string" ref="displayname">
+        <label locale="account~account.profile.th.displayname"/>
+    </input>
+
     <input type="email" ref="email" required="true">
         <label locale="account~account.profile.th.email"/>
     </input>

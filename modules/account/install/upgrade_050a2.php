@@ -26,6 +26,7 @@ class accountModuleUpgrader_050a2 extends \Jelix\Installer\Module\Installer
         $section = 'account:claim-mapping';
         if ($ini->getValue('username', $section) === null) {
             $ini->setValue('username', 'jelix/identity/username', $section);
+            $ini->setValue('displayname', 'jelix/identity/displayname', $section);
             $ini->setValue('firstname', 'jelix/identity/givenname', $section);
             $ini->setValue('lastname', 'jelix/identity/surname', $section);
             $ini->setValue('email', 'jelix/identity/emailaddress', $section);
