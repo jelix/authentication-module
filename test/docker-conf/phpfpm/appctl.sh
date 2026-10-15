@@ -133,17 +133,8 @@ function composerUpdate() {
 }
 
 function launch() {
-    if [ ! -f $APPDIR/var/config/profiles.ini.php ]; then
-        cp $APPDIR/var/config/profiles.ini.php.dist $APPDIR/var/config/profiles.ini.php
-    fi
-    if [ ! -f $APPDIR/var/config/localconfig.ini.php ]; then
-        cp $APPDIR/var/config/localconfig.ini.php.dist $APPDIR/var/config/localconfig.ini.php
-    fi
-    if [ ! -f $APPDIR/var/db/users.ini.php -a -f $APPDIR/var/users.ini.php.dist ]; then
-        cp $APPDIR/var/users.ini.php.dist $APPDIR/var/db/users.ini.php
-    fi
-    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/db/users.ini.php
 
+    resetApp
     if [ ! -d $APPDIR/vendor ]; then
       composerInstall
     fi
@@ -151,6 +142,24 @@ function launch() {
     launchInstaller
     setRights
     cleanTmp
+}
+
+
+function resetSqlite3() {
+  echo "--- Reset sqlite3 database"
+  if [ -f $APPDIR/var/db/daotablesqlite.sqlite ]; then
+    rm -f $APPDIR/var/db/daotablesqlite.sqlite
+  fi
+
+}
+
+function resetPostgresql() {
+  echo "--- Reset Postgresql database"
+  PGTABLES="account_idp accounts auth_user_requests jacl2_group jacl2_rights jacl2_subject jacl2_subject_group jacl2_user_group"
+  for TABLE in $PGTABLES
+  do
+      PGPASSWORD=jelix psql -h pgsql -U test_user -d testapp -c "drop table if exists $TABLE cascade;"
+  done
 }
 
 
@@ -170,8 +179,12 @@ case $COMMAND in
     clean)
         cleanApp;;
     reset)
-          cleanApp
-          launchInstaller
+          if [ ! -d $APPDIR/vendor ]; then
+            composerInstall
+          fi
+          resetApp
+          resetSqlite3
+          resetPostgresql
           ;;
     init-data)
           initData
@@ -195,4 +208,3 @@ case $COMMAND in
         exit 2
         ;;
 esac
-

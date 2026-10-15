@@ -12,6 +12,7 @@ RUN apt-get update &&  \
     ldap-utils \
     openssl \
     php${PHP_VERSION}-xdebug \
+    postgresql-client \
     && \
     apt-get clean
 
