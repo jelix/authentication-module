@@ -1,7 +1,7 @@
 <?php
 /**
  * @author     Laurent Jouanneau
- * @copyright  2023 Laurent Jouanneau
+ * @copyright  2023-2026 Laurent Jouanneau
  * @license   MIT
  */
 namespace Jelix\Authentication\Account\Command;
@@ -61,7 +61,7 @@ class CreateAccountCommand extends \Jelix\Scripts\ModuleCommandAbstract
             throw new \Exception('The account '.$accountName.' already exists');
         }
 
-        $newAccount = $manager->createAccountObject($accountName, $userEmail);
+        $newAccount = $manager->createAccountRecordObject($accountName, $userEmail);
         $newAccount->firstname = $firstName;
         $newAccount->lastname = $lastName;
         $newAccount->displayName = $firstName . ' ' . $lastName;

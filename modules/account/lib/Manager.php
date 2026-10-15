@@ -61,7 +61,7 @@ class Manager
      *
      * @return \jDaoRecordBase The record containing the account
      */
-    public function createAccountObject($userName, $email)
+    public function createAccountRecordObject($userName, $email)
     {
         $newAccount = \jDao::createRecord(self::$daoName, $this->daoProfile);
         $newAccount->username = $userName;
@@ -138,7 +138,7 @@ class Manager
         }
 
         $email = $mappedFields['email'] ?? $user->getEmail();
-        $newAccount = $this->createAccountObject($login, $email);
+        $newAccount = $this->createAccountRecordObject($login, $email);
 
         foreach ($mappedFields as $field => $value) {
             if ($field === 'username' || $field === 'email') {
