@@ -450,7 +450,7 @@ class standardWorkflowTest extends TestCase
 
         $account = $this->workflowState->getTemporaryUser()->getAccount();
         $this->assertNotNull($account);
-        $this->assertEquals('Robert Morane', $account->getRealName());
+        $this->assertEquals('Robert Morane', $account->getDisplayName());
         $this->assertEquals('bob.new@example.com', $account->getEmail());
     }
 

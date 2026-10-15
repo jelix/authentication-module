@@ -64,7 +64,7 @@ class MyAccountImplementation implements \Jelix\Authentication\Core\AuthSession\
         return $this->username;
     }
 
-    public function getRealName()
+    public function getDisplayName()
     {
         return $this->realname;
     }

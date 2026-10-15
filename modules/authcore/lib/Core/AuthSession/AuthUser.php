@@ -72,7 +72,7 @@ class AuthUser
     function getName()
     {
         if ($this->account) {
-            $displayName = $this->account->getRealName();
+            $displayName = $this->account->getDisplayName();
             if (trim($displayName)) {
                 return $displayName;
             }

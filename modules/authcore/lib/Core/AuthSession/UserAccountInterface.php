@@ -43,14 +43,14 @@ interface UserAccountInterface
     public function getUserName();
 
     /**
-     * The real name is the name displayed into the application.
+     * Gives the name to display into the application.
      *
      * It may contain the firstname and the lastname, or a nickname
      * if the application allows nicknames etc..
      *
-     * @return string the real name of the user
+     * @return string the display name of the user
      */
-    public function getRealName();
+    public function getDisplayName();
 
     /**
      * @return string the user email

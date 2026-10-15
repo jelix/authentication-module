@@ -68,7 +68,7 @@ class LoginCreateCommand extends AbstractCommand
 
 
         $login = $existingAccount->getUserName();
-        $realName = $existingAccount->getRealName();
+        $displayName = $existingAccount->getDisplayName();
         $userEmail = $existingAccount->getEmail();
         $password = $this->getPassword($input, $output);
 

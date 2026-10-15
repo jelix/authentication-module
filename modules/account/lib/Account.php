@@ -1,7 +1,7 @@
 <?php
 /**
  * @author alagroy
- * @copyright 2021-2024 Laurent Jouanneau and other contributors
+ * @copyright 2021-2026 Laurent Jouanneau and other contributors
  * @license    MIT
  */
 namespace Jelix\Authentication\Account;
@@ -43,7 +43,7 @@ class Account implements UserAccountInterface
         return $this->data['account_id'];
     }
 
-    public function getRealName()
+    public function getDisplayName()
     {
         return $this->data['displayname'] ?: $this->data['firstname'].' '.$this->data['lastname'];
     }

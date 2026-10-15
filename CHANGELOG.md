@@ -26,14 +26,11 @@ New API:
 
 BREAKING CHANGES:
 
-- There is no more event `AuthWorkflowStep` for the steps `get_account` and `create_account`. These steps now call
-  an account management adapter. A module implementing accounts management should have an object implementing
-  `Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface` and register it in the configuration.
+- Event `AuthWorkflowStep` for the steps `get_account` and `create_account` is replaced by an account management adapter.
+  A module implementing accounts management should have an object implementing
+  `Jelix\Authentication\Core\Workflow\AccountWorkflowAdapterInterface` and it must register it in the configuration.
 - The class `Jelix\Authentication\Account\Manager` is not anymore a static class. It should be instantiated to access
   to its methods.
-- events `AuthenticationUserCreation` and `AuthenticationUserDeletion` are renamed to `LoginPassCreation` and `LoginPassDeletion`
-- event `AuthLPCanResetPassword` is renamed to `LoginPassCanResetPassword`
-- class `AuthLPCanResetPasswordEvent` is renamed to `LoginPassCanResetPasswordEvent`
 - Session cleanup is now the responsibility of the identity provider.
 - The constants `AuthUser::ATTR_LOGIN`, `AuthUser::ATTR_NAME` and `AuthUser::ATTR_EMAIL` have been removed.
   User attributes now use URI-style keys defined in the new class `Jelix\Authentication\Core\IdentityAttributes`
@@ -47,6 +44,15 @@ BREAKING CHANGES:
   standard fields (username, firstname, lastname, email). 
 - the interface `Jelix\Authentication\Core\IdentityProviderInterface` has a new method `getWorkflowFeatures()` 
   to return the workflow features that may change the behavior of the authentication workflow.
+- The method `getRealName()` of `UserAccountInterface` has been renamed to `getDisplayName()`.
+
+BREAKING CHANGES in events:
+
+- no more event `AuthWorkflowStep` for the workflow steps `get_account` and `create_account`
+- events `AuthenticationUserCreation` and `AuthenticationUserDeletion` are renamed to `LoginPassCreation` and `LoginPassDeletion`
+- event `AuthLPCanResetPassword` is renamed to `LoginPassCanResetPassword`
+- class `AuthLPCanResetPasswordEvent` is renamed to `LoginPassCanResetPasswordEvent`
+
 
 0.4.1
 -----
