@@ -10,10 +10,10 @@
                 required="yes" datatype="string" maxlength="255" />
 
       <property name="firstname" fieldname="firstname"
-                required="yes" datatype="string" maxlength="100" />
+                datatype="string" maxlength="100" />
 
       <property name="lastname" fieldname="lastname"
-                required="yes" datatype="string" maxlength="100" />
+                datatype="string" maxlength="100" />
 
       <property name="email" fieldname="email" datatype="string"
                 required="yes" maxlength="255" />

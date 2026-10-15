@@ -13,9 +13,10 @@
         <label locale="account~account.profile.th.lastname"/>
     </input>
 
-    <input type="email" ref="email">
+    <input type="email" ref="email" required="true">
         <label locale="account~account.profile.th.email"/>
     </input>
+
     <radiobuttons ref="notify_auth_success" required='true'>
         <label locale="account~account.profile.th.notify_auth_success"/>
         <item value="1" locale='account~account.profile.notify_auth_success.text.on' />
