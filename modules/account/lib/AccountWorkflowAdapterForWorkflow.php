@@ -15,6 +15,8 @@ use Jelix\Authentication\Core\Workflow\WorkflowState;
 class AccountWorkflowAdapterForWorkflow implements AccountWorkflowAdapterInterface
 {
 
+    protected Manager $accountManager;
+
     public function __construct()
     {
         $this->accountManager = new Manager();

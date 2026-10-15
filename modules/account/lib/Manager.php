@@ -28,7 +28,7 @@ class Manager
     const STATUS_DISABLED = -1;
     const STATUS_DELETED = -2;
 
-    public function __construct($daoProfile = 'account', ClaimMapping $claimMapping = null)
+    public function __construct($daoProfile = 'account', ?ClaimMapping $claimMapping = null)
     {
         $this->daoProfile = $daoProfile;
 
