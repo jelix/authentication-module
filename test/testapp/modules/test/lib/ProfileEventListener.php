@@ -12,9 +12,9 @@ class ProfileEventListener extends jEventListener
         $tpl = $event->getTemplateService();
 
         $tpl->assign('position', 'above');
-        $event->addContent($tpl->fetch('test~profilePageExtended'), 6);
-        $tpl->assign('position', 'below');
         $event->addContent($tpl->fetch('test~profilePageExtended'), 3);
+        $tpl->assign('position', 'below');
+        $event->addContent($tpl->fetch('test~profilePageExtended'), 6);
         $event->addContent('<br>content on same position use insertion order (1)', 8);
         $event->addContent('<br>content on same position use insertion order (2)', 8);
     }

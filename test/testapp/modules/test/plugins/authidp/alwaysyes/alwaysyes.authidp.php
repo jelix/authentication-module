@@ -8,6 +8,9 @@
 
 use Jelix\Authentication\Core\IdentityProviderInterface;
 
+/**
+ * VERY DANGEROUS DO NOT USE IT IN PRODUCTION
+ */
 class AlwaysYesIdentityProvider implements IdentityProviderInterface {
 
 
