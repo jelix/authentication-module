@@ -145,7 +145,7 @@ class profileCtrl extends jController {
         $idpAccountList = $manager->searchIdpUsedByAccount($account->getAccountId());
         foreach($idpAccountList as $idpAccount) {
             $idpId = $idpAccount->idp_id;
-            $manager->detachAccountFromIdp($account->getAccountId(), $idpId, $user->getUserId());
+            $manager->detachAccountFromIdp($account->getAccountId(), $idpId, $user->getIdpUserId());
             if ($idpId == 'loginpass') {
                 /** @var loginpassIdentityProvider $loginpassIDP */
                 $loginpassIDP = jAuthentication::manager()->getIdpById('loginpass');

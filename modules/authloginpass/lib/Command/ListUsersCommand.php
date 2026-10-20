@@ -42,12 +42,12 @@ class ListUsersCommand extends  AbstractCommand
         }
 
         $table = new Table($output);
-        $table->setHeaders(array('Id', 'Login', 'Email', 'Username'));
+        $table->setHeaders(array('Id', 'Login', 'Email', 'Display Name'));
 
         /** @var AuthUser $user */
         foreach ($backend->getUsersList() as $user) {
             $table->addRow(array(
-                $user->getUserId(),
+                $user->getIdpUserId(),
                 $user->getLogin(),
                 $user->getEmail(),
                 $user->getName(),

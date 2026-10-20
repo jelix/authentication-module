@@ -37,7 +37,7 @@ class AccountWorkflowAdapterForTest implements AccountWorkflowAdapterInterface
                 }
                 else {
                     $account = new AccountForTest(
-                        $user->getUserId(),
+                        $user->getIdpUserId(),
                         $user->getLogin(),
                         $user->getName(),
                         $user->getEmail()

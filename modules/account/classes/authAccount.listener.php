@@ -25,7 +25,7 @@ class authAccountListener extends jEventListener
             return;
         }
 
-        $userId = $event->getUser()->getUserId();
+        $userId = $event->getUser()->getIdpUserId();
 
         // if a user has no account, we don't allow him to recover his account
         // and so, to reset his password.

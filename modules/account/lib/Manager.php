@@ -242,15 +242,15 @@ class Manager
 
     /**
      * @param string $idpId
-     * @param string $authUserId
+     * @param string $IdpUserId
      * @return null|Account
      */
-    public function searchAccountByIdp($idpId, $authUserId)
+    public function searchAccountByIdp($idpId, $IdpUserId)
     {
         $daoIdp = \jDao::get(self::$daoIdp, $this->daoProfile);
-        $accIdp = $daoIdp->findByIdpAndUser($idpId, $authUserId);
+        $accIdp = $daoIdp->findByIdpAndUser($idpId, $IdpUserId);
         if (!$accIdp) {
-            \jLog::log('search account: no account-idp for '.$idpId. ' - '. $authUserId, 'auth');
+            \jLog::log('search account: no account-idp for '.$idpId. ' - '. $IdpUserId, 'auth');
             return null;
         }
 

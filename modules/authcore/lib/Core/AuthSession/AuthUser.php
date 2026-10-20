@@ -23,7 +23,7 @@ class AuthUser
     /**
      * @var string the user id
      */
-    protected $userId;
+    protected $idpUserId;
 
     protected $attributes = array();
 
@@ -47,12 +47,12 @@ class AuthUser
      * These information should be stored at the keys indicated into the
      * IdentityAttributes constants.
      *
-     * @param string $userId Technical id of the user from the authentication provider
+     * @param string $idpUserId Technical id of the user from the authentication provider
      * @param array $attributes list of attributes
      */
-    function __construct($userId, array $attributes) {
+    function __construct($idpUserId, array $attributes) {
         $this->attributes = $attributes;
-        $this->userId = $userId;
+        $this->idpUserId = $idpUserId;
     }
 
     /**
@@ -60,8 +60,8 @@ class AuthUser
      *
      * @return string
      */
-    function getUserId() {
-        return $this->userId;
+    function getIdpUserId() {
+        return $this->idpUserId;
     }
 
     /**
@@ -112,7 +112,7 @@ class AuthUser
         if (isset($this->attributes[IdentityAttributes::UserName]) && $this->attributes[IdentityAttributes::UserName] !== '') {
             return $this->attributes[IdentityAttributes::UserName];
         }
-        return $this->userId;
+        return $this->idpUserId;
     }
 
     /**

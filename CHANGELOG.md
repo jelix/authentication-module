@@ -32,6 +32,7 @@ BREAKING CHANGES:
 - The class `Jelix\Authentication\Account\Manager` is not anymore a static class. It should be instantiated to access
   to its methods.
 - Session cleanup is now the responsibility of the identity provider.
+- `AuthUser::getUserId()` has been renamed to `AuthUser::getIdpUserId()`
 - The constants `AuthUser::ATTR_LOGIN`, `AuthUser::ATTR_NAME` and `AuthUser::ATTR_EMAIL` have been removed.
   User attributes now use URI-style keys defined in the new class `Jelix\Authentication\Core\IdentityAttributes`
   (e.g. `jelix/identity/username`, `jelix/identity/emailaddress`, `jelix/identity/displayname`).

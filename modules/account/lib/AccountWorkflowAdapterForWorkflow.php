@@ -29,7 +29,7 @@ class AccountWorkflowAdapterForWorkflow implements AccountWorkflowAdapterInterfa
         $authUser = $workflowState->getTemporaryUser();
 
         $isNewAccount = false;
-        $account = $this->accountManager->searchAccountByIdp($idpId, $authUser->getUserId(), true);
+        $account = $this->accountManager->searchAccountByIdp($idpId, $authUser->getIdpUserId(), true);
         if ($account) {
 
             $result = AccountWorkflowAdapterInterface::SEARCH_RESULT_ACCOUNT_FOUND;
