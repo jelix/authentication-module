@@ -40,9 +40,9 @@ BREAKING CHANGES:
 - The LDAP backend `searchAttributes` configuration must now map to `IdentityAttributes` keys instead of
   short names. For example: `uid:jelix/identity/username,mail:jelix/identity/emailaddress` instead of
   `uid:login,mail:email`.
-- The account module now uses a configurable claim-mapping (`[account:claim-mapping]` INI section) to map
+- The account module now uses a configurable claim-mapping (`[accounts:claim-mapping]` INI section) to map
   identity attributes to account fields during account creation. Default mapping is provided for the
-  standard fields (username, firstname, lastname, email). 
+  native fields (username, firstname, lastname, email, displayname). 
 - the interface `Jelix\Authentication\Core\IdentityProviderInterface` has a new method `getWorkflowFeatures()` 
   to return the workflow features that may change the behavior of the authentication workflow.
 - The method `getRealName()` of `UserAccountInterface` has been renamed to `getDisplayName()`.

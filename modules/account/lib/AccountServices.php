@@ -20,7 +20,7 @@ class AccountServices
     static public function getClaimMapping(): ClaimMapping
     {
         if (self::$claimMapping === null) {
-            $configSection = 'account:claim-mapping';
+            $configSection = 'accounts:claim-mapping';
             $configData = [];
             if (property_exists(\jApp::config(), $configSection) &&
                 is_array(\jApp::config()->$configSection)

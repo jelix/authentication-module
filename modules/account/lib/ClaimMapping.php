@@ -14,14 +14,14 @@ use Jelix\Authentication\Core\IdentityAttributes;
 /**
  * Maps identity attribute keys (from IdentityAttributes) to account storage fields.
  *
- * The mapping is configured via the [account:claim-mapping] INI section.
+ * The mapping is configured via the [accounts:claim-mapping] INI section.
  * Default mapping covers the standard account DAO fields.
  */
 class ClaimMapping
 {
     protected $mapping = [];
 
-    protected static $defaults = [
+    protected static $nativeMapping = [
         'username' => IdentityAttributes::UserName,
         'displayname' => IdentityAttributes::DisplayName,
         'firstname' => IdentityAttributes::FirstName,
@@ -31,11 +31,11 @@ class ClaimMapping
 
     /**
      * @param array $configuredMapping mapping from account field names to identity attribute keys,
-     *                                  overrides/complements the defaults
+     *                                 complements the native mapping
      */
     public function __construct(array $configuredMapping = [])
     {
-        $this->mapping = array_merge(self::$defaults, $configuredMapping);
+        $this->mapping = array_merge($configuredMapping, self::$nativeMapping);
     }
 
     /**
@@ -64,6 +64,19 @@ class ClaimMapping
                 $result[$accountField] = $value;
             }
         }
+
+        if (!isset($result['username'])) {
+            $result['username'] = $user->getLogin();
+        }
+
+        if (!isset($result['email'])) {
+            $result['email'] = $user->getEmail();
+        }
+
+        if (!isset($result['displayname'])) {
+            $result['displayname'] = $user->getName();
+        }
+
         return $result;
     }
 

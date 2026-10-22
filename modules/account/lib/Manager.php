@@ -128,7 +128,7 @@ class Manager
     {
         $mappedFields = $this->claimMapping->mapAuthUserToAccountFields($user);
 
-        $login = $mappedFields['username'] ?? $user->getLogin();
+        $login = $mappedFields['username'];
         if ($this->accountExists($login)) {
             return null;
         }
@@ -137,8 +137,7 @@ class Manager
             $status = self::STATUS_VALID;
         }
 
-        $email = $mappedFields['email'] ?? $user->getEmail();
-        $newAccount = $this->createAccountRecordObject($login, $email);
+        $newAccount = $this->createAccountRecordObject($login, $mappedFields['email']);
 
         foreach ($mappedFields as $field => $value) {
             if ($field === 'username' || $field === 'email') {

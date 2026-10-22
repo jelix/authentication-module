@@ -238,8 +238,5 @@ featureDeleteUser=on
 featureChangePassword=on
 aclAdapterClass="\Jelix\Authentication\LoginPass\LdapAcl2Adapter"
 
-[account:claim-mapping]
-username=jelix/identity/username
-firstname=jelix/identity/givenname
-lastname=jelix/identity/surname
-email=jelix/identity/emailaddress
+[accounts:claim-mapping]
+
