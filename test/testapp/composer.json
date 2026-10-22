@@ -16,13 +16,13 @@
         }
     },
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.2",
         "jelix/jelix": "dev-jelix-1.8.x",
         "jelix/adminui-module": "dev-master",
         "ircmaxell/random-lib" : "^1.2.0"
     },
     "require-dev" : {
-        "phpunit/phpunit" : "^8.4.3"
+        "phpunit/phpunit" : "~11.5.57"
     },
     "autoload": {
         "psr-4": {
